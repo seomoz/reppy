@@ -27,30 +27,57 @@ handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 logger.setLevel(logging.WARNING)
 
-class agent:
+# A hash of robots for various sites
+robots = {}
+
+def findOrMakeRobot(url, agent, agentString):
+	global robots
+	parsed = urlparse.urlparse(url)
+	robot = robots.get(parsed.hostname, None)
+	if not robot:
+		agentS = agentString or re.sub('(\S+?)(\/.+)?', r'\1', agent)
+		robot = repp.fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.hostname), userAgent=agent, userAgentString=agentS)
+		robots[parsed.hostname] = robot
+	return robot
+
+def allowed(url, agent, agentString=None):
+	if isinstance(url, basestring):
+		return findOrMakeRobot(url, agent, agentString).allowed(url)
+	else:
+		return [u for u in url if findOrMakeRobot(u, agent, agentString).allowed(u)]
+
+def disallowed(url, agent, agentString=None):
+	not allowed(url, agent, agentString)
+
+def crawlDelay(url, agent, agentString=None):
+	return findOrMakeRobot(url, agent, agentString).crawlDelay
+
+def sitemaps(url):
+	return findOrMakeRobot(url).sitemaps
+
+class agent(object):
 	'''Represents attributes for a given robot'''
 	def __init__(self):
-		self.disallow   = []
-		self.allow      = []
+		self.allowances = []
 		self.crawlDelay = None
 	
 	def allowed(self, url):
 		'''Can I fetch a given URL?'''
 		path = urllib.unquote(urlparse.urlparse(url).path.replace('%2f', '%252f'))
 		if path == '/robots.txt':
-			return True
-		disallow = sum([int(bool(r.match(path))) for r in self.disallow])
-		if not disallow:
-			return True
+			urls.append(u)
+		allowed = [a[1] for a in self.allowances if a[0].match(path)]
+		if allowed:
+			return allowed[-1]
 		else:
-			return bool(sum([int(bool(r.match(path))) for r in self.allow]))
+			return True
 	
 	def disallowed(self, url):
 		'''For completeness'''
 		return not self.allowed(url)
 
-class repp:
-	lineRE = re.compile('^\s*(\S+)\s*:\s*(.+?)\s*$', re.I)
+class repp(object):
+	lineRE = re.compile('^\s*(\S+)\s*:\s*(\S+?)\s*$', re.I)
 	
 	@classmethod
 	def fetch(c, url, **kwargs):
@@ -61,7 +88,7 @@ class repp:
 		if expires:
 			# Add a ttl to the class
 			expires = time.mktime(dateutil.parser.parse(expires).timetuple())
-			kwargs['ttl'] = kwargs['ttl'] or expires
+			kwargs['ttl'] = kwargs.get('ttl', None) or expires
 		kwargs['url'] = url
 		return c.parse(page.read(), **kwargs)
 	
@@ -115,10 +142,10 @@ class repp:
 						# have this user agent point to the one we declared
 						# for the previously-listed agent
 						cur = self.atts['agents'].get(curname, None) or agent()
-				elif key == 'disallow':
-					cur.disallow.append(self.makeREFromString(val))
+				elif key == 'disallow' and len(val):
+					cur.allowances.append((self.makeREFromString(val), False))
 				elif key == 'allow':
-					cur.allow.append(self.makeREFromString(val))
+					cur.allowances.append((self.makeREFromString(val), True ))
 				elif key == 'crawl-delay':
 					cur.crawl.crawlDelay = int(val)
 				elif key == 'sitemap':
@@ -133,20 +160,24 @@ class repp:
 		# Now store the user agent that we've been working on
 		self.atts['agents'][curname] = cur
 	
-	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)'):
+	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString='repparser'):
 		'''The string to parse, and the ttl for the robots file'''
 		self.atts = {
 			'sitemaps' : [],	# The sitemaps we've seen
 			'agents'   : {}		# The user-agents we've seen
 		}
 		# The sitemaps we've seen
-		self.sitemaps = []
+		self.sitemaps  = []
 		# When did we last parse this?
-		self.parsed   = time.time()
+		self.parsed    = time.time()
 		# Time to live
-		self.ttl      = ttl
+		self.ttl       = ttl
 		# The url that we fetched
-		self.url      = url
+		self.url       = url
+		# The user agent to use for future requests
+		self.userAgent = userAgent
+		# The user agent string to match in robots
+		self.userAgentString = userAgentString
 		# Do we refresh when we expire?
 		self.autorefresh = url and autorefresh
 	
@@ -165,21 +196,24 @@ class repp:
 		return self.remaining < 0
 	
 	def findAgent(self, agent):
-		a = self.agents.get(agent, None)
+		a = self.agents.get(agent or self.userAgentString, None)
 		return a or self.agents.get('*', None)
 	
-	def allowed(self, agent, url):
+	def allowed(self, url, agent=None):
 		'''We try to perform a good match, then a * match'''
 		a = self.findAgent(agent)
 		if a:
-			return a.allowed(url)
+			if isinstance(url, basestring):
+				return a.allowed(url)
+			else:
+				return [u for u in url if a.allowed(u)]
 		else:
 			return True
 	
-	def disallowed(self, agent):
-		return not self.allowed(agent)
+	def disallowed(self, url, agent=None):
+		return not self.allowed(url, agent)
 	
-	def crawlDelay(self, agent):
+	def crawlDelay(self, url, agent=None):
 		'''How fast can this '''
 		a = self.findAgent(agent)
 		if a:

@@ -13,49 +13,49 @@ class TestRFC(unittest.TestCase):
 		r = repp.parse('''
 			User-agent: *
 			Disallow: /tmp''')
-		self.assertTrue(not r.allowed('t', '/tmp'))
-		self.assertTrue(not r.allowed('t', '/tmp.html'))
-		self.assertTrue(not r.allowed('t', '/tmp/a.html'))
+		self.assertTrue(not r.allowed('/tmp', 't'))
+		self.assertTrue(not r.allowed('/tmp.html', 't'))
+		self.assertTrue(not r.allowed('/tmp/a.html', 't'))
 
 		r = repp.parse('''
 			User-agent: *
 			Disallow: /tmp/''')
-		self.assertTrue(    r.allowed('t', '/tmp'))
-		self.assertTrue(not r.allowed('t', '/tmp/'))
-		self.assertTrue(not r.allowed('t', '/tmp/a.html'))
+		self.assertTrue(    r.allowed('/tmp', 't'))
+		self.assertTrue(not r.allowed('/tmp/', 't'))
+		self.assertTrue(not r.allowed('/tmp/a.html', 't'))
 
 	def test_unquoting(self):
 		# Now test escaping entities
 		r = repp.parse('''
 			User-agent: *
 			Disallow: /a%3cd.html''')
-		self.assertTrue(not r.allowed('t', '/a%3cd.html'))
-		self.assertTrue(not r.allowed('t', '/a%3Cd.html'))
+		self.assertTrue(not r.allowed('/a%3cd.html', 't'))
+		self.assertTrue(not r.allowed('/a%3Cd.html', 't'))
 		# And case indpendent
 		r = repp.parse('''
 			User-agent: *
 			Disallow: /a%3Cd.html''')
-		self.assertTrue(not r.allowed('t', '/a%3cd.html'))
-		self.assertTrue(not r.allowed('t', '/a%3Cd.html'))
+		self.assertTrue(not r.allowed('/a%3cd.html', 't'))
+		self.assertTrue(not r.allowed('/a%3Cd.html', 't'))
 		# And escape the urls themselves
 		r = repp.parse('''
 			User-agent: *
 			Disallow: /%7ejoe/index.html''')
-		self.assertTrue(not r.allowed('t', '/~joe/index.html'))
-		self.assertTrue(not r.allowed('t', '/%7ejoe/index.html'))
+		self.assertTrue(not r.allowed('/~joe/index.html', 't'))
+		self.assertTrue(not r.allowed('/%7ejoe/index.html', 't'))
 	
 	def test_unquoting_forward_slash(self):
 		# But not with foward slash
 		r = repp.parse('''
 			User-agent: *
 			Disallow: /a%2fb.html''')
-		self.assertTrue(not r.allowed('t', '/a%2fb.html'))
-		self.assertTrue(    r.allowed('t', '/a/b.html'))
+		self.assertTrue(not r.allowed('/a%2fb.html', 't'))
+		self.assertTrue(    r.allowed('/a/b.html', 't'))
 		r = repp.parse('''
 			User-agent: *
 			Disallow: /a/b.html''')
-		self.assertTrue(    r.allowed('t', '/a%2fb.html'))
-		self.assertTrue(not r.allowed('t', '/a/b.html'))
+		self.assertTrue(    r.allowed('/a%2fb.html', 't'))
+		self.assertTrue(not r.allowed('/a/b.html', 't'))
 	
 	def test_rfc_example(self):
 		r = repp.parse('''# /robots.txt for http://www.fict.org/
@@ -75,53 +75,53 @@ class TestRFC(unittest.TestCase):
 			Allow: /~mak
 			Disallow: /''')
 		# The unhip bot
-		self.assertTrue(not r.allowed('unhipbot', '/'))
-		self.assertTrue(not r.allowed('unhipbot', '/index.html'))
-		self.assertTrue(    r.allowed('unhipbot', '/robots.txt'))
-		self.assertTrue(not r.allowed('unhipbot', '/server.html'))
-		self.assertTrue(not r.allowed('unhipbot', '/services/fast.html'))
-		self.assertTrue(not r.allowed('unhipbot', '/services/slow.html'))
-		self.assertTrue(not r.allowed('unhipbot', '/orgo.gif'))
-		self.assertTrue(not r.allowed('unhipbot', '/org/about.html'))
-		self.assertTrue(not r.allowed('unhipbot', '/org/plans.html'))
-		self.assertTrue(not r.allowed('unhipbot', '/%7Ejim/jim.html'))
-		self.assertTrue(not r.allowed('unhipbot', '/%7Emak/mak.html'))
+		self.assertTrue(not r.allowed('/', 'unhipbot'))
+		self.assertTrue(not r.allowed('/index.html', 'unhipbot'))
+		self.assertTrue(    r.allowed('/robots.txt', 'unhipbot'))
+		self.assertTrue(not r.allowed('/server.html', 'unhipbot'))
+		self.assertTrue(not r.allowed('/services/fast.html', 'unhipbot'))
+		self.assertTrue(not r.allowed('/services/slow.html', 'unhipbot'))
+		self.assertTrue(not r.allowed('/orgo.gif', 'unhipbot'))
+		self.assertTrue(not r.allowed('/org/about.html', 'unhipbot'))
+		self.assertTrue(not r.allowed('/org/plans.html', 'unhipbot'))
+		self.assertTrue(not r.allowed('/%7Ejim/jim.html', 'unhipbot'))
+		self.assertTrue(not r.allowed('/%7Emak/mak.html', 'unhipbot'))
 		# The webcrawler agent
-		self.assertTrue(    r.allowed('webcrawler', '/'))
-		self.assertTrue(    r.allowed('webcrawler', '/index.html'))
-		self.assertTrue(    r.allowed('webcrawler', '/robots.txt'))
-		self.assertTrue(    r.allowed('webcrawler', '/server.html'))
-		self.assertTrue(    r.allowed('webcrawler', '/services/fast.html'))
-		self.assertTrue(    r.allowed('webcrawler', '/services/slow.html'))
-		self.assertTrue(    r.allowed('webcrawler', '/orgo.gif'))
-		self.assertTrue(    r.allowed('webcrawler', '/org/about.html'))
-		self.assertTrue(    r.allowed('webcrawler', '/org/plans.html'))
-		self.assertTrue(    r.allowed('webcrawler', '/%7Ejim/jim.html'))
-		self.assertTrue(    r.allowed('webcrawler', '/%7Emak/mak.html'))
+		self.assertTrue(    r.allowed('/', 'webcrawler'))
+		self.assertTrue(    r.allowed('/index.html', 'webcrawler'))
+		self.assertTrue(    r.allowed('/robots.txt', 'webcrawler'))
+		self.assertTrue(    r.allowed('/server.html', 'webcrawler'))
+		self.assertTrue(    r.allowed('/services/fast.html', 'webcrawler'))
+		self.assertTrue(    r.allowed('/services/slow.html', 'webcrawler'))
+		self.assertTrue(    r.allowed('/orgo.gif', 'webcrawler'))
+		self.assertTrue(    r.allowed('/org/about.html', 'webcrawler'))
+		self.assertTrue(    r.allowed('/org/plans.html', 'webcrawler'))
+		self.assertTrue(    r.allowed('/%7Ejim/jim.html', 'webcrawler'))
+		self.assertTrue(    r.allowed('/%7Emak/mak.html', 'webcrawler'))
 		# The excite agent
-		self.assertTrue(    r.allowed('excite', '/'))
-		self.assertTrue(    r.allowed('excite', '/index.html'))
-		self.assertTrue(    r.allowed('excite', '/robots.txt'))
-		self.assertTrue(    r.allowed('excite', '/server.html'))
-		self.assertTrue(    r.allowed('excite', '/services/fast.html'))
-		self.assertTrue(    r.allowed('excite', '/services/slow.html'))
-		self.assertTrue(    r.allowed('excite', '/orgo.gif'))
-		self.assertTrue(    r.allowed('excite', '/org/about.html'))
-		self.assertTrue(    r.allowed('excite', '/org/plans.html'))
-		self.assertTrue(    r.allowed('excite', '/%7Ejim/jim.html'))
-		self.assertTrue(    r.allowed('excite', '/%7Emak/mak.html'))
+		self.assertTrue(    r.allowed('/', 'excite'))
+		self.assertTrue(    r.allowed('/index.html', 'excite'))
+		self.assertTrue(    r.allowed('/robots.txt', 'excite'))
+		self.assertTrue(    r.allowed('/server.html', 'excite'))
+		self.assertTrue(    r.allowed('/services/fast.html', 'excite'))
+		self.assertTrue(    r.allowed('/services/slow.html', 'excite'))
+		self.assertTrue(    r.allowed('/orgo.gif', 'excite'))
+		self.assertTrue(    r.allowed('/org/about.html', 'excite'))
+		self.assertTrue(    r.allowed('/org/plans.html', 'excite'))
+		self.assertTrue(    r.allowed('/%7Ejim/jim.html', 'excite'))
+		self.assertTrue(    r.allowed('/%7Emak/mak.html', 'excite'))
 		# All others
-		self.assertTrue(not r.allowed('anything', '/'))
-		self.assertTrue(not r.allowed('anything', '/index.html'))
-		self.assertTrue(    r.allowed('anything', '/robots.txt'))
-		self.assertTrue(    r.allowed('anything', '/server.html'))
-		self.assertTrue(    r.allowed('anything', '/services/fast.html'))
-		self.assertTrue(    r.allowed('anything', '/services/slow.html'))
-		self.assertTrue(not r.allowed('anything', '/orgo.gif'))
-		self.assertTrue(    r.allowed('anything', '/org/about.html'))
-		self.assertTrue(not r.allowed('anything', '/org/plans.html'))
-		self.assertTrue(not r.allowed('anything', '/%7Ejim/jim.html'))
-		self.assertTrue(    r.allowed('anything', '/%7Emak/mak.html'))
+		self.assertTrue(not r.allowed('/', 'anything'))
+		self.assertTrue(not r.allowed('/index.html', 'anything'))
+		self.assertTrue(    r.allowed('/robots.txt', 'anything'))
+		self.assertTrue(    r.allowed('/server.html', 'anything'))
+		self.assertTrue(    r.allowed('/services/fast.html', 'anything'))
+		self.assertTrue(    r.allowed('/services/slow.html', 'anything'))
+		self.assertTrue(not r.allowed('/orgo.gif', 'anything'))
+		self.assertTrue(    r.allowed('/org/about.html', 'anything'))
+		self.assertTrue(not r.allowed('/org/plans.html', 'anything'))
+		self.assertTrue(not r.allowed('/%7Ejim/jim.html', 'anything'))
+		self.assertTrue(    r.allowed('/%7Emak/mak.html', 'anything'))
 
 if __name__ == '__main__':
 	unittest.main()
