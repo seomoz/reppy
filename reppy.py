@@ -19,7 +19,7 @@ import logging
 import urlparse
 import dateutil.parser
 
-logger = logging.getLogger('repp')
+logger = logging.getLogger('reppy')
 formatter = logging.Formatter('%(message)s')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
@@ -30,13 +30,31 @@ logger.setLevel(logging.WARNING)
 # A hash of robots for various sites
 robots = {}
 
+def fetch(url, **kwargs):
+	'''Make a reppy object, fetching the url'''
+	obj = reppy(url=url, **kwargs)
+	obj.refresh()
+	return obj
+
+def parse(s, **kwargs):
+	'''Make a reppy object, parsing the contents of s'''
+	obj = reppy(**kwargs)
+	obj.parse(s)
+	return obj
+
+def getUserAgentString(userAgent):
+	'''Return a default user agent string to match, based on userAgent.
+	For example, for 'MyUserAgent/1.0', it will generate 'MyUserAgent'
+	'''
+	return re.sub('(\S+?)(\/.+)?', r'\1', userAgent)
+
 def findOrMakeRobot(url, agent, agentString):
 	global robots
 	parsed = urlparse.urlparse(url)
 	robot = robots.get(parsed.hostname, None)
 	if not robot:
-		agentS = agentString or re.sub('(\S+?)(\/.+)?', r'\1', agent)
-		robot = repp.fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.hostname), userAgent=agent, userAgentString=agentS)
+		robot = reppy.fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.hostname),
+			userAgent=agent, userAgentString=(agentString or getUserAgentString(agent)))
 		robots[parsed.hostname] = robot
 	return robot
 
@@ -76,27 +94,8 @@ class agent(object):
 		'''For completeness'''
 		return not self.allowed(url)
 
-class repp(object):
+class reppy(object):
 	lineRE = re.compile('^\s*(\S+)\s*:\s*(\S+?)\s*$', re.I)
-	
-	@classmethod
-	def fetch(c, url, **kwargs):
-		headers = {'User-Agent': kwargs.get('userAgent', 'REPParser/0.1 (Python)')}
-		page = urllib2.urlopen(urllib2.Request(url, headers=headers))
-		# Try to get the header's expiration time, which we should honor
-		expires = page.info().get('Expires', None)
-		if expires:
-			# Add a ttl to the class
-			expires = time.mktime(dateutil.parser.parse(expires).timetuple())
-			kwargs['ttl'] = kwargs.get('ttl', None) or expires
-		kwargs['url'] = url
-		return c.parse(page.read(), **kwargs)
-	
-	@classmethod
-	def parse(c, s, **kwargs):
-		obj = c(**kwargs)
-		obj._parse(s)
-		return obj
 	
 	def refresh(self):
 		'''Can only work if we have a url specified'''
@@ -107,7 +106,7 @@ class repp(object):
 			expires = page.info().get('Expires', None)
 			if expires:
 				# Add a ttl to the class
-				self.ttl = time.mktime(dateutil.parser.parse(expires).timetuple())
+				self.ttl = time.time() - time.mktime(dateutil.parser.parse(expires).timetuple())
 			self.parse(page.read())
 	
 	def makeREFromString(self, s):
@@ -121,7 +120,7 @@ class repp(object):
 		tmp = s.replace('%2f', '%252f').replace('*', '.+').replace('$', '.+')
 		return re.compile(urllib.unquote(tmp))
 	
-	def _parse(self, s):
+	def parse(self, s):
 		# The agent we're currently working with
 		cur     = agent()
 		# The name of the current agent
@@ -160,7 +159,7 @@ class repp(object):
 		# Now store the user agent that we've been working on
 		self.atts['agents'][curname] = cur
 	
-	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString='repparser'):
+	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString=None):
 		'''The string to parse, and the ttl for the robots file'''
 		self.atts = {
 			'sitemaps' : [],	# The sitemaps we've seen
@@ -177,7 +176,7 @@ class repp(object):
 		# The user agent to use for future requests
 		self.userAgent = userAgent
 		# The user agent string to match in robots
-		self.userAgentString = userAgentString
+		self.userAgentString = userAgentString or getUserAgentString(userAgent)
 		# Do we refresh when we expire?
 		self.autorefresh = url and autorefresh
 	
@@ -189,11 +188,11 @@ class repp(object):
 	
 	def remaining(self):
 		'''How long is left in its life'''
-		return self.parsed + ttl - time.time()
+		return self.parsed + self.ttl - time.time()
 	
 	def expired(self):
 		'''Has this robots.txt expired?'''
-		return self.remaining < 0
+		return self.remaining() < 0
 	
 	def findAgent(self, agent):
 		a = self.agents.get(agent or self.userAgentString, None)
