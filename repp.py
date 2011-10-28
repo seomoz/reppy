@@ -15,8 +15,17 @@ import re
 import time
 import urllib
 import urllib2
+import logging
 import urlparse
 import dateutil.parser
+
+logger = logging.getLogger('repp')
+formatter = logging.Formatter('%(message)s')
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+logger.setLevel(logging.WARNING)
 
 class agent:
 	'''Represents attributes for a given robot'''
@@ -27,7 +36,9 @@ class agent:
 	
 	def allowed(self, url):
 		'''Can I fetch a given URL?'''
-		path = urlparse.urlparse(url).path
+		path = urllib.unquote(urlparse.urlparse(url).path.replace('%2f', '%252f'))
+		if path == '/robots.txt':
+			return True
 		disallow = sum([int(bool(r.match(path))) for r in self.disallow])
 		if not disallow:
 			return True
@@ -43,7 +54,8 @@ class repp:
 	
 	@classmethod
 	def fetch(c, url, **kwargs):
-		page = urllib2.urlopen(url)
+		headers = {'User-Agent': kwargs.get('userAgent', 'REPParser/0.1 (Python)')}
+		page = urllib2.urlopen(urllib2.Request(url, headers=headers))
 		# Try to get the header's expiration time, which we should honor
 		expires = page.info().get('Expires', None)
 		if expires:
@@ -62,7 +74,8 @@ class repp:
 	def refresh(self):
 		'''Can only work if we have a url specified'''
 		if self.url:
-			page = urllib2.urlopen(self.url)
+			req = urllib2.Request(self.url, headers={'User-Agent': self.userAgent})
+			page = urllib2.urlopen(req)
 			# Try to get the header's expiration time, which we should honor
 			expires = page.info().get('Expires', None)
 			if expires:
@@ -111,16 +124,16 @@ class repp:
 				elif key == 'sitemap':
 					self.atts['sitemaps'].append(val)
 				else:
-					print 'Unknown key %s' % line
+					logger.warn('Unknown key %s' % line)
 					# To skip over where we set 'last'
 					continue
 				last = key
 			else:
-				print 'Skipping line %s' % line
+				logger.debug('Skipping line %s' % line)
 		# Now store the user agent that we've been working on
 		self.atts['agents'][curname] = cur
 	
-	def __init__(self, ttl=3600*3, url=None, autorefresh=True):
+	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)'):
 		'''The string to parse, and the ttl for the robots file'''
 		self.atts = {
 			'sitemaps' : [],	# The sitemaps we've seen
