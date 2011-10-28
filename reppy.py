@@ -83,7 +83,7 @@ class agent(object):
 		'''Can I fetch a given URL?'''
 		path = urllib.unquote(urlparse.urlparse(url).path.replace('%2f', '%252f'))
 		if path == '/robots.txt':
-			urls.append(u)
+			return True
 		allowed = [a[1] for a in self.allowances if a[0].match(path)]
 		if allowed:
 			return allowed[-1]
@@ -100,8 +100,19 @@ class reppy(object):
 	def refresh(self):
 		'''Can only work if we have a url specified'''
 		if self.url:
-			req = urllib2.Request(self.url, headers={'User-Agent': self.userAgent})
-			page = urllib2.urlopen(req)
+			try:
+				req = urllib2.Request(self.url, headers={'User-Agent': self.userAgent})
+				page = urllib2.urlopen(req)
+			except urllib2.HTTPError as e:
+				if e.code == 401 and e.code == 403:
+					# If disallowed, assume no access
+					logger.debug('Access disallowed to site %s' % e.code)
+					self.parse('''User-agent: *\nDisallow: /''')
+				elif e.code >= 400 and e.code < 500:
+					# From the spec, if it's a 404, then we can proceed without restriction
+					logger.debug('Page %s not found.' % e.url)
+					self.parse('')
+				return
 			# Try to get the header's expiration time, which we should honor
 			expires = page.info().get('Expires', None)
 			if expires:

@@ -2,22 +2,25 @@
 
 '''These are unit tests that are derived from the rfc at http://www.robotstxt.org/norobots-rfc.txt'''
 
-from repp import repp
+import os
+import sys
 
-import random
+sys.path.append(os.path.abspath('..'))
+
+import reppy
 import unittest
 
-class TestRFC(unittest.TestCase):
+class TestReppyRFC(unittest.TestCase):
 	def test_basic(self):
 		# Test beginning matching
-		r = repp.parse('''
+		r = reppy.parse('''
 			User-agent: *
 			Disallow: /tmp''')
 		self.assertTrue(not r.allowed('/tmp', 't'))
 		self.assertTrue(not r.allowed('/tmp.html', 't'))
 		self.assertTrue(not r.allowed('/tmp/a.html', 't'))
 
-		r = repp.parse('''
+		r = reppy.parse('''
 			User-agent: *
 			Disallow: /tmp/''')
 		self.assertTrue(    r.allowed('/tmp', 't'))
@@ -26,19 +29,19 @@ class TestRFC(unittest.TestCase):
 
 	def test_unquoting(self):
 		# Now test escaping entities
-		r = repp.parse('''
+		r = reppy.parse('''
 			User-agent: *
 			Disallow: /a%3cd.html''')
 		self.assertTrue(not r.allowed('/a%3cd.html', 't'))
 		self.assertTrue(not r.allowed('/a%3Cd.html', 't'))
 		# And case indpendent
-		r = repp.parse('''
+		r = reppy.parse('''
 			User-agent: *
 			Disallow: /a%3Cd.html''')
 		self.assertTrue(not r.allowed('/a%3cd.html', 't'))
 		self.assertTrue(not r.allowed('/a%3Cd.html', 't'))
 		# And escape the urls themselves
-		r = repp.parse('''
+		r = reppy.parse('''
 			User-agent: *
 			Disallow: /%7ejoe/index.html''')
 		self.assertTrue(not r.allowed('/~joe/index.html', 't'))
@@ -46,19 +49,19 @@ class TestRFC(unittest.TestCase):
 	
 	def test_unquoting_forward_slash(self):
 		# But not with foward slash
-		r = repp.parse('''
+		r = reppy.parse('''
 			User-agent: *
 			Disallow: /a%2fb.html''')
 		self.assertTrue(not r.allowed('/a%2fb.html', 't'))
 		self.assertTrue(    r.allowed('/a/b.html', 't'))
-		r = repp.parse('''
+		r = reppy.parse('''
 			User-agent: *
 			Disallow: /a/b.html''')
 		self.assertTrue(    r.allowed('/a%2fb.html', 't'))
 		self.assertTrue(not r.allowed('/a/b.html', 't'))
 	
 	def test_rfc_example(self):
-		r = repp.parse('''# /robots.txt for http://www.fict.org/
+		r = reppy.parse('''# /robots.txt for http://www.fict.org/
 			# comments to webmaster@fict.org
 
 			User-agent: unhipbot
