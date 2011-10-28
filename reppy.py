@@ -1,15 +1,27 @@
 #! /usr/bin/env python
+#
+# Copyright (c) 2011 SEOmoz
+# 
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-'''A robot exclusion protocol parser. Because I could not find a good one.
-
-My thinking is thus:
-
-- User-Agent specifies a scope.
-- Allow applies a rule in that scope
-- Disallow applies a rule in that scope
-- Crawl-delay applies a rule in that scope (not a global)
-- Sitemaps are global
-'''
+'''A robot exclusion protocol parser. Because I could not find a good one.'''
 
 import re
 import time
@@ -49,6 +61,7 @@ def getUserAgentString(userAgent):
 	return re.sub('(\S+?)(\/.+)?', r'\1', userAgent)
 
 def findOrMakeRobot(url, agent, agentString):
+	'''Either return the appropriate global reppy object, or make one'''
 	global robots
 	parsed = urlparse.urlparse(url)
 	robot = robots.get(parsed.hostname, None)
@@ -59,18 +72,22 @@ def findOrMakeRobot(url, agent, agentString):
 	return robot
 
 def allowed(url, agent, agentString=None):
+	'''Is the given url allowed for the given agent?'''
 	if isinstance(url, basestring):
 		return findOrMakeRobot(url, agent, agentString).allowed(url)
 	else:
 		return [u for u in url if findOrMakeRobot(u, agent, agentString).allowed(u)]
 
 def disallowed(url, agent, agentString=None):
+	'''Is the given url disallowed for the given agent?'''
 	not allowed(url, agent, agentString)
 
 def crawlDelay(url, agent, agentString=None):
+	'''What is the crawl delay for the given agent for the given site'''
 	return findOrMakeRobot(url, agent, agentString).crawlDelay
 
 def sitemaps(url):
+	'''What are the sitemaps for the associated site'''
 	return findOrMakeRobot(url).sitemaps
 
 class agent(object):
@@ -95,10 +112,46 @@ class agent(object):
 		return not self.allowed(url)
 
 class reppy(object):
+	'''A class that represents a set of agents, and can select them appropriately.
+	Associated with one robots.txt file.'''
+	
 	lineRE = re.compile('^\s*(\S+)\s*:\s*(.*)\s*(#.+)?$', re.I)
 	
+	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString=None):
+		self.reset()
+		# When did we last parse this?
+		self.parsed    = time.time()
+		# Time to live
+		self.ttl       = ttl
+		# The url that we fetched
+		self.url       = url
+		# The user agent to use for future requests
+		self.userAgent = userAgent
+		# The user agent string to match in robots
+		self.userAgentString = (userAgentString or getUserAgentString(userAgent)).lower()
+		# Do we refresh when we expire?
+		self.autorefresh = url and autorefresh
+	
+	def __getattr__(self, name):
+		'''So we can keep track of refreshes'''
+		if name == 'expired':
+			return self._expired()
+		elif name == 'remaining':
+			return self._remaining()
+		elif self.autorefresh and self._expired():
+			self.refresh()
+		return self.atts[name.lower()]
+	
+	def _remaining(self):
+		'''How long is left in its life'''
+		return self.parsed + self.ttl - time.time()
+
+	def _expired(self):
+		'''Has this robots.txt expired?'''
+		return self._remaining() < 0
+	
 	def reset(self):
-		# Reinitialize
+		'''Reinitialize self'''
 		self.atts = {
 			'sitemaps' : [],	# The sitemaps we've seen
 			'agents'   : {}		# The user-agents we've seen
@@ -130,16 +183,12 @@ class reppy(object):
 	
 	def makeREFromString(self, s):
 		'''Make a regular expression that matches the patterns expressable in robots.txt'''
-		# From the spec:
-		#	http://www.robotstxt.org/norobots-rfc.txt
-		# And based on Google's word:
-		#	http://googlewebmastercentral.blogspot.com/2008/06/improving-on-robots-exclusion-protocol.html
-		# The specific example of %2f should not be replaced. So, to accomplish that,
-		# We'll replace '%2f' with '%252f', which when decoded, is %2f
 		tmp = s.replace('%2f', '%252f').replace('*', '.+').replace('$', '.+')
 		return re.compile(urllib.unquote(tmp))
 	
 	def parse(self, s):
+		'''Parse the given string and store the resultant rules'''
+		self.reset()
 		# The agent we're currently working with
 		cur     = agent()
 		# The name of the current agent
@@ -178,42 +227,9 @@ class reppy(object):
 				logger.debug('Skipping line %s' % line)
 		# Now store the user agent that we've been working on
 		self.atts['agents'][curname] = cur
-	
-	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString=None):
-		'''The string to parse, and the ttl for the robots file'''
-		self.reset()
-		# When did we last parse this?
-		self.parsed    = time.time()
-		# Time to live
-		self.ttl       = ttl
-		# The url that we fetched
-		self.url       = url
-		# The user agent to use for future requests
-		self.userAgent = userAgent
-		# The user agent string to match in robots
-		self.userAgentString = (userAgentString or getUserAgentString(userAgent)).lower()
-		# Do we refresh when we expire?
-		self.autorefresh = url and autorefresh
-	
-	def __getattr__(self, name):
-		'''So we can keep track of refreshes'''
-		if name == 'expired':
-			return self._expired()
-		elif name == 'remaining':
-			return self._remaining()
-		elif self.autorefresh and self._expired():
-			self.refresh()
-		return self.atts[name.lower()]
-	
-	def _remaining(self):
-		'''How long is left in its life'''
-		return self.parsed + self.ttl - time.time()
-	
-	def _expired(self):
-		'''Has this robots.txt expired?'''
-		return self._remaining() < 0
-	
+		
 	def findAgent(self, agent):
+		'''Find the agent given a string for it'''
 		a = self.agents.get((agent or self.userAgentString).lower(), None)
 		return a or self.agents.get('*', None)
 	
@@ -229,6 +245,7 @@ class reppy(object):
 			return True
 	
 	def disallowed(self, url, agent=None):
+		'''For completeness'''
 		return not self.allowed(url, agent)
 	
 	def crawlDelay(self, agent=None):
