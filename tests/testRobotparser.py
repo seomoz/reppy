@@ -9,41 +9,42 @@ class TestRobotparserRFC(unittest.TestCase):
 	def test_basic(self):
 		# Test beginning matching
 		r = robotparser.RobotFileParser()
+		r.set_url('http://a.com/robots.txt')
 		r.parse('''
 			User-agent: *
-			Disallow: /tmp''')
-		self.assertTrue(not r.can_fetch('t', '/tmp'))
-		self.assertTrue(not r.can_fetch('t', '/tmp.html'))
-		self.assertTrue(not r.can_fetch('t', '/tmp/a.html'))
+			Disallow: /tmp'''.split('\n'))
+		self.assertTrue(not r.can_fetch('t', 'http://a.com/tmp'))
+		self.assertTrue(not r.can_fetch('t', 'http://b.com/tmp.html'))
+		self.assertTrue(not r.can_fetch('t', 'http://c.com/tmp/a.html'))
 
 		r = robotparser.RobotFileParser()
 		r.parse('''
 			User-agent: *
-			Disallow: /tmp/''')
-		self.assertTrue(    r.can_fetch('t', '/tmp'))
-		self.assertTrue(not r.can_fetch('t', '/tmp/'))
-		self.assertTrue(not r.can_fetch('t', '/tmp/a.html'))
+			Disallow: /tmp/'''.split('\n'))
+		self.assertTrue(    r.can_fetch('t', 'http://d.com/tmp'))
+		self.assertTrue(not r.can_fetch('t', 'http://e.com/tmp/'))
+		self.assertTrue(not r.can_fetch('t', 'http://f.com/tmp/a.html'))
 
 	def test_unquoting(self):
 		# Now test escaping entities
 		r = robotparser.RobotFileParser()
 		r.parse('''
 			User-agent: *
-			Disallow: /a%3cd.html''')
+			Disallow: /a%3cd.html'''.split('\n'))
 		self.assertTrue(not r.can_fetch('t', '/a%3cd.html'))
 		self.assertTrue(not r.can_fetch('t', '/a%3Cd.html'))
 		# And case indpendent
 		r = robotparser.RobotFileParser()
 		r.parse('''
 			User-agent: *
-			Disallow: /a%3Cd.html''')
+			Disallow: /a%3Cd.html'''.split('\n'))
 		self.assertTrue(not r.can_fetch('t', '/a%3cd.html'))
 		self.assertTrue(not r.can_fetch('t', '/a%3Cd.html'))
 		# And escape the urls themselves
 		r = robotparser.RobotFileParser()
 		r.parse('''
 			User-agent: *
-			Disallow: /%7ejoe/index.html''')
+			Disallow: /%7ejoe/index.html'''.split('\n'))
 		self.assertTrue(not r.can_fetch('t', '/~joe/index.html'))
 		self.assertTrue(not r.can_fetch('t', '/%7ejoe/index.html'))
 
@@ -52,13 +53,13 @@ class TestRobotparserRFC(unittest.TestCase):
 		r = robotparser.RobotFileParser()
 		r.parse('''
 			User-agent: *
-			Disallow: /a%2fb.html''')
+			Disallow: /a%2fb.html'''.split('\n'))
 		self.assertTrue(not r.can_fetch('t', '/a%2fb.html'))
 		self.assertTrue(    r.can_fetch('t', '/a/b.html'))
 		r = robotparser.RobotFileParser()
 		r.parse('''
 			User-agent: *
-			Disallow: /a/b.html''')
+			Disallow: /a/b.html'''.split('\n'))
 		self.assertTrue(    r.can_fetch('t', '/a%2fb.html'))
 		self.assertTrue(not r.can_fetch('t', '/a/b.html'))
 
@@ -79,7 +80,7 @@ class TestRobotparserRFC(unittest.TestCase):
 			Allow: /org/
 			Allow: /serv
 			Allow: /~mak
-			Disallow: /''')
+			Disallow: /'''.split('\n'))
 		# The unhip bot
 		self.assertTrue(not r.can_fetch('unhipbot', '/'))
 		self.assertTrue(not r.can_fetch('unhipbot', '/index.html'))

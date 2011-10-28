@@ -84,9 +84,9 @@ class agent(object):
 		path = urllib.unquote(urlparse.urlparse(url).path.replace('%2f', '%252f'))
 		if path == '/robots.txt':
 			return True
-		allowed = [a[1] for a in self.allowances if a[0].match(path)]
+		allowed = [a for a in self.allowances if a[1].match(path)]
 		if allowed:
-			return allowed[-1]
+			return max(allowed)[2]
 		else:
 			return True
 	
@@ -95,7 +95,14 @@ class agent(object):
 		return not self.allowed(url)
 
 class reppy(object):
-	lineRE = re.compile('^\s*(\S+)\s*:\s*(\S+?)\s*$', re.I)
+	lineRE = re.compile('^\s*(\S+)\s*:\s*(.*)\s*(#.+)?$', re.I)
+	
+	def reset(self):
+		# Reinitialize
+		self.atts = {
+			'sitemaps' : [],	# The sitemaps we've seen
+			'agents'   : {}		# The user-agents we've seen
+		}
 	
 	def refresh(self):
 		'''Can only work if we have a url specified'''
@@ -113,6 +120,7 @@ class reppy(object):
 					logger.debug('Page %s not found.' % e.url)
 					self.parse('')
 				return
+			self.parsed    = time.time()
 			# Try to get the header's expiration time, which we should honor
 			expires = page.info().get('Expires', None)
 			if expires:
@@ -152,12 +160,13 @@ class reppy(object):
 						# have this user agent point to the one we declared
 						# for the previously-listed agent
 						cur = self.atts['agents'].get(curname, None) or agent()
-				elif key == 'disallow' and len(val):
-					cur.allowances.append((self.makeREFromString(val), False))
+				elif key == 'disallow':
+					if len(val):
+						cur.allowances.append((len(val), self.makeREFromString(val), False))
 				elif key == 'allow':
-					cur.allowances.append((self.makeREFromString(val), True ))
+					cur.allowances.append((len(val), self.makeREFromString(val), True ))
 				elif key == 'crawl-delay':
-					cur.crawl.crawlDelay = int(val)
+					cur.crawlDelay = int(val)
 				elif key == 'sitemap':
 					self.atts['sitemaps'].append(val)
 				else:
@@ -172,12 +181,7 @@ class reppy(object):
 	
 	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString=None):
 		'''The string to parse, and the ttl for the robots file'''
-		self.atts = {
-			'sitemaps' : [],	# The sitemaps we've seen
-			'agents'   : {}		# The user-agents we've seen
-		}
-		# The sitemaps we've seen
-		self.sitemaps  = []
+		self.reset()
 		# When did we last parse this?
 		self.parsed    = time.time()
 		# Time to live
@@ -187,26 +191,30 @@ class reppy(object):
 		# The user agent to use for future requests
 		self.userAgent = userAgent
 		# The user agent string to match in robots
-		self.userAgentString = userAgentString or getUserAgentString(userAgent)
+		self.userAgentString = (userAgentString or getUserAgentString(userAgent)).lower()
 		# Do we refresh when we expire?
 		self.autorefresh = url and autorefresh
 	
 	def __getattr__(self, name):
 		'''So we can keep track of refreshes'''
-		if self.autorefresh and self.expired():
+		if name == 'expired':
+			return self._expired()
+		elif name == 'remaining':
+			return self._remaining()
+		elif self.autorefresh and self._expired():
 			self.refresh()
-		return self.atts[name]
+		return self.atts[name.lower()]
 	
-	def remaining(self):
+	def _remaining(self):
 		'''How long is left in its life'''
 		return self.parsed + self.ttl - time.time()
 	
-	def expired(self):
+	def _expired(self):
 		'''Has this robots.txt expired?'''
-		return self.remaining() < 0
+		return self._remaining() < 0
 	
 	def findAgent(self, agent):
-		a = self.agents.get(agent or self.userAgentString, None)
+		a = self.agents.get((agent or self.userAgentString).lower(), None)
 		return a or self.agents.get('*', None)
 	
 	def allowed(self, url, agent=None):
@@ -223,7 +231,7 @@ class reppy(object):
 	def disallowed(self, url, agent=None):
 		return not self.allowed(url, agent)
 	
-	def crawlDelay(self, url, agent=None):
+	def crawlDelay(self, agent=None):
 		'''How fast can this '''
 		a = self.findAgent(agent)
 		if a:

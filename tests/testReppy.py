@@ -8,6 +8,7 @@ import sys
 sys.path.append(os.path.abspath('..'))
 
 import reppy
+import random
 import unittest
 
 class TestReppyRFC(unittest.TestCase):
@@ -125,6 +126,82 @@ class TestReppyRFC(unittest.TestCase):
 		self.assertTrue(not r.allowed('/org/plans.html', 'anything'))
 		self.assertTrue(not r.allowed('/%7Ejim/jim.html', 'anything'))
 		self.assertTrue(    r.allowed('/%7Emak/mak.html', 'anything'))
+	
+	def test_crawl_delay(self):
+		r = reppy.parse('''
+			User-agent: agent
+			Crawl-delay: 5
+			User-agent: *
+			Crawl-delay: 1''')
+		self.assertEqual(r.crawlDelay('agent'), 5)
+		self.assertEqual(r.crawlDelay('testing'), 1)
+	
+	def test_sitemaps(self):
+		r = reppy.parse('''
+			User-agent: agent
+			Sitemap: http://a.com/sitemap.xml
+			Sitemap: http://b.com/sitemap.xml''')
+		self.assertEqual(r.sitemaps, ['http://a.com/sitemap.xml', 'http://b.com/sitemap.xml'])
+	
+	def test_batch_queries(self):
+		r = reppy.parse('''
+			User-agent: *
+			Disallow: /a
+			Disallow: /b
+			Allow: /b/''')
+		testUrls = ['/a/hello', '/a/howdy', '/b', '/b/hello']
+		allowed  = ['/b/hello']
+		self.assertEqual(r.allowed(testUrls), allowed)
+	
+	def test_wildcard(self):
+		r = reppy.parse('''
+			User-agent: *
+			Disallow: /hello/*/are/you''')
+		testUrls = ['/hello/', '/hello/how/are/you', '/hi/how/are/you/']
+		allowed  = ['/hello/', '/hi/how/are/you/']
+		self.assertEqual(r.allowed(testUrls), allowed)
+	
+	def test_set_ttl(self):
+		self.assertTrue(True)
+		r = reppy.parse('''
+			User-agent: *
+			Disallow: /hello/''', ttl=-1)
+		self.assertTrue(r.expired)
+		r = reppy.parse('''
+			User-agent: *
+			Disallow: /hello/''', ttl=2)
+		self.assertTrue(r.remaining > 1)
+		self.assertTrue(r.remaining < 2)
+	
+	def test_set_user_agent(self):
+		r = reppy.parse('''
+			User-agent: *
+			Disallow: /hello/''', userAgent='Testing/1.0')
+		self.assertEqual(r.userAgentString, 'testing')
+	
+	def test_disallowed(self):
+		'''Make sure disallowed is the opposite of allowed'''
+		r = reppy.parse('''
+			User-agent: *
+			Disallow: /0xa
+			Disallow: /0xb
+			Disallow: /0xc
+			Disallow: /0xd
+			Disallow: /0xe
+			Disallow: /0xf''')
+		for i in range(1000):
+			u = hex(random.randint(0, 16))
+			self.assertNotEqual(r.allowed(u), r.disallowed(u))
+	
+	def test_case_insensitivity(self):
+		'''Make sure user agent matches are case insensitive'''
+		r = reppy.parse('''
+			User-agent: agent
+			Disallow: /a''')
+		self.assertTrue(r.disallowed('/a', 'Agent'))
+		self.assertTrue(r.disallowed('/a', 'aGent'))
+		self.assertTrue(r.disallowed('/a', 'AGeNt'))
+		self.assertTrue(r.disallowed('/a', 'AGENT'))
 
 if __name__ == '__main__':
 	unittest.main()
