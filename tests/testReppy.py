@@ -11,6 +11,9 @@ import reppy
 import random
 import unittest
 
+import logging
+reppy.logger.setLevel(logging.FATAL)
+
 class TestReppyRFC(unittest.TestCase):
 	def test_basic(self):
 		# Test beginning matching
@@ -202,6 +205,61 @@ class TestReppyRFC(unittest.TestCase):
 		self.assertTrue(r.disallowed('/a', 'aGent'))
 		self.assertTrue(r.disallowed('/a', 'AGeNt'))
 		self.assertTrue(r.disallowed('/a', 'AGENT'))
+	
+	def test_query(self):
+		'''Make sure user agent matches are case insensitive'''
+		r = reppy.parse('''
+			User-agent: agent
+			Disallow: /a?howdy''')
+		self.assertTrue(    r.allowed('/a', 'agent'))
+		self.assertTrue(not r.allowed('/a?howdy', 'agent'))
+		self.assertTrue(not r.allowed('/a?howdy#fragment', 'agent'))
+		self.assertTrue(    r.allowed('/a?heyall', 'agent'))
+
+	def test_allow_all(self):
+		# Now test escaping entities
+		r = reppy.parse('''
+			User-agent: *
+			Disallow:  ''')
+		ua = 'dotbot'
+		self.assertTrue(    r.allowed('/', ua))
+		self.assertTrue(    r.allowed('/foo', ua))
+		self.assertTrue(    r.allowed('/foo.html', ua))
+		self.assertTrue(    r.allowed('/foo/bar', ua))
+		self.assertTrue(    r.allowed('/foo/bar.html', ua))
+	
+	def test_disallow_all(self):
+		# But not with foward slash
+		r = reppy.parse('''
+			User-agent: *
+			Disallow: /''')
+		ua = 'dotbot'
+		self.assertTrue(not r.allowed('/', ua))
+		self.assertTrue(not r.allowed('/foo', ua))
+		self.assertTrue(not r.allowed('/foo.html', ua))
+		self.assertTrue(not r.allowed('/foo/bar', ua))
+		self.assertTrue(not r.allowed('/foo/bar.html', ua))
+	
+	def test_allow_certain_pages_only(self):
+		r = reppy.parse('''
+			User-agent: *
+			Allow: /onepage.html
+			Allow: /oneotherpage.php
+			Disallow: /
+			Allow: /subfolder/page1.html
+			Allow: /subfolder/page2.php
+			Disallow: /subfolder/''')
+		ua = 'dotbot'
+		self.assertTrue(not r.allowed('/', ua))
+		self.assertTrue(not r.allowed('/foo', ua))
+		self.assertTrue(not r.allowed('/bar.html', ua))
+		self.assertTrue(    r.allowed('/onepage.html', ua))
+		self.assertTrue(    r.allowed('/oneotherpage.php', ua))
+		self.assertTrue(not r.allowed('/subfolder', ua))
+		self.assertTrue(not r.allowed('/subfolder/', ua))
+		self.assertTrue(not r.allowed('/subfolder/aaaaa', ua))
+		self.assertTrue(    r.allowed('/subfolder/page1.html', ua))
+		self.assertTrue(    r.allowed('/subfolder/page2.php', ua))
 
 if __name__ == '__main__':
 	unittest.main()

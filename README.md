@@ -13,6 +13,19 @@ Features
 - Batch queries
 - Configurable user agent for fetching robots.txt
 - Automatic refetching basing on expiration
+- Support for Crawl-delay
+- Support for Sitemaps
+- Wildcard matching
+
+Matching
+========
+
+This package supports the [1996 RFC](http://www.robotstxt.org/norobots-rfc.txt), as well
+as additional commonly-implemented features, like wildcard matching, crawl-delay, and
+sitemaps. There are varying approaches to matching `Allow` and `Disallow`. One approach
+is to use the longest match. Another is to use the most specific. This package chooses to
+follow the directive that is longest, the assumption being that it's the one that is
+most specific -- a term that is a little difficult to define in this context.
 
 Usage
 =====

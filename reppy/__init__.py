@@ -72,11 +72,11 @@ def findOrMakeRobot(url, agent, agentString):
 	'''Either return the appropriate global reppy object, or make one'''
 	global robots
 	parsed = urlparse.urlparse(url)
-	robot = robots.get(parsed.hostname, None)
+	robot = robots.get(parsed.netloc, None)
 	if not robot:
-		robot = reppy.fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.hostname),
+		robot = reppy.fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.netloc),
 			userAgent=agent, userAgentString=(agentString or getUserAgentString(agent)))
-		robots[parsed.hostname] = robot
+		robots[parsed.netloc] = robot
 	return robot
 
 def allowed(url, agent, agentString=None):
@@ -99,6 +99,7 @@ def sitemaps(url):
 	return findOrMakeRobot(url).sitemaps
 
 class agent(object):
+	pathRE = re.compile(r'^([^\/]+\/\/)?([^\/]+)?(/?.+?)$')
 	'''Represents attributes for a given robot'''
 	def __init__(self):
 		self.allowances = []
@@ -106,7 +107,8 @@ class agent(object):
 	
 	def allowed(self, url):
 		'''Can I fetch a given URL?'''
-		path = urllib.unquote(urlparse.urlparse(url).path.replace('%2f', '%252f'))
+		match = agent.pathRE.match(url)
+		path = urllib.unquote(agent.pathRE.match(url).group(3).replace('%2f', '%252f'))
 		if path == '/robots.txt':
 			return True
 		allowed = [a for a in self.allowances if a[1].match(path)]
@@ -123,7 +125,7 @@ class reppy(object):
 	'''A class that represents a set of agents, and can select them appropriately.
 	Associated with one robots.txt file.'''
 	
-	lineRE = re.compile('^\s*(\S+)\s*:\s*(.*)\s*(#.+)?$', re.I)
+	lineRE = re.compile('^\s*(\S+)\s*:\s*([^#]*)\s*(#.+)?$', re.I)
 	
 	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString=None):
 		self.reset()
@@ -191,8 +193,8 @@ class reppy(object):
 	
 	def makeREFromString(self, s):
 		'''Make a regular expression that matches the patterns expressable in robots.txt'''
-		tmp = s.replace('%2f', '%252f').replace('*', '.+').replace('$', '.+')
-		return re.compile(urllib.unquote(tmp))
+		tmp = re.escape(urllib.unquote(s.replace('%2f', '%252f')))
+		return re.compile(tmp.replace('\*', '.*').replace('\$', '$'))
 	
 	def parse(self, s):
 		'''Parse the given string and store the resultant rules'''
@@ -205,12 +207,12 @@ class reppy(object):
 		for line in s.split('\n'):
 			match = self.lineRE.match(line)
 			if match:
-				key = match.group(1).lower()
-				val = match.group(2)
+				key = match.group(1).strip().lower()
+				val = match.group(2).strip()
 				if key == 'user-agent':
 					# Store the current working agent
 					self.atts['agents'][curname] = cur
-					curname = val
+					curname = val.lower()
 					if last != 'user-agent':
 						# If the last line was a user agent, then all lines
 						# below also apply to the last user agent. So, we'll
