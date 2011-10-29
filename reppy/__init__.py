@@ -23,6 +23,14 @@
 
 '''A robot exclusion protocol parser. Because I could not find a good one.'''
 
+__author__     = 'Dan Lecocq'
+__copyright__  = '2011 SEOmoz'
+__license__    = 'SEOmoz'
+__version__    = '0.1.0'
+__maintainer__ = 'Dan Lecocq'
+__email__      = 'dan@seomoz.org'
+__status__     = 'Development'
+
 import re
 import time
 import urllib
