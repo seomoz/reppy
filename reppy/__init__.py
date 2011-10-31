@@ -73,11 +73,12 @@ def findOrMakeRobot(url, agent, agentString):
 	global robots
 	parsed = urlparse.urlparse(url)
 	robot = robots.get(parsed.netloc, None)
+	uas = agentString or getUserAgentString(agent)
 	if not robot:
-		robot = reppy.fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.netloc),
-			userAgent=agent, userAgentString=(agentString or getUserAgentString(agent)))
+		robot = fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.netloc),
+			userAgent=agent, userAgentString=uas)
 		robots[parsed.netloc] = robot
-	return robot
+	return robot.findAgent(uas)
 
 def allowed(url, agent, agentString=None):
 	'''Is the given url allowed for the given agent?'''
