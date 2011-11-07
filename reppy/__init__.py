@@ -206,36 +206,39 @@ class reppy(object):
 		curname = '*'
 		last    = ''
 		for line in s.split('\n'):
-			match = self.lineRE.match(line)
-			if match:
-				key = match.group(1).strip().lower()
-				val = match.group(2).strip()
-				if key == 'user-agent':
-					# Store the current working agent
-					self.atts['agents'][curname] = cur
-					curname = val.lower()
-					if last != 'user-agent':
-						# If the last line was a user agent, then all lines
-						# below also apply to the last user agent. So, we'll
-						# have this user agent point to the one we declared
-						# for the previously-listed agent
-						cur = self.atts['agents'].get(curname, None) or agent()
-				elif key == 'disallow':
-					if len(val):
-						cur.allowances.append((len(val), self.makeREFromString(val), False))
-				elif key == 'allow':
-					cur.allowances.append((len(val), self.makeREFromString(val), True ))
-				elif key == 'crawl-delay':
-					cur.crawlDelay = int(val)
-				elif key == 'sitemap':
-					self.atts['sitemaps'].append(val)
+			try:
+				match = self.lineRE.match(line)
+				if match:
+					key = match.group(1).strip().lower()
+					val = match.group(2).strip()
+					if key == 'user-agent':
+						# Store the current working agent
+						self.atts['agents'][curname] = cur
+						curname = val.lower()
+						if last != 'user-agent':
+							# If the last line was a user agent, then all lines
+							# below also apply to the last user agent. So, we'll
+							# have this user agent point to the one we declared
+							# for the previously-listed agent
+							cur = self.atts['agents'].get(curname, None) or agent()
+					elif key == 'disallow':
+						if len(val):
+							cur.allowances.append((len(val), self.makeREFromString(val), False))
+					elif key == 'allow':
+						cur.allowances.append((len(val), self.makeREFromString(val), True ))
+					elif key == 'crawl-delay':
+						cur.crawlDelay = float(val)
+					elif key == 'sitemap':
+						self.atts['sitemaps'].append(val)
+					else:
+						logger.warn('Unknown key %s' % line)
+						# To skip over where we set 'last'
+						continue
+					last = key
 				else:
-					logger.warn('Unknown key %s' % line)
-					# To skip over where we set 'last'
-					continue
-				last = key
-			else:
-				logger.debug('Skipping line %s' % line)
+					logger.debug('Skipping line %s' % line)
+			except:
+				logger.exception('Error parsing...')
 		# Now store the user agent that we've been working on
 		self.atts['agents'][curname] = cur
 		
