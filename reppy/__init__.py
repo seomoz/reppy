@@ -139,7 +139,7 @@ class reppy(object):
 		# The user agent to use for future requests
 		self.userAgent = userAgent
 		# The user agent string to match in robots
-		self.userAgentString = (userAgentString or getUserAgentString(userAgent)).lower()
+		self.userAgentString = (userAgentString or getUserAgentString(userAgent)).lower().encode('utf-8')
 		# Do we refresh when we expire?
 		self.autorefresh = url and autorefresh
 	
@@ -201,8 +201,12 @@ class reppy(object):
 		'''Parse the given string and store the resultant rules'''
 		self.reset()
 		# The agent we're currently working with
-		cur     = agent()
-		# The name of the current agent
+		cur     = None
+		# The name of the current agent. There are a couple schools of thought here
+		# For example, by including a default agent, the robots.txt's author's intent
+		# is clearly accommodated if a Disallow line appears before the a User-Agent
+		# line. However, how hard is it to follow the standard? If you're writing a 
+		# robots.txt, you should be able to write it correctly.
 		curname = '*'
 		last    = ''
 		for line in s.split('\n'):
@@ -211,24 +215,29 @@ class reppy(object):
 				if match:
 					key = match.group(1).strip().lower()
 					val = match.group(2).strip()
-					if key == 'user-agent':
+					if key == 'user-agent' or key == 'useragent':
 						# Store the current working agent
-						self.atts['agents'][curname] = cur
-						curname = val.lower()
-						if last != 'user-agent':
+						if cur:
+							self.atts['agents'][curname] = cur
+						try:
+							curname = val.lower().encode('utf-8')
+						except:
+							print 'Failed'
+							curname = val.lower()
+						if last != 'user-agent' and last != 'useragent':
 							# If the last line was a user agent, then all lines
 							# below also apply to the last user agent. So, we'll
 							# have this user agent point to the one we declared
 							# for the previously-listed agent
 							cur = self.atts['agents'].get(curname, None) or agent()
-					elif key == 'disallow':
+					elif cur and key == 'disallow':
 						if len(val):
 							cur.allowances.append((len(val), self.makeREFromString(val), False))
-					elif key == 'allow':
+					elif cur and key == 'allow':
 						cur.allowances.append((len(val), self.makeREFromString(val), True ))
-					elif key == 'crawl-delay':
+					elif cur and key == 'crawl-delay':
 						cur.crawlDelay = float(val)
-					elif key == 'sitemap':
+					elif cur and key == 'sitemap':
 						self.atts['sitemaps'].append(val)
 					else:
 						logger.warn('Unknown key %s' % line)
@@ -240,10 +249,14 @@ class reppy(object):
 			except:
 				logger.exception('Error parsing...')
 		# Now store the user agent that we've been working on
-		self.atts['agents'][curname] = cur
+		self.atts['agents'][curname] = cur or agent()
 		
 	def findAgent(self, agent):
 		'''Find the agent given a string for it'''
+		try:
+			agent = agent.lower().encode('utf-8')
+		except:
+			pass
 		a = self.agents.get((agent or self.userAgentString).lower(), None)
 		return a or self.agents.get('*', None)
 	

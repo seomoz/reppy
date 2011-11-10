@@ -55,7 +55,7 @@ that supports modern robots.txt constructs like Sitemaps, Allow, and Crawl-delay
 	platforms        = 'Posix; MacOS X',
 	test_suite       = 'tests.testReppy',
 	classifiers      = [
-		'License :: OSI Approved :: MIT License'
+		'License :: OSI Approved :: MIT License',
 		'Development Status :: 3 - Alpha',
 		'Environment :: Web Environment',
 		'Intended Audience :: Developers',
