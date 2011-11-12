@@ -32,11 +32,9 @@ except ImportError:
 		'dependencies' : ['python-dateutil']
 	}
 
-from reppy import __version__
-
 setup(
 	name             = 'reppy',
-	version          = __version__,
+	version          = '0.1.0',
 	description      = 'Replacement robots.txt Parser',
 	long_description = '''Replaces the built-in robotsparser with a RFC-conformant implementation
 that supports modern robots.txt constructs like Sitemaps, Allow, and Crawl-delay. Main features:
