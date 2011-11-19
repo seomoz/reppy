@@ -50,10 +50,21 @@ logger.setLevel(logging.WARNING)
 # A hash of robots for various sites
 robots = {}
 
+def addRobot(robot):
+	if robot.url:
+		parsed = urlparse.urlparse(robot.url)
+		robots[parsed.netloc] = robot
+
+def findRobot(url):
+	parsed = urlparse.urlparse(url)
+	return robots.get(parsed.netloc, None)
+
 def fetch(url, **kwargs):
 	'''Make a reppy object, fetching the url'''
 	obj = reppy(url=url, **kwargs)
+	print 'fetched'
 	obj.refresh()
+	print 'refreshed'
 	return obj
 
 def parse(s, **kwargs):
@@ -72,19 +83,22 @@ def findOrMakeRobot(url, agent, agentString):
 	'''Either return the appropriate global reppy object, or make one'''
 	global robots
 	parsed = urlparse.urlparse(url)
-	robot = robots.get(parsed.netloc, None)
+	robot = robots.get(parsed.netloc)
 	uas = agentString or getUserAgentString(agent)
 	if not robot:
+		print 'Couldnt find existing robots, fetching'
 		robot = fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.netloc),
 			userAgent=agent, userAgentString=uas)
-		robots[parsed.netloc] = robot
 	return robot.findAgent(uas)
 
 def allowed(url, agent, agentString=None):
 	'''Is the given url allowed for the given agent?'''
+	print 'allowed'
 	if isinstance(url, basestring):
+		print 'is a string'
 		return findOrMakeRobot(url, agent, agentString).allowed(url)
 	else:
+		print 'is something else'
 		return [u for u in url if findOrMakeRobot(u, agent, agentString).allowed(u)]
 
 def disallowed(url, agent, agentString=None):
@@ -171,11 +185,14 @@ class reppy(object):
 	def refresh(self):
 		'''Can only work if we have a url specified'''
 		if self.url:
+			print 'self.url exists'
 			try:
 				req = urllib2.Request(self.url, headers={'User-Agent': self.userAgent})
 				page = urllib2.urlopen(req)
+				print 'Got page'
 			except urllib2.HTTPError as e:
-				if e.code == 401 and e.code == 403:
+				print 'Failed to get page'
+				if e.code == 401 or e.code == 403:
 					# If disallowed, assume no access
 					logger.debug('Access disallowed to site %s' % e.code)
 					self.parse('''User-agent: *\nDisallow: /''')
@@ -190,7 +207,8 @@ class reppy(object):
 			if expires:
 				# Add a ttl to the class
 				self.ttl = time.time() - time.mktime(dateutil.parser.parse(expires).timetuple())
-			self.parse(page.read())
+			data = page.read()
+			self.parse(data)
 	
 	def makeREFromString(self, s):
 		'''Make a regular expression that matches the patterns expressable in robots.txt'''
@@ -250,6 +268,8 @@ class reppy(object):
 				logger.exception('Error parsing...')
 		# Now store the user agent that we've been working on
 		self.atts['agents'][curname] = cur or agent()
+		# Add myself to the global robots dictionary
+		addRobot(self)
 		
 	def findAgent(self, agent):
 		'''Find the agent given a string for it'''
