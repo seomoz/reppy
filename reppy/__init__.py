@@ -50,6 +50,9 @@ logger.setLevel(logging.WARNING)
 # A hash of robots for various sites
 robots = {}
 
+# 'agent' refers to the short name for your bot. For example, 'googlebot'
+# 'agentString' refers to the entire string provided in the User-Agent header
+
 def addRobot(robot):
 	if robot.url:
 		parsed = urlparse.urlparse(robot.url)
@@ -77,39 +80,38 @@ def getUserAgentString(userAgent):
 	'''
 	return re.sub('(\S+?)(\/.+)?', r'\1', userAgent)
 
-def findOrMakeRobot(url, agent, agentString):
+def findOrMakeRobot(url, **kwargs):
 	'''Either return the appropriate global reppy object, or make one'''
 	global robots
 	parsed = urlparse.urlparse(url)
 	robot = robots.get(parsed.netloc)
-	uas = agentString or getUserAgentString(agent)
 	if not robot:
-		robot = fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.netloc),
-			userAgent=agent, userAgentString=uas)
-	return robot.findAgent(uas)
+		robot = fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.netloc), **kwargs)
+	return robot
 
-def allowed(url, agent, agentString=None):
+def allowed(url, agent, **kwargs):
 	'''Is the given url allowed for the given agent?'''
 	if isinstance(url, basestring):
-		return findOrMakeRobot(url, agent, agentString).allowed(url)
+		return findOrMakeRobot(url, **kwargs).allowed(url, agent)
 	else:
-		return [u for u in url if findOrMakeRobot(u, agent, agentString).allowed(u)]
+		return [u for u in url if findOrMakeRobot(u, **kwargs).allowed(u, agent)]
 
-def disallowed(url, agent, agentString=None):
+def disallowed(url, agent, **kwargs):
 	'''Is the given url disallowed for the given agent?'''
-	return not allowed(url, agent, agentString)
+	return not allowed(url, agent, **kwargs)
 
-def crawlDelay(url, agent, agentString=None):
+def crawlDelay(url, agent, **kwargs):
 	'''What is the crawl delay for the given agent for the given site'''
-	return findOrMakeRobot(url, agent, agentString).crawlDelay
+	return findOrMakeRobot(url, agent, **kwargs).crawlDelay(agent)
 
-def sitemaps(url):
+def sitemaps(url, **kwargs):
 	'''What are the sitemaps for the associated site'''
-	return findOrMakeRobot(url).sitemaps
+	return findOrMakeRobot(url, **kwargs).sitemaps
 
 class agent(object):
-	pathRE = re.compile(r'^([^\/]+\/\/)?([^\/]+)?(/?.+?)$')
 	'''Represents attributes for a given robot'''
+	pathRE = re.compile(r'^([^\/]+\/\/)?([^\/]+)?(/?.+?)$')
+	
 	def __init__(self):
 		self.allowances = []
 		self.crawlDelay = None
@@ -117,7 +119,7 @@ class agent(object):
 	def allowed(self, url):
 		'''Can I fetch a given URL?'''
 		match = agent.pathRE.match(url)
-		path = urllib.unquote(agent.pathRE.match(url).group(3).replace('%2f', '%252f'))
+		path = urllib.unquote(match.group(3).replace('%2f', '%252f'))
 		if path == '/robots.txt':
 			return True
 		allowed = [a for a in self.allowances if a[1].match(path)]
@@ -125,10 +127,6 @@ class agent(object):
 			return max(allowed)[2]
 		else:
 			return True
-	
-	def disallowed(self, url):
-		'''For completeness'''
-		return not self.allowed(url)
 
 class reppy(object):
 	'''A class that represents a set of agents, and can select them appropriately.
@@ -136,7 +134,7 @@ class reppy(object):
 	
 	lineRE = re.compile('^\s*(\S+)\s*:\s*([^#]*)\s*(#.+)?$', re.I)
 	
-	def __init__(self, ttl=3600*3, url=None, autorefresh=True, userAgent='REPParser/0.1 (Python)', userAgentString=None):
+	def __init__(self, ttl=3600*3, url=None, autorefresh=True, agentString='REPParser/0.1 (Python)'):
 		self.reset()
 		# When did we last parse this?
 		self.parsed    = time.time()
@@ -144,10 +142,8 @@ class reppy(object):
 		self.ttl       = ttl
 		# The url that we fetched
 		self.url       = url
-		# The user agent to use for future requests
-		self.userAgent = userAgent
 		# The user agent string to match in robots
-		self.userAgentString = (userAgentString or getUserAgentString(userAgent)).lower().encode('utf-8')
+		self.agentString = agentString.lower().encode('utf-8')
 		# Do we refresh when we expire?
 		self.autorefresh = url and autorefresh
 	
@@ -180,7 +176,7 @@ class reppy(object):
 		'''Can only work if we have a url specified'''
 		if self.url:
 			try:
-				req = urllib2.Request(self.url, headers={'User-Agent': self.userAgent})
+				req = urllib2.Request(self.url, headers={'User-Agent': self.agentString})
 				page = urllib2.urlopen(req)
 			except urllib2.HTTPError as e:
 				if e.code == 401 or e.code == 403:
@@ -242,7 +238,7 @@ class reppy(object):
 						if len(val):
 							cur.allowances.append((len(val), self.makeREFromString(val), False))
 					elif cur and key == 'allow':
-						cur.allowances.append((len(val), self.makeREFromString(val), True ))
+						cur.allowances.append((len(val), self.makeREFromString(val), True))
 					elif cur and key == 'crawl-delay':
 						cur.crawlDelay = float(val)
 					elif cur and key == 'sitemap':
@@ -267,25 +263,21 @@ class reppy(object):
 			agent = agent.lower().encode('utf-8')
 		except:
 			pass
-		a = self.agents.get((agent or self.userAgentString).lower(), None)
-		return a or self.agents.get('*', None)
+		return self.agents.get(agent.lower(), self.agents.get('*'))
 	
-	def allowed(self, url, agent=None):
+	def allowed(self, url, agent):
 		'''We try to perform a good match, then a * match'''
 		a = self.findAgent(agent)
-		if a:
-			if isinstance(url, basestring):
-				return a.allowed(url)
-			else:
-				return [u for u in url if a.allowed(u)]
+		if isinstance(url, basestring):
+			return a.allowed(url)
 		else:
-			return True
+			return [u for u in url if a.allowed(u)]
 	
-	def disallowed(self, url, agent=None):
+	def disallowed(self, url, agent):
 		'''For completeness'''
 		return not self.allowed(url, agent)
 	
-	def crawlDelay(self, agent=None):
+	def crawlDelay(self, agent):
 		'''How fast can this '''
 		a = self.findAgent(agent)
 		if a:

@@ -154,7 +154,7 @@ class TestReppyRFC(unittest.TestCase):
 			Allow: /b/''')
 		testUrls = ['/a/hello', '/a/howdy', '/b', '/b/hello']
 		allowed  = ['/b/hello']
-		self.assertEqual(r.allowed(testUrls), allowed)
+		self.assertEqual(r.allowed(testUrls, 't'), allowed)
 	
 	def test_wildcard(self):
 		r = reppy.parse('''
@@ -162,7 +162,7 @@ class TestReppyRFC(unittest.TestCase):
 			Disallow: /hello/*/are/you''')
 		testUrls = ['/hello/', '/hello/how/are/you', '/hi/how/are/you/']
 		allowed  = ['/hello/', '/hi/how/are/you/']
-		self.assertEqual(r.allowed(testUrls), allowed)
+		self.assertEqual(r.allowed(testUrls, 't'), allowed)
 	
 	def test_set_ttl(self):
 		self.assertTrue(True)
@@ -176,12 +176,6 @@ class TestReppyRFC(unittest.TestCase):
 		self.assertTrue(r.remaining > 1)
 		self.assertTrue(r.remaining < 2)
 	
-	def test_set_user_agent(self):
-		r = reppy.parse('''
-			User-agent: *
-			Disallow: /hello/''', userAgent='Testing/1.0')
-		self.assertEqual(r.userAgentString, 'testing')
-	
 	def test_disallowed(self):
 		'''Make sure disallowed is the opposite of allowed'''
 		r = reppy.parse('''
@@ -194,7 +188,7 @@ class TestReppyRFC(unittest.TestCase):
 			Disallow: /0xf''')
 		for i in range(1000):
 			u = hex(random.randint(0, 16))
-			self.assertNotEqual(r.allowed(u), r.disallowed(u))
+			self.assertNotEqual(r.allowed(u, 't'), r.disallowed(u, 't'))
 	
 	def test_case_insensitivity(self):
 		'''Make sure user agent matches are case insensitive'''
@@ -260,6 +254,12 @@ class TestReppyRFC(unittest.TestCase):
 		self.assertTrue(not r.allowed('/subfolder/aaaaa', ua))
 		self.assertTrue(    r.allowed('/subfolder/page1.html', ua))
 		self.assertTrue(    r.allowed('/subfolder/page2.php', ua))
+	
+	def test_empty(self):
+		r = reppy.parse('')
+		self.assertTrue(    r.allowed('/', 't'))
+		self.assertEqual(r.crawlDelay('t'), None)
+		self.assertEqual(r.sitemaps, [])
 
 if __name__ == '__main__':
 	unittest.main()
