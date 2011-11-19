@@ -89,7 +89,7 @@ def allowed(url, agent, agentString=None):
 
 def disallowed(url, agent, agentString=None):
 	'''Is the given url disallowed for the given agent?'''
-	not allowed(url, agent, agentString)
+	return not allowed(url, agent, agentString)
 
 def crawlDelay(url, agent, agentString=None):
 	'''What is the crawl delay for the given agent for the given site'''
