@@ -62,9 +62,7 @@ def findRobot(url):
 def fetch(url, **kwargs):
 	'''Make a reppy object, fetching the url'''
 	obj = reppy(url=url, **kwargs)
-	print 'fetched'
 	obj.refresh()
-	print 'refreshed'
 	return obj
 
 def parse(s, **kwargs):
@@ -86,19 +84,15 @@ def findOrMakeRobot(url, agent, agentString):
 	robot = robots.get(parsed.netloc)
 	uas = agentString or getUserAgentString(agent)
 	if not robot:
-		print 'Couldnt find existing robots, fetching'
 		robot = fetch('%s://%s/robots.txt' % (parsed.scheme, parsed.netloc),
 			userAgent=agent, userAgentString=uas)
 	return robot.findAgent(uas)
 
 def allowed(url, agent, agentString=None):
 	'''Is the given url allowed for the given agent?'''
-	print 'allowed'
 	if isinstance(url, basestring):
-		print 'is a string'
 		return findOrMakeRobot(url, agent, agentString).allowed(url)
 	else:
-		print 'is something else'
 		return [u for u in url if findOrMakeRobot(u, agent, agentString).allowed(u)]
 
 def disallowed(url, agent, agentString=None):
@@ -185,13 +179,10 @@ class reppy(object):
 	def refresh(self):
 		'''Can only work if we have a url specified'''
 		if self.url:
-			print 'self.url exists'
 			try:
 				req = urllib2.Request(self.url, headers={'User-Agent': self.userAgent})
 				page = urllib2.urlopen(req)
-				print 'Got page'
 			except urllib2.HTTPError as e:
-				print 'Failed to get page'
 				if e.code == 401 or e.code == 403:
 					# If disallowed, assume no access
 					logger.debug('Access disallowed to site %s' % e.code)
@@ -240,7 +231,6 @@ class reppy(object):
 						try:
 							curname = val.lower().encode('utf-8')
 						except:
-							print 'Failed'
 							curname = val.lower()
 						if last != 'user-agent' and last != 'useragent':
 							# If the last line was a user agent, then all lines
