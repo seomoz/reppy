@@ -206,7 +206,7 @@ class reppy(object):
 		'''Parse the given string and store the resultant rules'''
 		self.reset()
 		# The agent we're currently working with
-		cur     = None
+		cur     = agent()
 		# The name of the current agent. There are a couple schools of thought here
 		# For example, by including a default agent, the robots.txt's author's intent
 		# is clearly accommodated if a Disallow line appears before the a User-Agent
