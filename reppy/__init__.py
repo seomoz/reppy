@@ -102,7 +102,7 @@ def disallowed(url, agent, **kwargs):
 
 def crawlDelay(url, agent, **kwargs):
 	'''What is the crawl delay for the given agent for the given site'''
-	return findOrMakeRobot(url, agent, **kwargs).crawlDelay(agent)
+	return findOrMakeRobot(url, **kwargs).crawlDelay(agent)
 
 def sitemaps(url, **kwargs):
 	'''What are the sitemaps for the associated site'''
