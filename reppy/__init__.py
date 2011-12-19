@@ -110,7 +110,7 @@ def sitemaps(url, **kwargs):
 
 class agent(object):
 	'''Represents attributes for a given robot'''
-	pathRE = re.compile(r'^([^\/]+\/\/)?([^\/]+)?(/?.+?)$')
+	pathRE = re.compile(r'^([^\/]+\/\/)?([^\/]+)?(/?.+?)$', re.M)
 	
 	def __init__(self):
 		self.allowances = []
