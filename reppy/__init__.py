@@ -201,6 +201,12 @@ class reppy(object):
     
     def makeREFromString(self, s):
         '''Make a regular expression that matches the patterns expressable in robots.txt'''
+        # If the string doesn't start with a forward slash, we'll insert it
+        # anyways. http://code.google.com/web/controlcrawlindex/docs/robots_txt.html
+        # As such, the only permissible start characters for a rule like this are
+        # '*' and '/'
+        if s and s[0] != '/' and s[0] != '*':
+            s = '/' + s
         tmp = re.escape(urllib.unquote(s.replace('%2f', '%252f')))
         return re.compile(tmp.replace('\*', '.*').replace('\$', '$'))
     
