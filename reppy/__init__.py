@@ -192,10 +192,13 @@ class reppy(object):
             # Try to get the header's expiration time, which we should honor
             expires = page.info().get('Expires', None)
             if expires:
-                # Add a ttl to the class
-                self.ttl = time.time() - time.mktime(dateutil.parser.parse(expires).timetuple())
-                # Give ourselves at least an hour
-                self.ttl = max(self.ttl, 3600)
+                try:
+                    # Add a ttl to the class
+                    self.ttl = time.time() - time.mktime(dateutil.parser.parse(expires).timetuple())
+                    # Give ourselves at least an hour
+                    self.ttl = max(self.ttl, 3600)
+                except ValueError:
+                    self.ttl = 3600
             data = page.read()
             self.parse(data)
     
