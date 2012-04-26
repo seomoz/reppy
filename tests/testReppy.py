@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 '''These are unit tests that are derived from the rfc at http://www.robotstxt.org/norobots-rfc.txt'''
 
@@ -270,6 +271,58 @@ class TestReppyRFC(unittest.TestCase):
         ua = 'dotbot'
         self.assertTrue(not r.allowed('/hello', ua))
         self.assertTrue(not r.allowed('/hello/everyone', ua))
+    
+    def test_grouping_unknown_keys(self):
+        # When we encounter unknown keys, we should disregard any
+        # grouping that may have happened between user agent rules.
+        # For example, in the wild, we encountered:
+        #
+        #   User-agent: *
+        #   Disallow: /content/2/
+        #   User-agent: *
+        #   Noindex: /gb.html
+        #   Noindex: /content/2/
+        #   User-agent: ia_archiver
+        #   Disallow: /
+        #
+        # Since 'Noindex' is an unknown directive, the rules for ia_archiver
+        # were getting glommed into the rules for *, when that was
+        # clearly not the intention.
+        r = reppy.parse('''
+            User-agent: *
+            Disallow: /content/2/
+            User-agent: *
+            Noindex: /gb.html
+            Noindex: /content/2/
+            User-agent: ia_archiver
+            Disallow: /
+        ''')
+        self.assertTrue(    r.allowed('/foo', 'dotbot'))
+        self.assertTrue(not r.allowed('/bar', 'ia_archiver'))
+    
+    def test_utf8_bom(self):
+        # If there's a utf-8 BOM, we should parse it as such
+        import codecs
+        r = reppy.parse(codecs.BOM_UTF8 + '''User-agent: foo
+            Allow: /foo
+            
+            User-agent: *
+            Disallow: /foo
+        ''')
+        self.assertTrue(    r.allowed('/foo', 'foo'))
+        self.assertTrue(not r.allowed('/foo', 'other'))
+    
+    def test_utf16_bom(self):
+        # If there's a utf-8 BOM, we should parse it as such
+        import codecs
+        r = reppy.parse('''User-agent: foo
+            Allow: /foo
+            
+            User-agent: *
+            Disallow: /foo
+        '''.decode('utf-8').encode('utf-16'))
+        self.assertTrue(    r.allowed('/foo', 'foo'))
+        self.assertTrue(not r.allowed('/foo', 'other'))
 
 if __name__ == '__main__':
     unittest.main()

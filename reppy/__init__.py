@@ -34,6 +34,7 @@ __status__     = 'Development'
 import re
 import time
 import urllib
+import codecs
 import urllib2
 import logging
 import urlparse
@@ -217,7 +218,13 @@ class reppy(object):
         '''Parse the given string and store the resultant rules'''
         self.reset()
         # The agent we're currently working with
-        cur     = agent()
+        cur = agent()
+        # For future reference: http://www.evanjones.ca/python-utf8.html
+        if s.startswith(codecs.BOM_UTF8):
+            s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
+        elif s.startswith(codecs.BOM_UTF16):
+            s = s.decode('utf-16')
+        
         # The name of the current agent. There are a couple schools of thought here
         # For example, by including a default agent, the robots.txt's author's intent
         # is clearly accommodated if a Disallow line appears before the a User-Agent
@@ -256,8 +263,6 @@ class reppy(object):
                         self.atts['sitemaps'].append(val)
                     else:
                         logger.warn('Unknown key %s' % line)
-                        # To skip over where we set 'last'
-                        continue
                     last = key
                 else:
                     logger.debug('Skipping line %s' % line)
