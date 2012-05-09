@@ -109,6 +109,14 @@ def sitemaps(url, **kwargs):
     '''What are the sitemaps for the associated site'''
     return findOrMakeRobot(url, **kwargs).sitemaps
 
+class ReppyException(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return 'ReppyException: ' + str(self.value)
+    def __repr__(self):
+        return 'ReppyException: ' + repr(self.value)
+
 class agent(object):
     '''Represents attributes for a given robot'''
     pathRE = re.compile(r'^([^\/]+\/\/)?([^\/]+)?(/?.+?)$', re.M)
@@ -177,18 +185,20 @@ class reppy(object):
         '''Can only work if we have a url specified'''
         if self.url:
             try:
-                req = urllib2.Request(self.url, headers={'User-Agent': self.agentString})
+                req = urllib2.Request(str(self.url), headers={'User-Agent': self.agentString})
                 page = urllib2.urlopen(req)
             except urllib2.HTTPError as e:
                 if e.code == 401 or e.code == 403:
                     # If disallowed, assume no access
-                    logger.debug('Access disallowed to site %s' % e.code)
+                    logger.warn('Access disallowed to site %s' % e.code)
                     self.parse('''User-agent: *\nDisallow: /''')
                 elif e.code >= 400 and e.code < 500:
                     # From the spec, if it's a 404, then we can proceed without restriction
-                    logger.debug('Page %s not found.' % e.url)
+                    logger.warn('Page %s not found.' % e.url)
                     self.parse('')
                 return
+            except Exception as e:
+                raise ReppyException(e)
             self.parsed    = time.time()
             # Try to get the header's expiration time, which we should honor
             expires = page.info().get('Expires', None)
@@ -262,7 +272,7 @@ class reppy(object):
                     elif cur and key == 'sitemap':
                         self.atts['sitemaps'].append(val)
                     else:
-                        logger.warn('Unknown key %s' % line)
+                        logger.debug('Unknown key %s' % line)
                     last = key
                 else:
                     logger.debug('Skipping line %s' % line)
