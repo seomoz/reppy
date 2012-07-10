@@ -231,8 +231,9 @@ class reppy(object):
 
         # Else check for no-cache, no-store, or must-revalidate in Cache-Control
         if cache_control is not None:
-            if reduce(lambda x, y: x or y, ('no-cache', 'no-store', 'must-revalidate' in cache_control)):
-                return -1L
+            for i in ['no-cache', 'no-store', 'must-revalidate']:
+                if i in cache_control:
+                    return -1L
 
         # Else there's no TTL, return the default value
         return long(DEFAULT_TTL)
@@ -355,7 +356,7 @@ class reppy(object):
         return not self.allowed(url, agent)
     
     def crawlDelay(self, agent):
-        '''How fast can this '''
+        '''How fast can the specified agent legally crawl this site?'''
         a = self.findAgent(agent)
         if a:
             return a.crawlDelay
