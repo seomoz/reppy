@@ -145,13 +145,15 @@ class reppy(object):
     Associated with one robots.txt file.'''
     
     lineRE = re.compile('^\s*(\S+)\s*:\s*([^#]*)\s*(#.+)?$', re.I)
+    DEFAULT_TTL = 3600*3
     
-    def __init__(self, ttl=3600*3, url=None, autorefresh=True, agentString='REPParser/0.1 (Python)'):
+    def __init__(self, ttl=DEFAULT_TTL, url=None, autorefresh=True, agentString='REPParser/0.1 (Python)'):
         self.reset()
         # When did we last parse this?
         self.parsed    = time.time()
         # Time to live
         self.ttl       = ttl
+        self.oneshot   = ttl <= 0
         # The url that we fetched
         self.url       = url
         # The user agent string to match in robots
@@ -171,11 +173,16 @@ class reppy(object):
     
     def _remaining(self):
         '''How long is left in its life'''
-        return self.parsed + self.ttl - time.time()
+        # Integer math makes a ttl of 0 last until the second rolls over.
+        return long(self.parsed) + self.ttl - long(time.time())
 
     def _expired(self):
         '''Has this robots.txt expired?'''
-        return self._remaining() < 0
+        if self.oneshot:
+            self.oneshot = False
+            return False
+        else:
+            return self._remaining() < 0
     
     def reset(self):
         '''Reinitialize self'''
@@ -183,7 +190,53 @@ class reppy(object):
             'sitemaps' : [],    # The sitemaps we've seen
             'agents'   : {}     # The user-agents we've seen
         }
-    
+
+    def _totime(self, s):
+        return time.mktime(dateutil.parser.parse(s).timetuple())
+
+    def _get_ttl(self, p):
+        MANGLED_TTL = 3600L
+
+        # Get values of any Cache-Control or Expires headers.
+        headers = p.info()
+        cache_control = headers.get('Cache-Control', None)
+        expires = headers.get('Expires', None)
+        date = headers.get('Date', None)
+
+        # If max-age is specified in Cache-Control, use it and ignore any
+        # Expires header, as per RFC2616 Sec. 13.2.4.
+        if cache_control is not None:
+            cache_control = [x.strip() for x in cache_control.lower().split(',') ]
+            for i in cache_control:
+                fields = [x.strip() for x in i.split('=', 1)]
+                if len(fields) == 2 and fields[0] == 'max-age':
+                    try:
+                        return long(fields[1])
+                    except ValueError:
+                        return MANGLED_TTL
+
+        # Else use Expires header, if present.
+        if expires is not None:
+            if date is None:
+                base = time.time()
+            else:
+                try:
+                    base = _totime(date)
+                except ValueError:
+                    base = time.time()
+            try:
+                return long(_totime(expires) - base)
+            except ValueError:
+                return MANGLED_TTL
+
+        # Else check for no-cache, no-store, or must-revalidate in Cache-Control
+        if cache_control is not None:
+            if reduce(lambda x, y: x or y, ('no-cache', 'no-store', 'must-revalidate' in cache_control)):
+                return -1L
+
+        # Else there's no TTL, return the default value
+        return long(DEFAULT_TTL)
+
     def refresh(self):
         '''Can only work if we have a url specified'''
         if self.url:
@@ -205,15 +258,9 @@ class reppy(object):
                 raise ReppyException(e)
             self.parsed    = time.time()
             # Try to get the header's expiration time, which we should honor
-            expires = page.info().get('Expires', None)
-            if expires:
-                try:
-                    # Add a ttl to the class
-                    self.ttl = time.time() - time.mktime(dateutil.parser.parse(expires).timetuple())
-                    # Give ourselves at least an hour
-                    self.ttl = max(self.ttl, 3600)
-                except ValueError:
-                    self.ttl = 3600
+            self.ttl = _get_ttl(page)
+            self.oneshot = self.ttl <= 0
+            # Then parse the file
             data = page.read()
             self.parse(data)
     
