@@ -144,7 +144,6 @@ class reppy(object):
     '''A class that represents a set of agents, and can select them appropriately.
     Associated with one robots.txt file.'''
 
-    lineRE = re.compile('^\s*(\S+)\s*:\s*([^#]*)\s*(#.+)?$', re.I)
     DEFAULT_TTL = 3600*3
 
     def __init__(self, ttl=DEFAULT_TTL, url=None, autorefresh=True, agentString='REPParser/0.1 (Python)'):
@@ -215,17 +214,19 @@ class reppy(object):
                     except ValueError:
                         return MANGLED_TTL
 
-        # Else use Expires header, if present.
+        # Else use Expires header, if present. Convert it to a TTL by subtracting
+        # the value of the Date header, as per RFC2616 Sec. 13.2.4, if a Date
+        # header is present.
         if expires is not None:
             if date is None:
                 base = time.time()
             else:
                 try:
-                    base = _totime(date)
+                    base = self._totime(date)
                 except ValueError:
                     base = time.time()
             try:
-                return long(_totime(expires) - base)
+                return long(self._totime(expires) - base)
             except ValueError:
                 return MANGLED_TTL
 
@@ -235,8 +236,8 @@ class reppy(object):
                 if i in cache_control:
                     return -1L
 
-        # Else there's no TTL, return the default value
-        return long(DEFAULT_TTL)
+        # Else there's no TTL, so return the default value
+        return long(self.DEFAULT_TTL)
 
     def refresh(self):
         '''Can only work if we have a url specified'''
@@ -259,7 +260,7 @@ class reppy(object):
                 raise ReppyException(e)
             self.parsed    = time.time()
             # Try to get the header's expiration time, which we should honor
-            self.ttl = _get_ttl(page)
+            self.ttl = self._get_ttl(page)
             self.oneshot = self.ttl <= 0
             # Then parse the file
             data = page.read()
@@ -282,10 +283,11 @@ class reppy(object):
         # The agent we're currently working with
         cur = agent()
         # For future reference: http://www.evanjones.ca/python-utf8.html
-        if s.startswith(codecs.BOM_UTF8):
-            s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
-        elif s.startswith(codecs.BOM_UTF16):
-            s = s.decode('utf-16')
+        if isinstance(s, str):
+            if s.startswith(codecs.BOM_UTF8):
+                s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
+            elif s.startswith(codecs.BOM_UTF16):
+                s = s.decode('utf-16')
 
         # The name of the current agent. There are a couple schools of thought here
         # For example, by including a default agent, the robots.txt's author's intent
@@ -294,44 +296,62 @@ class reppy(object):
         # robots.txt, you should be able to write it correctly.
         curname = '*'
         last    = ''
-        for line in s.split('\n'):
+        for rawline in s.split('\n'):
+            line = rawline
+
+            # Throw away comments
+            octothorpe = line.find('#')
+            if octothorpe >= 0:
+                line = line[:octothorpe]
+
+            # Throw away any trailing whitespace
+            line = line.rstrip()
+
+            # Silently ignore blank and comment lines
+            if line == '':
+                continue
+
+            # Non-silently ignore lines with no ':' delimiter
+            if ':' not in line:
+                logger.debug("Skipping garbled robots.txt line %s" % repr(rawline))
+                continue
+
+            # Looks valid. Split and interpret it
+            key, val = [x.strip() for x in line.split(':', 1)]
+            key = key.lower()
             try:
-                match = self.lineRE.match(line)
-                if match:
-                    key = match.group(1).strip().lower()
-                    val = match.group(2).strip()
-                    if key == 'user-agent' or key == 'useragent':
-                        # Store the current working agent
-                        if cur:
-                            self.atts['agents'][curname] = cur
-                        try:
-                            curname = val.lower().encode('utf-8')
-                        except:
-                            curname = val.lower()
-                        if last != 'user-agent' and last != 'useragent':
-                            # If the last line was a user agent, then all lines
-                            # below also apply to the last user agent. So, we'll
-                            # have this user agent point to the one we declared
-                            # for the previously-listed agent
-                            cur = self.atts['agents'].get(curname, None) or agent()
-                    elif cur and key == 'disallow':
-                        if len(val):
-                            cur.allowances.append((len(val), self.makeREFromString(val), False))
-                    elif cur and key == 'allow':
-                        cur.allowances.append((len(val), self.makeREFromString(val), True))
-                    elif cur and key == 'crawl-delay':
-                        cur.crawlDelay = float(val)
-                    elif cur and key == 'sitemap':
-                        self.atts['sitemaps'].append(val)
-                    else:
-                        logger.debug('Unknown key %s' % line)
-                    last = key
+                if key == 'user-agent' or key == 'useragent':
+                    # Store the current working agent
+                    if cur:
+                        self.atts['agents'][curname] = cur
+                    try:
+                        curname = val.lower().encode('utf-8')
+                    except:
+                        curname = val.lower()
+                    if last != 'user-agent' and last != 'useragent':
+                        # If the last line was a user agent, then all lines
+                        # below also apply to the last user agent. So, we'll
+                        # have this user agent point to the one we declared
+                        # for the previously-listed agent
+                        cur = self.atts['agents'].get(curname, None) or agent()
+                elif cur and key == 'disallow':
+                    if len(val):
+                        cur.allowances.append((len(val), self.makeREFromString(val), False))
+                elif cur and key == 'allow':
+                    cur.allowances.append((len(val), self.makeREFromString(val), True))
+                elif cur and key == 'crawl-delay':
+                    cur.crawlDelay = float(val)
+                elif cur and key == 'sitemap':
+                    self.atts['sitemaps'].append(val)
                 else:
-                    logger.debug('Skipping line %s' % line)
+                    logger.debug("Unknown key in robots.txt line %s" % repr(rawline))
+                last = key
             except:
                 logger.exception('Error parsing...')
+
         # Now store the user agent that we've been working on
         self.atts['agents'][curname] = cur or agent()
+
         # Add myself to the global robots dictionary
         addRobot(self)
 
