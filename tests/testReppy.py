@@ -170,10 +170,14 @@ class TestReppyRFC(unittest.TestCase):
         r = reppy.parse('''
             User-agent: *
             Disallow: /hello/''', ttl=-1)
+        # Pre-expired robots.txt files will still be honored ...
+        self.assertFalse(r.expired)
+        # ... once, and that's all.
         self.assertTrue(r.expired)
         r = reppy.parse('''
             User-agent: *
             Disallow: /hello/''', ttl=2)
+        # Normal, sane expiration times (no matter how short) are honored.
         self.assertTrue(r.remaining > 1)
         self.assertTrue(r.remaining < 2)
     

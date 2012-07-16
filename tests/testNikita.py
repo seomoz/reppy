@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# These tests come from the Nikita the Spider page at
+# http://nikitathespider.com/ . Reppy has deliberately chosen to do
+# some things differently than Nikita, so these tests will NOT all
+# pass.
+
 import os
 import sys
 
