@@ -296,7 +296,7 @@ class reppy(object):
         # robots.txt, you should be able to write it correctly.
         curname = '*'
         last    = ''
-        for rawline in s.split('\n'):
+        for rawline in s.splitlines():
             line = rawline
 
             # Throw away comments
