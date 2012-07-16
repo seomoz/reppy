@@ -280,14 +280,24 @@ class reppy(object):
     def parse(self, s):
         '''Parse the given string and store the resultant rules'''
         self.reset()
+        # Name of file to log
+        logname = self.url or 'robots.txt'
         # The agent we're currently working with
         cur = agent()
         # For future reference: http://www.evanjones.ca/python-utf8.html
         if isinstance(s, str):
             if s.startswith(codecs.BOM_UTF8):
-                s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
+                try:
+                    s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
+                except UnicodeDecodeError:
+                    logger.error('Too much garbage! Ignoring ' + logname)
+                    return
             elif s.startswith(codecs.BOM_UTF16):
-                s = s.decode('utf-16')
+                try:
+                    s = s.decode('utf-16')
+                except UnicodeDecodeError:
+                    logger.error('Too much garbage! Ignoring ' + logname)
+                    return
 
         # The name of the current agent. There are a couple schools of thought here
         # For example, by including a default agent, the robots.txt's author's intent
