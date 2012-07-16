@@ -51,7 +51,7 @@ class TestReppyRFC(unittest.TestCase):
             Disallow: /%7ejoe/index.html''')
         self.assertTrue(not r.allowed('/~joe/index.html', 't'))
         self.assertTrue(not r.allowed('/%7ejoe/index.html', 't'))
-    
+
     def test_unquoting_forward_slash(self):
         # But not with foward slash
         r = reppy.parse('''
@@ -64,7 +64,7 @@ class TestReppyRFC(unittest.TestCase):
             Disallow: /a/b.html''')
         self.assertTrue(    r.allowed('/a%2fb.html', 't'))
         self.assertTrue(not r.allowed('/a/b.html', 't'))
-    
+
     def test_rfc_example(self):
         r = reppy.parse('''# /robots.txt for http://www.fict.org/
             # comments to webmaster@fict.org
@@ -74,7 +74,7 @@ class TestReppyRFC(unittest.TestCase):
 
             User-agent: webcrawler
             User-agent: excite
-            Disallow: 
+            Disallow:
 
             User-agent: *
             Disallow: /org/plans.html
@@ -130,7 +130,7 @@ class TestReppyRFC(unittest.TestCase):
         self.assertTrue(not r.allowed('/org/plans.html', 'anything'))
         self.assertTrue(not r.allowed('/%7Ejim/jim.html', 'anything'))
         self.assertTrue(    r.allowed('/%7Emak/mak.html', 'anything'))
-    
+
     def test_crawl_delay(self):
         r = reppy.parse('''
             User-agent: agent
@@ -139,14 +139,14 @@ class TestReppyRFC(unittest.TestCase):
             Crawl-delay: 1''')
         self.assertEqual(r.crawlDelay('agent'), 5)
         self.assertEqual(r.crawlDelay('testing'), 1)
-    
+
     def test_sitemaps(self):
         r = reppy.parse('''
             User-agent: agent
             Sitemap: http://a.com/sitemap.xml
             Sitemap: http://b.com/sitemap.xml''')
         self.assertEqual(r.sitemaps, ['http://a.com/sitemap.xml', 'http://b.com/sitemap.xml'])
-    
+
     def test_batch_queries(self):
         r = reppy.parse('''
             User-agent: *
@@ -156,7 +156,7 @@ class TestReppyRFC(unittest.TestCase):
         testUrls = ['/a/hello', '/a/howdy', '/b', '/b/hello']
         allowed  = ['/b/hello']
         self.assertEqual(r.allowed(testUrls, 't'), allowed)
-    
+
     def test_wildcard(self):
         r = reppy.parse('''
             User-agent: *
@@ -164,7 +164,7 @@ class TestReppyRFC(unittest.TestCase):
         testUrls = ['/hello/', '/hello/how/are/you', '/hi/how/are/you/']
         allowed  = ['/hello/', '/hi/how/are/you/']
         self.assertEqual(r.allowed(testUrls, 't'), allowed)
-    
+
     def test_set_ttl(self):
         self.assertTrue(True)
         r = reppy.parse('''
@@ -180,7 +180,7 @@ class TestReppyRFC(unittest.TestCase):
         # Normal, sane expiration times (no matter how short) are honored.
         self.assertTrue(r.remaining > 1)
         self.assertTrue(r.remaining <= 2)
-    
+
     def test_disallowed(self):
         '''Make sure disallowed is the opposite of allowed'''
         r = reppy.parse('''
@@ -194,7 +194,7 @@ class TestReppyRFC(unittest.TestCase):
         for i in range(1000):
             u = hex(random.randint(0, 16))
             self.assertNotEqual(r.allowed(u, 't'), r.disallowed(u, 't'))
-    
+
     def test_case_insensitivity(self):
         '''Make sure user agent matches are case insensitive'''
         r = reppy.parse('''
@@ -204,7 +204,7 @@ class TestReppyRFC(unittest.TestCase):
         self.assertTrue(r.disallowed('/a', 'aGent'))
         self.assertTrue(r.disallowed('/a', 'AGeNt'))
         self.assertTrue(r.disallowed('/a', 'AGENT'))
-    
+
     def test_query(self):
         '''Make sure user agent matches are case insensitive'''
         r = reppy.parse('''
@@ -226,7 +226,7 @@ class TestReppyRFC(unittest.TestCase):
         self.assertTrue(    r.allowed('/foo.html', ua))
         self.assertTrue(    r.allowed('/foo/bar', ua))
         self.assertTrue(    r.allowed('/foo/bar.html', ua))
-    
+
     def test_disallow_all(self):
         # But not with foward slash
         r = reppy.parse('''
@@ -238,7 +238,7 @@ class TestReppyRFC(unittest.TestCase):
         self.assertTrue(not r.allowed('/foo.html', ua))
         self.assertTrue(not r.allowed('/foo/bar', ua))
         self.assertTrue(not r.allowed('/foo/bar.html', ua))
-    
+
     def test_allow_certain_pages_only(self):
         r = reppy.parse('''
             User-agent: *
@@ -259,13 +259,13 @@ class TestReppyRFC(unittest.TestCase):
         self.assertTrue(not r.allowed('/subfolder/aaaaa', ua))
         self.assertTrue(    r.allowed('/subfolder/page1.html', ua))
         self.assertTrue(    r.allowed('/subfolder/page2.php', ua))
-    
+
     def test_empty(self):
         r = reppy.parse('')
         self.assertTrue(    r.allowed('/', 't'))
         self.assertEqual(r.crawlDelay('t'), None)
         self.assertEqual(r.sitemaps, [])
-    
+
     def test_relative(self):
         # Basically, we should treat 'hello' like '/hello'
         r = reppy.parse('''
@@ -275,7 +275,7 @@ class TestReppyRFC(unittest.TestCase):
         ua = 'dotbot'
         self.assertTrue(not r.allowed('/hello', ua))
         self.assertTrue(not r.allowed('/hello/everyone', ua))
-    
+
     def test_grouping_unknown_keys(self):
         # When we encounter unknown keys, we should disregard any
         # grouping that may have happened between user agent rules.
@@ -303,25 +303,25 @@ class TestReppyRFC(unittest.TestCase):
         ''')
         self.assertTrue(    r.allowed('/foo', 'dotbot'))
         self.assertTrue(not r.allowed('/bar', 'ia_archiver'))
-    
+
     def test_utf8_bom(self):
         # If there's a utf-8 BOM, we should parse it as such
         import codecs
         r = reppy.parse(codecs.BOM_UTF8 + '''User-agent: foo
             Allow: /foo
-            
+
             User-agent: *
             Disallow: /foo
         ''')
         self.assertTrue(    r.allowed('/foo', 'foo'))
         self.assertTrue(not r.allowed('/foo', 'other'))
-    
+
     def test_utf16_bom(self):
         # If there's a utf-8 BOM, we should parse it as such
         import codecs
         r = reppy.parse('''User-agent: foo
             Allow: /foo
-            
+
             User-agent: *
             Disallow: /foo
         '''.decode('utf-8').encode('utf-16'))
