@@ -284,20 +284,22 @@ class reppy(object):
         logname = self.url or 'robots.txt'
         # The agent we're currently working with
         cur = agent()
-        # For future reference: http://www.evanjones.ca/python-utf8.html
+
+        # If we didn't get a header indicating unicode, we have an 8-bit
+        # string here. Suspect undeclared UTF-8 or UTF-16 and look for a
+        # leading BOM. If there is one, attempt to decode. If the decoding
+        # fails, proclaim the robots.txt file to be garbage and ignore it.
         if isinstance(s, str):
-            if s.startswith(codecs.BOM_UTF8):
-                try:
+            try:
+                if s.startswith(codecs.BOM_UTF8):
                     s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
-                except UnicodeDecodeError:
-                    logger.error('Too much garbage! Ignoring ' + logname)
-                    return
-            elif s.startswith(codecs.BOM_UTF16):
-                try:
+                elif s.startswith(codecs.BOM_UTF16):
                     s = s.decode('utf-16')
-                except UnicodeDecodeError:
-                    logger.error('Too much garbage! Ignoring ' + logname)
-                    return
+            except UnicodeDecodeError:
+                logger.error('Too much garbage! Ignoring ' + logname)
+                self.atts['agents']['*'] = agent()
+                addRobot(self)
+                return
 
         # The name of the current agent. There are a couple schools of thought here
         # For example, by including a default agent, the robots.txt's author's intent
