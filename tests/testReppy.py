@@ -179,7 +179,7 @@ class TestReppyRFC(unittest.TestCase):
             Disallow: /hello/''', ttl=2)
         # Normal, sane expiration times (no matter how short) are honored.
         self.assertTrue(r.remaining > 1)
-        self.assertTrue(r.remaining < 2)
+        self.assertTrue(r.remaining <= 2)
     
     def test_disallowed(self):
         '''Make sure disallowed is the opposite of allowed'''
