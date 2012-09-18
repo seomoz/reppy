@@ -109,6 +109,11 @@ def sitemaps(url, **kwargs):
     '''What are the sitemaps for the associated site'''
     return findOrMakeRobot(url, **kwargs).sitemaps
 
+def clear_cache():
+    '''Clear reppy's cache of robots.txt files'''
+    global robots
+    robots = {}
+
 class ReppyException(Exception):
     def __init__(self, value):
         self.value = value
@@ -201,6 +206,7 @@ class reppy(object):
                     self.parse('')
                 else:
                     raise ReppyException, ServerError('Remote server returned status %i' % e.code)
+                return
             except Exception as e:
                 raise ReppyException(e)
             self.parsed    = time.time()
