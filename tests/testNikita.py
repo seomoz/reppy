@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# These tests come from the Nikita the Spider page at
+# http://nikitathespider.com/ . Reppy has deliberately chosen to do
+# some things differently than Nikita, so these tests will NOT all
+# pass.
+
 import os
 import sys
 
@@ -24,7 +29,7 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(    r.allowed('/bar.html', 'Foobot'))
 		self.assertTrue(    r.allowed('/', 'SomeOtherBot'))
 		self.assertTrue(    r.allowed('/blahblahblah', 'SomeOtherBot'))
-	
+
 	def test_mk1994(self):
 		r = reppy.parse('''# robots.txt for http://www.example.com/
 			User-agent: *
@@ -43,7 +48,7 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(not r.allowed('http://example.org/foo.html', 'CrunchyFrogBot'))
 		self.assertTrue(not r.allowed('https://example.org/foo.html', 'CrunchyFrogBot'))
 		self.assertTrue(not r.allowed('ftp://example.net/foo.html', 'CrunchyFrogBot'))
-	
+
 	def test_blank(self):
 		r = reppy.parse('''''')
 		self.assertTrue(    r.allowed('/', 'foobot'))
@@ -64,7 +69,7 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(not r.allowed('/foo/bar.html', 'Mozilla/5.0 (compatible; Foobot/2.1)'))
 		self.assertTrue(not r.allowed('/foo/bar.html', 'barbot'))
 		self.assertTrue(    r.allowed('/tmp/', 'barbot'))
-	
+
 	def test_utf8(self):
 		s = '''# robots.txt for http://www.example.com/
 			UserAgent: Jävla-Foobot
@@ -80,7 +85,7 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(    r.allowed('/', 'foobot'))
 		self.assertTrue(    r.allowed('/', 'Mozilla/5.0 (compatible; \u041b\u044c\u0432\u0456\u0432-bot/1.1)'))
 		self.assertTrue(not r.allowed('/totalitarianism/foo.html', 'Mozilla/5.0 (compatible; \u041b\u044c\u0432\u0456\u0432-bot/1.1)'))
-	
+
 	def test_implicit(self):
 		r = reppy.parse('''# robots.txt for http://www.example.com/
 			User-agent: *
@@ -91,7 +96,7 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(    r.allowed('/bar.html', 'foobot'))
 		self.assertTrue(not r.allowed('/', 'SomeOtherBot'))
 		self.assertTrue(not r.allowed('/blahblahblah', 'SomeOtherBot'))
-	
+
 	def test_wildcards(self):
 		r = reppy.parse('''# robots.txt for http://www.example.com/
 			User-agent: Rule1TestBot
@@ -113,13 +118,13 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(not r.allowed('/foo.html', 'Rule1TestBot'))
 		self.assertTrue(not r.allowed('/food', 'Rule1TestBot'))
 		self.assertTrue(not r.allowed('/foo/bar.html', 'Rule1TestBot'))
-		
+
 		self.assertTrue(    r.allowed('/fo.html', 'Rule2TestBot'))
 		self.assertTrue(not r.allowed('/foo/bar.html', 'Rule2TestBot'))
 		self.assertTrue(not r.allowed('/food/bar.html', 'Rule2TestBot'))
 		self.assertTrue(not r.allowed('/foo/a/b/c/x/y/z/bar.html', 'Rule2TestBot'))
 		self.assertTrue(    r.allowed('/food/xyz.html', 'Rule2TestBot'))
-		
+
 		self.assertTrue(not r.allowed('/foo.htm', 'Rule3TestBot'))
 		self.assertTrue(not r.allowed('/foo.html', 'Rule3TestBot'))
 		self.assertTrue(    r.allowed('/foo', 'Rule3TestBot'))
@@ -129,7 +134,7 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(    r.allowed('/foo/bar.txt', 'Rule3TestBot'))
 
 		self.assertTrue(not r.allowed('/fo.html', 'Rule4TestBot'))
-		self.assertTrue(not r.allowed('/foo.html', 'Rule4TestBot')) 
+		self.assertTrue(not r.allowed('/foo.html', 'Rule4TestBot'))
 		self.assertTrue(not r.allowed('/foo', 'Rule4TestBot'))
 		self.assertTrue(    r.allowed('/foo/bar.html', 'Rule4TestBot'))
 		self.assertTrue(not r.allowed('/foo/bar.txt', 'Rule4TestBot'))
@@ -166,7 +171,7 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(    r.allowed('/bar.html', 'Somebot'))
 		self.assertTrue(not r.allowed('/x.html', 'Somebot'))
 		self.assertTrue(not r.allowed('/foo.html', 'AnotherBot'))
-		
+
 		self.assertEqual(r.crawlDelay('Foobot'), 5)
 		self.assertEqual(r.crawlDelay('Blahbot'), None)
 		self.assertEqual(r.crawlDelay('Somebot'), 0.3)
@@ -179,7 +184,7 @@ class TestReppyNikita(unittest.TestCase):
 			Disallow: /
 			User-agent: *
 
-			# With apologies to Dr. Seuss, this syntax won't act as the author expects. 
+			# With apologies to Dr. Seuss, this syntax won't act as the author expects.
 			# It will only match UA strings that contain "onebot twobot greenbot bluebot".
 			# To match multiple UAs to a single rule, use multiple "User-agent:" lines.
 			User-agent: onebot twobot greenbot bluebot
@@ -207,16 +212,16 @@ class TestReppyNikita(unittest.TestCase):
 		self.assertTrue(not r.allowed('/', 'FOOBOT'))
 		self.assertTrue(not r.allowed('/', 'FoOBoT'))
 		self.assertTrue(not r.allowed('/', 'foobot'))
-	
+
 	def test_fetch(self):
 		# This should throw an error
 		self.assertRaises(Exception, reppy.fetch('http://example.com/robots.txt'))
-		
+
 		r = reppy.fetch('http://NikitaTheSpider.com/python/rerp/robots.iso-8859-1.txt')
 		ua = 'BättreBot'
 		self.assertTrue(not r.allowed('/stuff', ua))
 		self.assertTrue(    r.allowed('/index.html', ua))
-		
+
 		ua = 'BästaBot'
 		self.assertTrue(    r.allowed('/stuff', ua))
 		self.assertTrue(not r.allowed('/index.html', ua))
@@ -257,32 +262,32 @@ class TestReppyNikita(unittest.TestCase):
 
 	def test_expiration(self):
 		pass
-		# 
+		#
 		# # -----------------------------------------------------------
 		# # Test the parser's expiration features
 		# # -----------------------------------------------------------
 		# print("Running local time test")
-		# 
-		# # Create a fresh parser to (re)set the expiration date. I test to see if 
-		# # the dates are accurate to +/-1 minute. If your local clock is off by 
+		#
+		# # Create a fresh parser to (re)set the expiration date. I test to see if
+		# # the dates are accurate to +/-1 minute. If your local clock is off by
 		# # more than that, these tests will fail.
-		# 
+		#
 		# parser = robotexclusionrulesparser.RobotExclusionRulesParser()
 		# localtime = time.mktime(time.localtime())
 		# assert((parser.expiration_date > localtime + robotexclusionrulesparser.SEVEN_DAYS - 60) and
 		#        (parser.expiration_date < localtime + robotexclusionrulesparser.SEVEN_DAYS + 60))
-		# 
+		#
 		# print("Passed.")
-		# 
-		# 
+		#
+		#
 		# print("Running UTC test")
-		# 
+		#
 		# parser = robotexclusionrulesparser.RobotExclusionRulesParser()
 		# parser.use_local_time = False
 		# utc = calendar.timegm(time.gmtime())
 		# assert((parser.expiration_date > utc + robotexclusionrulesparser.SEVEN_DAYS - 60) and
 		#        (parser.expiration_date < utc + robotexclusionrulesparser.SEVEN_DAYS + 60))
-		# 
+		#
 		# print("Passed.")
 
 if __name__ == '__main__':

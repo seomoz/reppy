@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 #
 # Copyright (c) 2011 SEOmoz
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
 # "Software"), to deal in the Software without restriction, including
@@ -9,10 +9,10 @@
 # distribute, sublicense, and/or sell copies of the Software, and to
 # permit persons to whom the Software is furnished to do so, subject to
 # the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -128,11 +128,11 @@ class ServerError(Exception):
 class agent(object):
     '''Represents attributes for a given robot'''
     pathRE = re.compile(r'^([^\/]+\/\/)?([^\/]+)?(/?.+?)$', re.M)
-    
+
     def __init__(self):
         self.allowances = []
         self.crawlDelay = None
-    
+
     def allowed(self, url):
         '''Can I fetch a given URL?'''
         match = agent.pathRE.match(url)
@@ -148,22 +148,23 @@ class agent(object):
 class reppy(object):
     '''A class that represents a set of agents, and can select them appropriately.
     Associated with one robots.txt file.'''
-    
-    lineRE = re.compile('^\s*(\S+)\s*:\s*([^#]*)\s*(#.+)?$', re.I)
-    
-    def __init__(self, ttl=3600*3, url=None, autorefresh=True, agentString='REPParser/0.1 (Python)'):
+
+    DEFAULT_TTL = 3600*3
+
+    def __init__(self, ttl=DEFAULT_TTL, url=None, autorefresh=True, agentString='REPParser/0.1 (Python)'):
         self.reset()
         # When did we last parse this?
         self.parsed    = time.time()
         # Time to live
         self.ttl       = ttl
+        self.oneshot   = ttl <= 0
         # The url that we fetched
         self.url       = url
         # The user agent string to match in robots
         self.agentString = agentString.lower().encode('utf-8')
         # Do we refresh when we expire?
         self.autorefresh = url and autorefresh
-    
+
     def __getattr__(self, name):
         '''So we can keep track of refreshes'''
         if name == 'expired':
@@ -173,22 +174,76 @@ class reppy(object):
         elif self.autorefresh and self._expired():
             self.refresh()
         return self.atts[name.lower()]
-    
+
     def _remaining(self):
         '''How long is left in its life'''
-        return self.parsed + self.ttl - time.time()
+        # Integer math makes a ttl of 0 last until the second rolls over.
+        return long(self.parsed) + self.ttl - long(time.time())
 
     def _expired(self):
         '''Has this robots.txt expired?'''
-        return self._remaining() < 0
-    
+        if self.oneshot:
+            self.oneshot = False
+            return False
+        else:
+            return self._remaining() < 0
+
     def reset(self):
         '''Reinitialize self'''
         self.atts = {
             'sitemaps' : [],    # The sitemaps we've seen
             'agents'   : {}     # The user-agents we've seen
         }
-    
+
+    def _totime(self, s):
+        return time.mktime(dateutil.parser.parse(s).timetuple())
+
+    def _get_ttl(self, p):
+        MANGLED_TTL = 3600L
+
+        # Get values of any Cache-Control or Expires headers.
+        headers = p.info()
+        cache_control = headers.get('Cache-Control', None)
+        expires = headers.get('Expires', None)
+        date = headers.get('Date', None)
+
+        # If max-age is specified in Cache-Control, use it and ignore any
+        # Expires header, as per RFC2616 Sec. 13.2.4.
+        if cache_control is not None:
+            cache_control = [x.strip() for x in cache_control.lower().split(',') ]
+            for i in cache_control:
+                fields = [x.strip() for x in i.split('=', 1)]
+                if len(fields) == 2 and fields[0] == 'max-age':
+                    try:
+                        return long(fields[1])
+                    except ValueError:
+                        return MANGLED_TTL
+
+        # Else use Expires header, if present. Convert it to a TTL by subtracting
+        # the value of the Date header, as per RFC2616 Sec. 13.2.4, if a Date
+        # header is present.
+        if expires is not None:
+            if date is None:
+                base = time.time()
+            else:
+                try:
+                    base = self._totime(date)
+                except ValueError:
+                    base = time.time()
+            try:
+                return long(self._totime(expires) - base)
+            except ValueError:
+                return MANGLED_TTL
+
+        # Else check for no-cache, no-store, or must-revalidate in Cache-Control
+        if cache_control is not None:
+            for i in ['no-cache', 'no-store', 'must-revalidate']:
+                if i in cache_control:
+                    return -1L
+
+        # Else there's no TTL, so return the default value
+        return long(self.DEFAULT_TTL)
+
     def refresh(self):
         '''Can only work if we have a url specified'''
         if self.url:
@@ -211,18 +266,12 @@ class reppy(object):
                 raise ReppyException(e)
             self.parsed    = time.time()
             # Try to get the header's expiration time, which we should honor
-            expires = page.info().get('Expires', None)
-            if expires:
-                try:
-                    # Add a ttl to the class
-                    self.ttl = time.time() - time.mktime(dateutil.parser.parse(expires).timetuple())
-                    # Give ourselves at least an hour
-                    self.ttl = max(self.ttl, 3600)
-                except ValueError:
-                    self.ttl = 3600
+            self.ttl = self._get_ttl(page)
+            self.oneshot = self.ttl <= 0
+            # Then parse the file
             data = page.read()
             self.parse(data)
-    
+
     def makeREFromString(self, s):
         '''Make a regular expression that matches the patterns expressable in robots.txt'''
         # If the string doesn't start with a forward slash, we'll insert it
@@ -233,66 +282,97 @@ class reppy(object):
             s = '/' + s
         tmp = re.escape(urllib.unquote(s.replace('%2f', '%252f')))
         return re.compile(tmp.replace('\*', '.*').replace('\$', '$'))
-    
+
     def parse(self, s):
         '''Parse the given string and store the resultant rules'''
         self.reset()
+        # Name of file to log
+        logname = self.url or 'robots.txt'
         # The agent we're currently working with
         cur = agent()
-        # For future reference: http://www.evanjones.ca/python-utf8.html
-        if s.startswith(codecs.BOM_UTF8):
-            s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
-        elif s.startswith(codecs.BOM_UTF16):
-            s = s.decode('utf-16')
-        
+
+        # If we didn't get a header indicating unicode, we have an 8-bit
+        # string here. Suspect undeclared UTF-8 or UTF-16 and look for a
+        # leading BOM. If there is one, attempt to decode. If the decoding
+        # fails, proclaim the robots.txt file to be garbage and ignore it.
+        if isinstance(s, str):
+            try:
+                if s.startswith(codecs.BOM_UTF8):
+                    s = s.decode('utf-8').lstrip(unicode(codecs.BOM_UTF8, 'utf-8'))
+                elif s.startswith(codecs.BOM_UTF16):
+                    s = s.decode('utf-16')
+            except UnicodeDecodeError:
+                logger.error('Too much garbage! Ignoring ' + logname)
+                self.atts['agents']['*'] = agent()
+                addRobot(self)
+                return
+
         # The name of the current agent. There are a couple schools of thought here
         # For example, by including a default agent, the robots.txt's author's intent
         # is clearly accommodated if a Disallow line appears before the a User-Agent
-        # line. However, how hard is it to follow the standard? If you're writing a 
+        # line. However, how hard is it to follow the standard? If you're writing a
         # robots.txt, you should be able to write it correctly.
         curname = '*'
         last    = ''
-        for line in s.split('\n'):
+        for rawline in s.splitlines():
+            line = rawline
+
+            # Throw away comments
+            octothorpe = line.find('#')
+            if octothorpe >= 0:
+                line = line[:octothorpe]
+
+            # Throw away any trailing whitespace
+            line = line.rstrip()
+
+            # Silently ignore blank and comment lines
+            if line == '':
+                continue
+
+            # Non-silently ignore lines with no ':' delimiter
+            if ':' not in line:
+                logger.debug("Skipping garbled robots.txt line %s" % repr(rawline))
+                continue
+
+            # Looks valid. Split and interpret it
+            key, val = [x.strip() for x in line.split(':', 1)]
+            key = key.lower()
             try:
-                match = self.lineRE.match(line)
-                if match:
-                    key = match.group(1).strip().lower()
-                    val = match.group(2).strip()
-                    if key == 'user-agent' or key == 'useragent':
-                        # Store the current working agent
-                        if cur:
-                            self.atts['agents'][curname] = cur
-                        try:
-                            curname = val.lower().encode('utf-8')
-                        except:
-                            curname = val.lower()
-                        if last != 'user-agent' and last != 'useragent':
-                            # If the last line was a user agent, then all lines
-                            # below also apply to the last user agent. So, we'll
-                            # have this user agent point to the one we declared
-                            # for the previously-listed agent
-                            cur = self.atts['agents'].get(curname, None) or agent()
-                    elif cur and key == 'disallow':
-                        if len(val):
-                            cur.allowances.append((len(val), self.makeREFromString(val), False))
-                    elif cur and key == 'allow':
-                        cur.allowances.append((len(val), self.makeREFromString(val), True))
-                    elif cur and key == 'crawl-delay':
-                        cur.crawlDelay = float(val)
-                    elif cur and key == 'sitemap':
-                        self.atts['sitemaps'].append(val)
-                    else:
-                        logger.debug('Unknown key %s' % line)
-                    last = key
+                if key == 'user-agent' or key == 'useragent':
+                    # Store the current working agent
+                    if cur:
+                        self.atts['agents'][curname] = cur
+                    try:
+                        curname = val.lower().encode('utf-8')
+                    except:
+                        curname = val.lower()
+                    if last != 'user-agent' and last != 'useragent':
+                        # If the last line was a user agent, then all lines
+                        # below also apply to the last user agent. So, we'll
+                        # have this user agent point to the one we declared
+                        # for the previously-listed agent
+                        cur = self.atts['agents'].get(curname, None) or agent()
+                elif cur and key == 'disallow':
+                    if len(val):
+                        cur.allowances.append((len(val), self.makeREFromString(val), False))
+                elif cur and key == 'allow':
+                    cur.allowances.append((len(val), self.makeREFromString(val), True))
+                elif cur and key == 'crawl-delay':
+                    cur.crawlDelay = float(val)
+                elif cur and key == 'sitemap':
+                    self.atts['sitemaps'].append(val)
                 else:
-                    logger.debug('Skipping line %s' % line)
+                    logger.debug("Unknown key in robots.txt line %s" % repr(rawline))
+                last = key
             except:
                 logger.exception('Error parsing...')
+
         # Now store the user agent that we've been working on
         self.atts['agents'][curname] = cur or agent()
+
         # Add myself to the global robots dictionary
         addRobot(self)
-        
+
     def findAgent(self, agent):
         '''Find the agent given a string for it'''
         try:
@@ -300,7 +380,7 @@ class reppy(object):
         except:
             pass
         return self.agents.get(agent.lower(), self.agents.get('*'))
-    
+
     def allowed(self, url, agent):
         '''We try to perform a good match, then a * match'''
         a = self.findAgent(agent)
@@ -308,13 +388,13 @@ class reppy(object):
             return a.allowed(url)
         else:
             return [u for u in url if a.allowed(u)]
-    
+
     def disallowed(self, url, agent):
         '''For completeness'''
         return not self.allowed(url, agent)
-    
+
     def crawlDelay(self, agent):
-        '''How fast can this '''
+        '''How fast can the specified agent legally crawl this site?'''
         a = self.findAgent(agent)
         if a:
             return a.crawlDelay
