@@ -254,6 +254,9 @@ class reppy(object):
                     # From the spec, if it's a 404, then we can proceed without restriction
                     logger.warn('Page %s not found.' % e.url)
                     self.parse('')
+                    self.ttl = self.DEFAULT_TTL
+                    self.oneshot = False
+                    return
                 else:
                     raise ReppyException, ServerError('Remote server returned status %i' % e.code)
             except Exception as e:
