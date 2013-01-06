@@ -1,0 +1,8 @@
+HTTP/1.0 200 OK
+Content-Length: 99
+Content-Type: text/plain
+Cache-Control: no-cache
+
+Sitemap: http://localhost:8080/a
+Sitemap: http://localhost:8080/b
+Sitemap: http://localhost:8080/c

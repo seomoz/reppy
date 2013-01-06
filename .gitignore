@@ -2,4 +2,5 @@
 build/*
 dist/*
 reppy.egg-info/*
+.coverage
 
