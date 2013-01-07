@@ -1,0 +1,7 @@
+HTTP/1.0 200 OK
+Content-Length: 29
+Content-Type: text/plain
+Cache-Control: no-cache
+
+User-Agent: *
+Crawl-Delay: 5
