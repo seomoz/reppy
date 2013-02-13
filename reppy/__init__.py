@@ -165,13 +165,18 @@ class reppy(object):
         # Do we refresh when we expire?
         self.autorefresh = url and autorefresh
 
+    # Note that if autorefresh is set, this might cause a gratuitous fetch
+    # of robots.txt. Autorefresh is a hackish feature best not used, given
+    # how incompletely implemented it is. Moreover, it will break for things
+    # like crawls via a proxy, since any gratuitous autorefresh will never
+    # be via a proxy.
     def __getattr__(self, name):
         '''So we can keep track of refreshes'''
         if name == 'expired':
-            return self._expired()
+            return self.is_expired()
         elif name == 'remaining':
             return self._remaining()
-        elif self.autorefresh and self._expired():
+        elif self.autorefresh and self.is_expired():
             self.refresh()
         return self.atts[name.lower()]
 
@@ -180,10 +185,11 @@ class reppy(object):
         # Integer math makes a ttl of 0 last until the second rolls over.
         return long(self.parsed) + self.ttl - long(time.time())
 
-    def _expired(self):
+   def is_expired(self, peek=False):
         '''Has this robots.txt expired?'''
         if self.oneshot:
-            self.oneshot = False
+            if not peek:
+                self.oneshot = False
             return False
         else:
             return self._remaining() < 0
