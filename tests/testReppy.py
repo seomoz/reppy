@@ -239,6 +239,19 @@ class TestReppyRFC(unittest.TestCase):
         self.assertTrue(not r.allowed('/foo/bar', ua))
         self.assertTrue(not r.allowed('/foo/bar.html', ua))
 
+    def test_disallow_all_url(self):
+        '''Make sure base url without trailing slash is disallowed
+        in case Disallow: / rule is used.'''
+        base_url = 'http://example.com'
+        r = reppy.parse('''
+            User-agent: *
+            Disallow: /''', url=base_url+'/robots.txt')
+        ua = 'dotbot'
+        # all urls should be blocked according to http://www.robotstxt.org/orig.html#code
+        self.assertTrue(not r.allowed(base_url, ua))
+        self.assertTrue(not r.allowed(base_url+'/', ua))
+        self.assertTrue(not r.allowed(base_url+'/foo.html', ua))
+
     def test_allow_certain_pages_only(self):
         r = reppy.parse('''
             User-agent: *
@@ -327,6 +340,25 @@ class TestReppyRFC(unittest.TestCase):
         '''.decode('utf-8').encode('utf-16'))
         self.assertTrue(    r.allowed('/foo', 'foo'))
         self.assertTrue(not r.allowed('/foo', 'other'))
+
+class TestExtractingPath(unittest.TestCase):
+    def test_extract_path(self):
+        #print dir(reppy)
+        #from reppy import extract_path
+        self.assertEqual('/', reppy.extract_path(''))
+        self.assertEqual('/', reppy.extract_path('http://example.com'))
+        
+        self.assertEqual('/foo', reppy.extract_path('/foo'))
+        self.assertEqual('/foo', reppy.extract_path('http://example.com/foo'))
+        
+        self.assertEqual('/foo/', reppy.extract_path('/foo/'))
+        self.assertEqual('/foo/', reppy.extract_path('http://example.com/foo/'))
+        
+        self.assertEqual('/foo/bar', reppy.extract_path('/foo/bar'))
+        self.assertEqual('/foo/bar', reppy.extract_path('http://example.com/foo/bar'))
+        
+        self.assertEqual('/foo/bar?a=b', reppy.extract_path('/foo/bar?a=b'))
+        self.assertEqual('/foo/bar?a=b', reppy.extract_path('http://example.com/foo/bar?a=b'))
 
 if __name__ == '__main__':
     unittest.main()
