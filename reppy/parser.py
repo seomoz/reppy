@@ -64,6 +64,10 @@ class Agent(object):
             if len(path) == 0:
                 # case for http://example.com
                 path = '/'
+            # If there was a question mark in the url, but no query string
+            # then we must still preserve the question mark.
+            if (not parts.query) and ('?' in url):
+                path = path + '?'
         return path
 
     def allowed(self, url):

@@ -905,6 +905,27 @@ class TestParse(unittest.TestCase):
             Disallow: /iwwida.pvx''')
         self.assertTrue(not rules.allowed('/WheelPit', agent))
 
+    def test_trailing_question(self):
+        '''Make sure a trailing question mark doesn't muss anything up'''
+        rules = self.parse('''
+            User-agent: *
+            Disallow: /search
+            Disallow: /sdch
+            Disallow: /groups
+            Disallow: /images
+            Disallow: /catalogs
+            Allow: /catalogs/about
+            Allow: /catalogs/p?''')
+        agent = 'dotbot'
+        base_url = 'http://example.com'
+        self.assertTrue(not rules.allowed('/catalogs/foo', agent))
+        self.assertTrue(not rules.allowed('/catalogs/p', agent))
+        self.assertTrue(rules.allowed('/catalogs/p?', agent))
+        # Make sure it works for full urls as well
+        self.assertTrue(not rules.allowed(base_url + '/catalogs/foo', agent))
+        self.assertTrue(not rules.allowed(base_url + '/catalogs/p', agent))
+        self.assertTrue(rules.allowed(base_url + '/catalogs/p?', agent))
+
     def test_disallow_all_url(self):
         '''Make sure base url without trailing slash is disallowed
         in case Disallow: / rule is used.'''
