@@ -34,7 +34,7 @@ except ImportError:
 
 setup(
     name             = 'reppy',
-    version          = '0.2.0',
+    version          = '0.2.1',
     description      = 'Replacement robots.txt Parser',
     long_description = '''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like

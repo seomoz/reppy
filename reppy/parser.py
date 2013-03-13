@@ -27,6 +27,7 @@ import re
 import time
 import urllib
 import codecs
+import urlparse
 
 from . import logger, exceptions, Utility
 
@@ -39,10 +40,35 @@ class Agent(object):
         self.allowances = []
         self.delay = None
 
+    @staticmethod
+    def extract_path(url):
+        '''Extracts path (with parameters) from given url, if url is already a
+        path (starts with /) it's rerurned without modifications. In case url
+        is empty or only contains domain without trailing slash, returns a
+        single slash.'''
+        # This method was actually contributed by Wiktor Bachnik (wbachnik)
+        # but because I forgot to rebase before my branch, this is going to
+        # appear in a different commit :-/
+        if len(url) == 0:
+            # empty, assume /
+            path = '/'
+        elif url[0] == '/':
+            # url is already a path
+            path = url
+        else:
+            # url is a proper url scheme://host/...
+            parts = urlparse.urlsplit(url)
+            needed_parts = urlparse.SplitResult(scheme='', netloc='',
+                path=parts.path, query=parts.query, fragment='')
+            path = needed_parts.geturl()
+            if len(path) == 0:
+                # case for http://example.com
+                path = '/'
+        return path
+
     def allowed(self, url):
         '''Can I fetch a given URL?'''
-        match = self.pathRE.match(url)
-        path = urllib.unquote(match.group(3).replace('%2f', '%252f'))
+        path = urllib.unquote(self.extract_path(url).replace('%2f', '%252f'))
         if path == '/robots.txt':
             return True
         allowed = [a for a in self.allowances if a[1].match(path)]

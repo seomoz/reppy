@@ -905,5 +905,36 @@ class TestParse(unittest.TestCase):
             Disallow: /iwwida.pvx''')
         self.assertTrue(not rules.allowed('/WheelPit', agent))
 
+    def test_disallow_all_url(self):
+        '''Make sure base url without trailing slash is disallowed
+        in case Disallow: / rule is used.'''
+        base_url = 'http://example.com'
+        rules = self.parse('''
+            User-agent: *
+            Disallow: /''')
+        agent = 'dotbot'
+        # all urls should be blocked according to
+        #   http://www.robotstxt.org/orig.html#code
+        self.assertTrue(not rules.allowed(base_url, agent))
+        self.assertTrue(not rules.allowed(base_url + '/', agent))
+        self.assertTrue(not rules.allowed(base_url + '/foo.html', agent))
+
+    def test_extract_path(self):
+        '''Make sure we can correctly extract example paths'''
+        from reppy.parser import Agent
+        self.assertEqual('/', Agent.extract_path(''))
+        self.assertEqual('/', Agent.extract_path('http://example.com'))
+        self.assertEqual('/foo', Agent.extract_path('/foo'))
+        self.assertEqual('/foo', Agent.extract_path('http://example.com/foo'))
+        self.assertEqual('/foo/', Agent.extract_path('/foo/'))
+        self.assertEqual('/foo/',
+            Agent.extract_path('http://example.com/foo/'))
+        self.assertEqual('/foo/bar', Agent.extract_path('/foo/bar'))
+        self.assertEqual('/foo/bar',
+            Agent.extract_path('http://example.com/foo/bar'))
+        self.assertEqual('/foo/bar?a=b', Agent.extract_path('/foo/bar?a=b'))
+        self.assertEqual('/foo/bar?a=b',
+            Agent.extract_path('http://example.com/foo/bar?a=b'))
+
 if __name__ == '__main__':
     unittest.main()
