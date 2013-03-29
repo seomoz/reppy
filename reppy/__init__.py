@@ -185,7 +185,7 @@ class reppy(object):
         # Integer math makes a ttl of 0 last until the second rolls over.
         return long(self.parsed) + self.ttl - long(time.time())
 
-   def is_expired(self, peek=False):
+    def is_expired(self, peek=False):
         '''Has this robots.txt expired?'''
         if self.oneshot:
             if not peek:
