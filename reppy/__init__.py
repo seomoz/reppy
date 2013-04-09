@@ -26,7 +26,7 @@
 __maintainer__ = 'Dan Lecocq'
 __copyright__ = '2011 SEOmoz'
 __license__ = 'SEOmoz'
-__version__ = '0.2.0'
+__version__ = '0.2.2'
 __author__ = 'Dan Lecocq'
 __status__ = 'Development'
 __email__ = 'dan@seomoz.org'
@@ -51,6 +51,10 @@ import time
 import urlparse
 import dateutil.parser
 
+#####################################################
+# Import our exceptions at the global level
+#####################################################
+from .exceptions import ServerError, ReppyException
 
 class Utility(object):
     '''Utility methods'''

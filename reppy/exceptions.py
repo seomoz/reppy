@@ -29,6 +29,6 @@ class ReppyException(Exception):
     pass
 
 
-class ServerError(Exception):
+class ServerError(ReppyException):
     '''When the remote server returns an error'''
     pass
