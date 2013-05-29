@@ -123,7 +123,7 @@ Each of these takes a url and a short user agent string (for example,
 ```python
 robots.allowed('http://example.com/allowed.html', 'my-agent')
 # True
-robots.disallowed('http://example.com/allowed.html', 'my-agen't)
+robots.disallowed('http://example.com/allowed.html', 'my-agent')
 # False
 ```
 
