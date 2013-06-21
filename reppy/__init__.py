@@ -41,7 +41,7 @@ handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter('%(message)s'))
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.ERROR)
 
 #####################################################
 # A couple utilities
