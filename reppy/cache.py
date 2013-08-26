@@ -35,6 +35,7 @@ class RobotsCache(object):
     A policy for eviction can be set (or not set) by inheriting from this class
     '''
     default_ttl = 3600
+    min_ttl = 60
 
     def __init__(self, *args, **kwargs):
         # The provided args and kwargs are used when fetching robots.txt with
@@ -73,7 +74,7 @@ class RobotsCache(object):
             robots_url = 'http://%s/robots.txt' % Utility.hostname(url)
             logger.debug('Fetching %s' % robots_url)
             req = requests.get(robots_url, *args, **kwargs)
-            ttl = Utility.get_ttl(req.headers, self.default_ttl)
+            ttl = max(self.min_ttl, Utility.get_ttl(req.headers, self.default_ttl))
             # And now parse the thing and return it
             return parser.Rules(robots_url, req.status_code, req.content,
                 time.time() + ttl)
