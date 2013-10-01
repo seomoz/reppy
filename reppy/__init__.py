@@ -130,7 +130,7 @@ class Utility(object):
                 try:
                     base = Utility.parse_time(date)
                 except ValueError:
-                    return default
+                    base = time.time()
             try:
                 return Utility.parse_time(expires) - base
             except ValueError:
