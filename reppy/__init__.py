@@ -49,7 +49,7 @@ logger.setLevel(logging.ERROR)
 import re
 import time
 import urlparse
-import dateutil.parser
+import email.utils
 
 #####################################################
 # Import our exceptions at the global level
@@ -71,8 +71,17 @@ class Utility(object):
 
     @staticmethod
     def parse_time(strng):
-        '''Parse a human-readable time into a timestamp'''
-        return time.mktime(dateutil.parser.parse(strng).timetuple())
+        '''Parse an HTTP-style (i.e. email-style) time into a timestamp'''
+        v = email.utils.parsedate_tz(strng)
+        if v is None:
+            # Reject bad data
+            raise ValueError("Invalid time.")
+        if v[9] is None:
+            # Default time zone is GMT/UTC
+            v = list(v)  # @$%?? Dutch
+            v[9] = 0
+            v = tuple(v)
+        return email.utils.mktime_tz(v)
 
     @staticmethod
     def get_ttl(headers, default):
@@ -83,21 +92,25 @@ class Utility(object):
         # Expires header, as per RFC2616 Sec. 13.2.4.
         if headers.get('cache-control') is not None:
             for directive in headers['cache-control'].split(','):
-                tokens = directive.lower().strip().partition('=')
+                tokens = directive.lower().partition('=')
+                t_name = tokens[0].strip()
+                t_value = tokens[2].strip()
                 # If we're not allowed to cache, then expires is now
-                if tokens[0].strip() in (
-                    'no-cache', 'no-store', 'must-revalidate'):
+                if t_name in ('no-store', 'must-revalidate'):
                     return 0
-                elif tokens[0].strip() == 's-maxage':
+                elif t_name == 'no-cache' and t_value == '':
+                    # Only honor no-cache if there is no =value after it
+                    return 0
+                elif t_name == 's-maxage':
                     try:
                         # Since s-maxage should override max-age, return
-                        return long(tokens[2])
+                        return long(t_value)
                     except ValueError:
                         # Couldn't parse s-maxage as an integer
                         continue
-                elif tokens[0].strip() == 'max-age':
+                elif t_name == 'max-age':
                     try:
-                        ttl = long(tokens[2])
+                        ttl = long(t_value)
                     except ValueError:
                         # Couldn't parse max-age as an integer
                         continue
