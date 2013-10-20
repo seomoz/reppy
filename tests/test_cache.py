@@ -5,6 +5,12 @@
 http://www.robotstxt.org/norobots-rfc.txt'''
 
 import unittest
+import sys
+
+if sys.version_info[0] == 3:
+    # We cannot run these tests on Python 3 yet, because they rely
+    # on the asis module and gevent, both of which are not available.
+    raise unittest.SkipTest()
 
 # We need to monkey-path socket
 from gevent import monkey; monkey.patch_all()

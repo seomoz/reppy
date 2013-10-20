@@ -21,15 +21,17 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import sys
+dateutil_version = '>=2.0' if sys.version_info[0] == 3 else '==1.5'
 try:
     from setuptools import setup
     extra = {
-        'install_requires': ['python-dateutil==1.5', 'url', 'requests']
+        'install_requires': ['python-dateutil{}'.format(dateutil_version), 'url', 'requests']
     }
 except ImportError:
     from distutils.core import setup
     extra = {
-        'dependencies': ['python-dateutil==1.5', 'url', 'requests']
+        'dependencies': ['python-dateutil{}'.format(dateutil_version), 'url', 'requests']
     }
 
 setup(

@@ -46,10 +46,18 @@ logger.setLevel(logging.ERROR)
 #####################################################
 # A couple utilities
 #####################################################
+import sys
 import re
 import time
-import urlparse
+try:
+    from urllib import parse as urlparse
+except ImportError:
+    # Python 2
+    import urlparse
 import dateutil.parser
+
+if sys.version_info[0] == 3:
+    long = int
 
 #####################################################
 # Import our exceptions at the global level
