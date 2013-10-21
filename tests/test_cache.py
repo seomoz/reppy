@@ -51,12 +51,15 @@ class TestCache(unittest.TestCase):
     def test_expires(self):
         '''Should be able to recognize expired rules'''
         with asis.Server('tests/asis/test_expires', port=8080):
+            old_ttl = self.robots.min_ttl
+            self.robots.min_ttl = 0
             self.assertNotEqual(
                 self.robots.find('http://localhost:8080/foo', True), None)
             # Now, it shouldn't be cached, so when we find it again, it should
             # be missing (or at least, requiring a refetch)
             self.assertEqual(
                 self.robots.find('http://localhost:8080/foo', False), None)
+            self.robots.min_ttl = old_ttl
 
     def test_clear(self):
         '''Should be able to explicitly clear rules'''
