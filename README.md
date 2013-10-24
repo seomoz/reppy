@@ -158,3 +158,18 @@ robots.sitemaps('http://example.com/')
 Path-Matching
 -------------
 Path matching supports both `*` and `$`
+
+Running Tests
+=============
+In order to run tests, you'll need `nose`, `asis`, `gevent` and `coverage`, all
+of which can be installed with `pip`:
+
+```bash
+sudo pip install asis nose gevent coverage
+```
+
+From there, the tests may be run with:
+
+```bash
+make test
+```
