@@ -47,14 +47,14 @@ class TestUtility(unittest.TestCase):
         import datetime
         ttl = Utility.get_ttl({
             'expires': (
-                datetime.datetime.now() + datetime.timedelta(seconds=10)
+                datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
             ).strftime('%a, %d %b %Y %H:%M:%S %z')
         }, 5)
         self.assertLess(ttl, 11)
         self.assertGreater(ttl, 9)
 
         # Make sure this works when a date is provided
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         ttl = self.assertEqual(Utility.get_ttl({
             'expires': (
                 now + datetime.timedelta(seconds=10)
@@ -67,7 +67,7 @@ class TestUtility(unittest.TestCase):
         # If the date is unparseable, use 'now'
         ttl = Utility.get_ttl({
             'expires': (
-                datetime.datetime.now() + datetime.timedelta(seconds=10)
+                datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
             ).strftime('%a, %d %b %Y %H:%M:%S %z'),
             'date': 'not a valid time'
         }, 5)
