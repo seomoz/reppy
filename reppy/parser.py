@@ -105,7 +105,7 @@ class Rules(object):
         else:
             raise exceptions.ReppyException(
                 exceptions.ServerError(
-                    'Remote server returned status %i' % status))
+                    'Remote server returned status %i' % status, status))
 
     @property
     def ttl(self):
