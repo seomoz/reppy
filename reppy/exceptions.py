@@ -34,5 +34,5 @@ class ServerError(ReppyException):
         self.status = kwargs.get('status')
         if self.status is None and len(args) >= 2:
             self.status = args[1]
-        ReppyException.init(self, *args, **kwargs)
+        ReppyException.__init__(self, *args, **kwargs)
 
