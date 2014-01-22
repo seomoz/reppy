@@ -19,7 +19,8 @@ class TestOldMozscape(unittest.TestCase):
         return reppy.parser.Rules('http://example.com/robots.txt', 200, strng, 0)
 
     def test_wwwseomozorg(self):
-        robots_txt = "User-agent: *\n" + \
+        robots_txt = "../resources.test/rep/www.seomoz.org\n" + \
+                     "User-agent: *\n" + \
                      "Disallow: /blogdetail.php?ID=537\n" + \
                      "Disallow: /tracker\n" + \
                      "\n" + \
@@ -28,8 +29,8 @@ class TestOldMozscape(unittest.TestCase):
         rules = self.parse(robots_txt)
         # Basic functionality, and lack of case sensitivity.
         for agent in [ 'dotbot', 'DoTbOt' ]:
-            self.assertTrue(rules.allowed("/blogdetail.php?ID=537", agent))
-            self.assertFalse(rules.allowed("/blog", agent))
+            self.assertTrue(rules.allowed("/blog", agent))
+            self.assertFalse(rules.allowed("/blogdetail.php?ID=537", agent))
             self.assertFalse(rules.allowed("/tracker", agent))
 
     def test_allowall(self):
@@ -62,7 +63,7 @@ class TestOldMozscape(unittest.TestCase):
 
     def test_no_googlebot_file(self):
         robots_txt = "User-agent: Googlebot\n" + \
-                     "Disallow: /no-google/\n"
+                     "Disallow: /no-google/blocked-page.html\n"
         rules = self.parse(robots_txt)
         self.assertFalse(rules.allowed("/no-google/blocked-page.html", "googlebot"))
         self.assertTrue(rules.allowed("/", "googlebot"))
@@ -93,7 +94,7 @@ class TestOldMozscape(unittest.TestCase):
         rules = self.parse(robots_txt)
         self.assertFalse(rules.allowed("/", "dotbot"))
         self.assertFalse(rules.allowed("/foo", "dotbot"))
-        self.assertTrue(rules.allowed("/bar.html", "dotbot"))
+        self.assertFalse(rules.allowed("/bar.html", "dotbot"))
         self.assertTrue(rules.allowed("/onepage.html", "dotbot"))
         self.assertTrue(rules.allowed("/oneotherpage.php", "dotbot"))
         self.assertFalse(rules.allowed("/subfolder", "dotbot"))
