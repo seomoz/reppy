@@ -10,7 +10,7 @@ import logging
 from reppy import Utility
 reppy.logger.setLevel(logging.FATAL)
 
-MYNAME = 'rogerbot'
+MYNAME = 'reppy'
 
 class TestMozscape(unittest.TestCase):
     @staticmethod
@@ -28,10 +28,10 @@ class TestMozscape(unittest.TestCase):
         self.assertFalse(rules.allowed("/stuff/to/read/", MYNAME))
 
     def test_disallow_specific(self):
-        robots_txt = "User-agent: *\n" + \
-                     "Disallow: /cgi-bin/\n" + \
-                     "Disallow: /tmp/\n" + \
-                     "Disallow: /~joe/\n"
+        robots_txt = ( "User-agent: *\n"
+                     "Disallow: /cgi-bin/\n"
+                     "Disallow: /tmp/\n"
+                     "Disallow: /~joe/\n" )
         rules = self.parse(robots_txt)
         self.assertTrue(rules.allowed("/", MYNAME))
         self.assertFalse(rules.allowed("/cgi-bin//", MYNAME))
@@ -68,11 +68,11 @@ class TestMozscape(unittest.TestCase):
         self.assertFalse(rules.allowed("/stuff/to/read/", MYNAME))
 
     def test_allow_another_robot(self):
-        robots_txt = "User-agent: GoodBot\n" + \
-                     "Disallow:\n" + \
-                     "\n" + \
-                     "User-agent: *\n" + \
-                     "Disallow: /\n"
+        robots_txt = ( "User-agent: GoodBot\n"
+                     "Disallow:\n"
+                     "\n"
+                     "User-agent: *\n"
+                     "Disallow: /\n" )
         rules = self.parse(robots_txt)
         self.assertFalse(rules.allowed("/", MYNAME))
         self.assertFalse(rules.allowed("/cgi-bin//", MYNAME))
@@ -82,11 +82,11 @@ class TestMozscape(unittest.TestCase):
         self.assertFalse(rules.allowed("/stuff/to/read/", MYNAME))
 
     def test_allow_our_robot(self):
-        robots_txt = "User-agent: " + MYNAME + "\n" + \
-                     "Disallow:\n" + \
-                     "\n" + \
-                     "User-agent: *\n" + \
-                     "Disallow: /\n"
+        robots_txt = ( "User-agent: " + MYNAME + "\n"
+                     "Disallow:\n"
+                     "\n"
+                     "User-agent: *\n"
+                     "Disallow: /\n" )
         rules = self.parse(robots_txt)
         self.assertTrue(rules.allowed("/", MYNAME))
         self.assertTrue(rules.allowed("/cgi-bin//", MYNAME))
@@ -96,10 +96,10 @@ class TestMozscape(unittest.TestCase):
         self.assertTrue(rules.allowed("/stuff/to/read/", MYNAME))
 
     def test_allow_variation(self):
-        robots_txt = "User-agent: " + MYNAME + "\n" + \
-                     "Disallow: /\n" + \
-                     "Allow: /tmp/\n" + \
-                     "Allow: /stuff/\n"
+        robots_txt = ( "User-agent: " + MYNAME + "\n"
+                     "Disallow: /\n"
+                     "Allow: /tmp/\n"
+                     "Allow: /stuff/\n" )
         rules = self.parse(robots_txt)
         self.assertFalse(rules.allowed("/", MYNAME))
         self.assertFalse(rules.allowed("/cgi-bin//", MYNAME))
