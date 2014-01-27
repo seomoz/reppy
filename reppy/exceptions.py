@@ -28,7 +28,11 @@ class ReppyException(Exception):
     '''Any internal exception'''
     pass
 
-
 class ServerError(ReppyException):
     '''When the remote server returns an error'''
-    pass
+    def __init__(self, *args, **kwargs):
+        self.status = kwargs.get('status')
+        if self.status is None and len(args) >= 2:
+            self.status = args[1]
+        ReppyException.__init__(self, *args, **kwargs)
+
