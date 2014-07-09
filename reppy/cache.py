@@ -28,6 +28,7 @@ import time
 import requests
 
 from . import parser, logger, exceptions, Utility
+from .parser import string_types
 
 
 class RobotsCache(object):
@@ -90,7 +91,7 @@ class RobotsCache(object):
     def allowed(self, url, agent):
         '''Check whether the provided url is allowed for the provided user
         agent. The agent may be a short or long version'''
-        if hasattr(url, '__iter__'):
+        if hasattr(url, '__iter__') and not isinstance(url, string_types):
             results = [self.allowed(u, agent) for u in url]
             return [u for u, allowed in zip(url, results) if allowed]
         return self.find(url, fetch_if_missing=True).allowed(
@@ -99,7 +100,7 @@ class RobotsCache(object):
     def disallowed(self, url, agent):
         '''Check whether the provided url is disallowed. Equivalent to:
             not obj.allowed(url, agent)'''
-        if hasattr(url, '__iter__'):
+        if hasattr(url, '__iter__') and not isinstance(url, string_types):
             results = [self.allowed(u, agent) for u in url]
             return [u for u, allowed in zip(url, results) if not allowed]
         return not self.allowed(url, agent)

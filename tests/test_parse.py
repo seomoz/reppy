@@ -310,7 +310,7 @@ class TestParse(unittest.TestCase):
     def test_utf8_bom(self):
         '''If there's a utf-8 BOM, we should parse it as such'''
         import codecs
-        rules = self.parse(codecs.BOM_UTF8 + '''User-agent: foo
+        rules = self.parse(codecs.BOM_UTF8 + b'''User-agent: foo
             Allow: /foo
 
             User-agent: *
@@ -321,7 +321,7 @@ class TestParse(unittest.TestCase):
 
     def test_utf16_bom(self):
         '''If there's a utf-16 BOM, we should parse it as such'''
-        rules = self.parse('''User-agent: foo
+        rules = self.parse(b'''User-agent: foo
             Allow: /foo
 
             User-agent: *

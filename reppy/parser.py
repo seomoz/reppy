@@ -23,13 +23,28 @@
 
 '''Classes for parsing robotx.txt files'''
 
+import sys
 import re
 import time
-import urllib
 import codecs
-import urlparse
+try:
+    from urllib import parse as urlparse
+    from urllib.parse import unquote
+except ImportError:
+    # Python 2
+    import urlparse
+    from urllib import unquote
 
 from . import logger, exceptions, Utility
+
+if sys.version_info[0] == 3:
+    string_types = str
+    text_type = str
+    binary_type = bytes
+else:
+    string_types = basestring,
+    text_type = unicode
+    binary_type = str
 
 
 class Agent(object):
@@ -72,7 +87,7 @@ class Agent(object):
 
     def allowed(self, url):
         '''Can I fetch a given URL?'''
-        path = urllib.unquote(self.extract_path(url).replace('%2f', '%252f'))
+        path = unquote(self.extract_path(url).replace('%2f', '%252f'))
         if path == '/robots.txt':
             return True
         allowed = [a for a in self.allowances if a[1].match(path)]
@@ -128,7 +143,7 @@ class Rules(object):
         # '*' and '/'
         if rule and rule[0] != '/' and rule[0] != '*':
             rule = '/' + rule
-        tmp = re.escape(urllib.unquote(rule.replace('%2f', '%252f')))
+        tmp = re.escape(unquote(rule.replace('%2f', '%252f')))
         return re.compile(tmp.replace('\*', '.*').replace('\$', '$'))
 
     def __getitem__(self, agent):
@@ -145,11 +160,11 @@ class Rules(object):
         # string here. Suspect undeclared UTF-8 or UTF-16 and look for a
         # leading BOM. If there is one, attempt to decode. If the decoding
         # fails, proclaim the robots.txt file to be garbage and ignore it.
-        if isinstance(content, str):
+        if isinstance(content, binary_type):
             try:
                 if content.startswith(codecs.BOM_UTF8):
                     content = content.decode('utf-8').lstrip(
-                        unicode(codecs.BOM_UTF8, 'utf-8'))
+                        text_type(codecs.BOM_UTF8, 'utf-8'))
                 elif content.startswith(codecs.BOM_UTF16):
                     content = content.decode('utf-16')
             except UnicodeDecodeError:  # pragma: no cover
@@ -190,11 +205,7 @@ class Rules(object):
                 # Store the current working agent
                 if cur:
                     self.agents[curname] = cur
-                try:
-                    curname = val.lower().encode('utf-8')
-                except:  # pragma: no cover
-                    # We don't expect this to ever happen
-                    curname = val.lower()
+                curname = val.lower()
                 if last != 'user-agent' and last != 'useragent':
                     # If the last line was a user agent, then all lines
                     # below also apply to the last user agent. So, we'll
@@ -222,7 +233,7 @@ class Rules(object):
 
     def allowed(self, url, agent):
         '''We try to perform a good match, then a * match'''
-        if hasattr(url, '__iter__'):
+        if hasattr(url, '__iter__') and not isinstance(url, string_types):
             results = [self[agent].allowed(u) for u in url]
             return [u for u, allowed in zip(url, results) if allowed]
         return self[agent].allowed(url)
