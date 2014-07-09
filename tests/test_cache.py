@@ -6,7 +6,7 @@ http://www.robotstxt.org/norobots-rfc.txt'''
 
 import unittest
 
-# We need to monkey-path socket
+# We need to monkey-patch socket
 from gevent import monkey; monkey.patch_all()
 import asis
 import reppy
