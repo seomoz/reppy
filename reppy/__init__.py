@@ -26,7 +26,7 @@
 __maintainer__ = 'Dan Lecocq'
 __copyright__ = '2011 SEOmoz'
 __license__ = 'SEOmoz'
-__version__ = '0.2.2'
+__version__ = '0.3.0'
 __author__ = 'Dan Lecocq'
 __status__ = 'Development'
 __email__ = 'dan@seomoz.org'

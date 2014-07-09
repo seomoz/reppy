@@ -1,0 +1,5 @@
+-r requirements.txt
+git+https://github.com/seomoz/asis
+nose
+gevent
+coverage

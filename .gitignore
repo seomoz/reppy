@@ -4,3 +4,6 @@ dist/*
 reppy.egg-info/*
 .coverage
 htmlcov/
+.tox
+*.egg
+*.egg-info
