@@ -7,7 +7,7 @@ http://www.robotstxt.org/norobots-rfc.txt'''
 import unittest
 import sys
 
-if sys.version_info[0] == 3:
+if sys.version_info[0] == 3 or '__pypy__' in sys.builtin_module_names:
     # We cannot run these tests on Python 3 yet, because they rely
     # on the asis module and gevent, both of which are not available.
     raise unittest.SkipTest()
