@@ -24,12 +24,12 @@
 try:
     from setuptools import setup
     extra = {
-        'install_requires': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
+        'install_requires': ['python-dateutil>=1.5, !=2.0', 'url', 'requests', 'chardet']
     }
 except ImportError:
     from distutils.core import setup
     extra = {
-        'dependencies': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
+        'dependencies': ['python-dateutil>=1.5, !=2.0', 'url', 'requests', 'chardet']
     }
 
 setup(
