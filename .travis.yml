@@ -1,0 +1,14 @@
+language: python
+
+python:
+  - "3.4"
+  - "3.3"
+  - "2.7"
+  - "pypy"
+
+install:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then travis_retry pip install -r dev-requirements.txt; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then travis_retry pip install -r dev-requirements-py3.txt; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then travis_retry pip install -r dev-requirements-py3.txt; fi
+
+script: make test

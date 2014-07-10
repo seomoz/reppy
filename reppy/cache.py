@@ -28,6 +28,7 @@ import time
 import requests
 
 from . import parser, logger, exceptions, Utility
+from .parser import string_types
 
 
 class RobotsCache(object):
@@ -40,6 +41,7 @@ class RobotsCache(object):
     def __init__(self, *args, **kwargs):
         # The provided args and kwargs are used when fetching robots.txt with
         # a `requests.get`
+        self.session = kwargs.pop('session', requests.Session())
         self.args = args
         self.kwargs = kwargs
         # A mapping of hostnames to their robots.txt rules
@@ -73,7 +75,7 @@ class RobotsCache(object):
             # First things first, fetch the thing
             robots_url = 'http://%s/robots.txt' % Utility.hostname(url)
             logger.debug('Fetching %s' % robots_url)
-            req = requests.get(robots_url, *args, **kwargs)
+            req = self.session.get(robots_url, *args, **kwargs)
             ttl = max(self.min_ttl, Utility.get_ttl(req.headers, self.default_ttl))
             # And now parse the thing and return it
             return parser.Rules(robots_url, req.status_code, req.content,
@@ -89,7 +91,7 @@ class RobotsCache(object):
     def allowed(self, url, agent):
         '''Check whether the provided url is allowed for the provided user
         agent. The agent may be a short or long version'''
-        if hasattr(url, '__iter__'):
+        if hasattr(url, '__iter__') and not isinstance(url, string_types):
             results = [self.allowed(u, agent) for u in url]
             return [u for u, allowed in zip(url, results) if allowed]
         return self.find(url, fetch_if_missing=True).allowed(
@@ -98,7 +100,7 @@ class RobotsCache(object):
     def disallowed(self, url, agent):
         '''Check whether the provided url is disallowed. Equivalent to:
             not obj.allowed(url, agent)'''
-        if hasattr(url, '__iter__'):
+        if hasattr(url, '__iter__') and not isinstance(url, string_types):
             results = [self.allowed(u, agent) for u in url]
             return [u for u, allowed in zip(url, results) if not allowed]
         return not self.allowed(url, agent)
