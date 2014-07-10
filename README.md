@@ -1,7 +1,7 @@
 Robots Exclusion Protocol Parser for Python
 ===========================================
 
-[![Build Status](https://travis-ci.org/jmcarp/reppy.svg?branch=master)](https://travis-ci.org/jmcarp/reppy)
+[![Build Status](https://travis-ci.org/seomoz/reppy.svg?branch=master)](https://travis-ci.org/seomoz/reppy)
 
 This started out of a lack of memoization support in other robots.txt parsers
 I've encountered, and the lack of support for `Crawl-delay` and `Sitemap` in
