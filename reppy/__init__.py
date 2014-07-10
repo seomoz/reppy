@@ -55,7 +55,6 @@ try:
 except ImportError:
     # Python 2
     import urlparse
-import dateutil.parser
 
 if sys.version_info[0] == 3:
     long = int

@@ -24,17 +24,17 @@
 try:
     from setuptools import setup
     extra = {
-        'install_requires': ['python-dateutil', 'url', 'requests']
+        'install_requires': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
     }
 except ImportError:
     from distutils.core import setup
     extra = {
-        'dependencies': ['python-dateutil', 'url', 'requests']
+        'dependencies': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
     }
 
 setup(
     name             = 'reppy',
-    version='0.3.0',
+    version          = '0.3.0',
     description      = 'Replacement robots.txt Parser',
     long_description = '''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like

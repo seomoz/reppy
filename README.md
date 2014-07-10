@@ -167,7 +167,7 @@ In order to run tests, you'll need `nose`, `asis`, `gevent` and `coverage`, all
 of which can be installed with `pip`:
 
 ```bash
-sudo pip install asis nose gevent coverage
+sudo pip install -r dev-requirements.txt
 ```
 
 From there, the tests may be run with:
