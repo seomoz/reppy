@@ -12,7 +12,7 @@ if sys.version_info[0] == 3 or '__pypy__' in sys.builtin_module_names:
     # on the asis module and gevent, both of which are not available.
     raise unittest.SkipTest()
 
-# We need to monkey-path socket
+# We need to monkey-patch socket
 from gevent import monkey; monkey.patch_all()
 import asis
 import reppy
