@@ -27,6 +27,7 @@ import sys
 import re
 import time
 import codecs
+import chardet
 try:
     from urllib import parse as urlparse
     from urllib.parse import unquote
@@ -167,6 +168,10 @@ class Rules(object):
                         text_type(codecs.BOM_UTF8, 'utf-8'))
                 elif content.startswith(codecs.BOM_UTF16):
                     content = content.decode('utf-16')
+                else:
+                    encoding = chardet.detect(content)
+                    if encoding['encoding']:
+                        content = content.decode(encoding['encoding'])
             except UnicodeDecodeError:  # pragma: no cover
                 # This is a very rare and difficult-to-reproduce exception
                 logger.error('Too much garbage! Ignoring %s' % self.url)
