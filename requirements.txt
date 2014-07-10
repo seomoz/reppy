@@ -1,3 +1,4 @@
 url
+chardet
 requests
 python-dateutil
