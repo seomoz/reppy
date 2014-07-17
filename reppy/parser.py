@@ -167,6 +167,8 @@ class Rules(object):
                         text_type(codecs.BOM_UTF8, 'utf-8'))
                 elif content.startswith(codecs.BOM_UTF16):
                     content = content.decode('utf-16')
+                else:
+                    content = content.decode('utf-8', 'ignore')
             except UnicodeDecodeError:  # pragma: no cover
                 # This is a very rare and difficult-to-reproduce exception
                 logger.error('Too much garbage! Ignoring %s' % self.url)

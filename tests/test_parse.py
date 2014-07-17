@@ -330,6 +330,17 @@ class TestParse(unittest.TestCase):
         self.assertTrue(rules.allowed('/foo', 'foo'))
         self.assertTrue(not rules.allowed('/foo', 'other'))
 
+    def test_ascii(self):
+         '''If we get bytes without encoding, we should parse it as such'''
+         rules = self.parse(b'''User-agent: foo
+             Allow: /foo
+
+             User-agent: *
+             Disallow: /foo
+         ''')
+         self.assertTrue(rules.allowed('/foo', 'foo'))
+         self.assertTrue(not rules.allowed('/foo', 'other'))
+
     def test_skip_line(self):
         '''If there is no colon in a line, then we must skip it'''
         rules = self.parse('''User-agent: foo
