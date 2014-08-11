@@ -24,12 +24,12 @@
 '''A robot exclusion protocol parser. Because I could not find a good one.'''
 
 __maintainer__ = 'Dan Lecocq'
-__copyright__ = '2011 SEOmoz'
+__copyright__ = '2011-2014 SEOmoz'
 __license__ = 'SEOmoz'
 __version__ = '0.3.0'
 __author__ = 'Dan Lecocq'
 __status__ = 'Development'
-__email__ = 'dan@seomoz.org'
+__email__ = 'dan@moz.com'
 
 #####################################################
 # All things logging
