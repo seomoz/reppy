@@ -60,11 +60,13 @@ class TestCache(unittest.TestCase):
             old_ttl = self.robots.min_ttl
             self.robots.min_ttl = 0
             self.assertNotEqual(
-                self.robots.find('http://localhost:8080/foo', True), None)
-            # Now, it shouldn't be cached, so when we find it again, it should
-            # be missing (or at least, requiring a refetch)
+                self.robots.find('http://localhost:8080/foo', fetch_if_missing=True), None)
+            # If we ignore the TTL, it should still be there.
+            self.assertNotEqual(
+                self.robots.find('http://localhost:8080/foo', fetch_if_missing=False, honor_ttl=False), None)
+            # However, if we honor the TTL, it should be missing in the cache.
             self.assertEqual(
-                self.robots.find('http://localhost:8080/foo', False), None)
+                self.robots.find('http://localhost:8080/foo', fetch_if_missing=False), None)
             self.robots.min_ttl = old_ttl
 
     def test_clear(self):
