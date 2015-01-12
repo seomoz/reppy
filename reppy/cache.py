@@ -53,7 +53,7 @@ class RobotsCache(object):
         canonical = Utility.hostname(url)
         cached = self._cache.get(canonical)
         # If it's expired, we should get rid of it
-        if cached and cached.expired:
+        if honor_ttl and cached and cached.expired:
             del self._cache[canonical]
             cached = None
         # Should we fetch it if it's missing?
