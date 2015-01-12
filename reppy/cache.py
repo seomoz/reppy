@@ -47,7 +47,7 @@ class RobotsCache(object):
         # A mapping of hostnames to their robots.txt rules
         self._cache = {}
 
-    def find(self, url, fetch_if_missing=False):
+    def find(self, url, fetch_if_missing=False, honor_ttl=True):
         '''Finds the rules associated with the particular url. Optionally, it
         can fetch the rules if they are missing.'''
         canonical = Utility.hostname(url)
