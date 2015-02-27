@@ -70,6 +70,12 @@ class Utility(object):
     def hostname(url):
         '''Return a normalized, canonicalized version of the url's hostname'''
         return urlparse.urlparse(url).netloc
+    
+    @staticmethod
+    def roboturl(url):
+        '''Return a normalized uri to the robots.txt'''
+        parsed = urlparse.urlparse(url)
+        return '%s://%s/robots.txt' % (parsed.scheme, parsed.netloc)
 
     @staticmethod
     def short_user_agent(strng):

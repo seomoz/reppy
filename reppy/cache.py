@@ -73,7 +73,7 @@ class RobotsCache(object):
         '''
         try:
             # First things first, fetch the thing
-            robots_url = 'http://%s/robots.txt' % Utility.hostname(url)
+            robots_url = Utility.roboturl(url)
             logger.debug('Fetching %s' % robots_url)
             req = self.session.get(robots_url, *args, **kwargs)
             ttl = max(self.min_ttl, Utility.get_ttl(req.headers, self.default_ttl))
