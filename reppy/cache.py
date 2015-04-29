@@ -43,6 +43,7 @@ class RobotsCache(object):
         # a `requests.get`
         self.session = kwargs.pop('session', requests.Session())
         self.args = args
+        self.disallow_forbidden = kwargs.pop('disallow_forbidden', True)
         self.kwargs = kwargs
         # A mapping of hostnames to their robots.txt rules
         self._cache = {}
@@ -79,7 +80,8 @@ class RobotsCache(object):
             ttl = max(self.min_ttl, Utility.get_ttl(req.headers, self.default_ttl))
             # And now parse the thing and return it
             return parser.Rules(robots_url, req.status_code, req.content,
-                time.time() + ttl)
+                                time.time() + ttl,
+                                disallow_forbidden=self.disallow_forbidden)
         except Exception as exc:
             raise exceptions.ServerError(exc)
 

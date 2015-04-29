@@ -352,12 +352,19 @@ class TestParse(unittest.TestCase):
     ###########################################################################
     # Status code issues
     ###########################################################################
-    def test_status_disallowed(self):
-        '''Make sure that when we get a disallowed status, that we believe
+    def test_status_forbidden(self):
+        '''Make sure that when we get a forbidden status, that we believe
         we're not allowed to crawl a site'''
         rules = Rules('http://example.com/robots.txt', 401, '', 0)
         self.assertTrue(not rules.allowed('/foo', 't'))
         self.assertTrue(not rules.allowed('http://example.com/foo', 't'))
+
+    def test_status_forbidden_allow(self):
+        '''Test that if the flag is given, we allow all sites when robots.txt
+        is forbidden'''
+        rules = Rules('http://example.com/robots.txt', 401, '', 0, disallow_forbidden=False)
+        self.assertTrue(rules.allowed('/foo', 't'))
+        self.assertTrue(rules.allowed('http://example.com/foo', 't'))
 
     def test_status_allowed(self):
         '''If no robots.txt exists, we're given free range'''
