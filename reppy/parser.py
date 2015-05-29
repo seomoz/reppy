@@ -100,7 +100,7 @@ class Agent(object):
 class Rules(object):
     '''A class that represents a set of agents, and can select them
     appropriately. Associated with one robots.txt file.'''
-    def __init__(self, url, status, content, expires):
+    def __init__(self, url, status, content, expires, disallow_forbidden=True):
         self.agents = {}
         self.sitemaps = []
         # Information about this
@@ -110,9 +110,12 @@ class Rules(object):
         if status == 200:
             self.parse(content)
         elif status in (401, 403):
-            logger.warn('Access disallowed to site %s (%i)' % (
+            logger.warn('Access forbidden to site %s (%i)' % (
                 url, status))
-            self.parse('''User-agent: *\nDisallow: /''')
+            if disallow_forbidden:
+                self.parse('''User-agent: *\nDisallow: /''')
+            else:
+                self.parse('')
         elif status >= 400 and status < 500:
             logger.info('Assuming unrestricted access %s (%i)' % (
                 url, status))
