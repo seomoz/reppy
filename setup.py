@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2011 SEOmoz
+# Copyright (c) 2011-2014 SEOmoz, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,12 +24,26 @@
 try:
     from setuptools import setup
     extra = {
-        'install_requires': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
+        'install_requires': [
+            'asis',
+            'coverage',
+            'nose',
+            'python-dateutil>=1.5, !=2.0',
+            'requests',
+            'url'
+        ]
     }
 except ImportError:
     from distutils.core import setup
     extra = {
-        'dependencies': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
+        'dependencies': [
+            'asis',
+            'coverage',
+            'nose',
+            'python-dateutil>=1.5, !=2.0',
+            'requests',
+            'url'
+        ]
     }
 
 setup(
