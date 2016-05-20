@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Content-Length: 23
+Content-Type: text/plain
+
+User-Agent: *
+Allow: /

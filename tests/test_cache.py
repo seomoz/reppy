@@ -6,6 +6,7 @@ http://www.robotstxt.org/norobots-rfc.txt'''
 
 import unittest
 import sys
+import mock
 
 if sys.version_info[0] == 3 or '__pypy__' in sys.builtin_module_names:
     # We cannot run these tests on Python 3 yet, because they rely
@@ -18,7 +19,8 @@ import asis
 import reppy
 import logging
 from reppy.cache import RobotsCache
-from reppy.exceptions import ServerError
+from reppy.exceptions import (ServerError, ConnectionException, MalformedUrl, SSLException,
+ExcessiveRedirects, BadStatusCode)
 reppy.logger.setLevel(logging.FATAL)
 
 
@@ -112,8 +114,9 @@ class TestCache(unittest.TestCase):
 
     def test_server_error(self):
         '''Make sure we can catch server errors'''
-        self.assertRaises(ServerError, self.robots.allowed,
-            'http://localhost:8080/foo', 'rogerbot')
+        with mock.patch.object(self.robots.session, 'get', side_effect=TypeError):
+            self.assertRaises(ServerError, self.robots.allowed,
+                'http://localhost:8080/foo', 'rogerbot')
 
     def test_disallowed(self):
         '''Check the disallowed interface'''
@@ -142,3 +145,31 @@ class TestCache(unittest.TestCase):
                     'http://localhost:8080/b',
                     'http://localhost:8080/c'
                 ])
+
+    def test_dns_exception(self):
+        '''Raises an exception if url does not resolve.'''
+        self.assertRaises(ConnectionException, self.robots.allowed,
+            'http://does-not-resolve', 'rogerbot')
+
+    def test_malformed_url(self):
+        '''Raises an exception if the url is malformed.'''
+        self.assertRaises(MalformedUrl, self.robots.allowed,
+            'hhttp://moz.com', 'rogerbot')
+
+    def test_ssl_exception(self):
+        '''Raises an exception if there is an ssl error.'''
+        with asis.Server('tests/asis/test_ssl_exception', port=8080):
+            self.assertRaises(SSLException, self.robots.allowed,
+                'https://localhost:8080', 'rogerbot')
+
+    def test_excessive_redirects(self):
+        '''Raises an exception if there are too many redirects.'''
+        with asis.Server('tests/asis/test_excessive_redirects', port=8080):
+            self.assertRaises(ExcessiveRedirects, self.robots.allowed,
+                'http://localhost:8080/one', 'rogerbot')
+
+    def test_bad_status_codes(self):
+        '''Raises an exception if there is a 5xx status code.'''
+        with asis.Server('tests/asis/test_bad_status_codes', port=8080):
+            self.assertRaises(BadStatusCode, self.robots.allowed,
+                'http://localhost:8080', 'rogerbot')

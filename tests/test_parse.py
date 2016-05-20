@@ -10,7 +10,7 @@ import unittest
 import reppy
 import logging
 from reppy.parser import Rules
-from reppy.exceptions import ReppyException
+from reppy.exceptions import ReppyException, BadStatusCode
 reppy.logger.setLevel(logging.FATAL)
 
 
@@ -374,7 +374,7 @@ class TestParse(unittest.TestCase):
 
     def test_server_error(self):
         '''Make sure that if there's a server error, it raises an exception'''
-        self.assertRaises(ReppyException, Rules,
+        self.assertRaises(BadStatusCode, Rules,
             'http://example.com/robots.txt', 500, '', 0)
 
     ###########################################################################
@@ -454,7 +454,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(rules.allowed('/no-google/someotherfolder', agent))
         self.assertTrue(rules.allowed('/no-google/someotherfolder/somefile', agent))
         self.assertTrue(not rules.allowed('/no-google/blocked-page.html', agent))
-    
+
     def test_rogerbot_only(self):
         rules = self.parse('''
             User-agent: *
@@ -468,7 +468,7 @@ class TestParse(unittest.TestCase):
         agent = 'rogerbot'
         self.assertTrue(rules.allowed('/no-bots/block-all-bots-except-rogerbot-page.html', agent))
         self.assertTrue(rules.allowed('/', agent))
-    
+
     def test_allow_certain_pages_only(self):
         rules = self.parse('''
             User-agent: *
@@ -489,7 +489,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(not rules.allowed('/subfolder/aaaaa', agent))
         self.assertTrue(rules.allowed('/subfolder/page1.html', agent))
         self.assertTrue(rules.allowed('/subfolder/page2.php', agent))
-    
+
     def test_no_gifs_or_jpgs(self):
         rules = self.parse('''
             User-agent: *
@@ -514,7 +514,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(not rules.allowed('/foo/test.gif', agent))
         self.assertTrue(not rules.allowed('/foo/bar/test.gif', agent))
         self.assertTrue(rules.allowed('/the-gif-extension-is-awesome.html', agent))
-    
+
     def test_block_subdirectory_wildcard(self):
         rules = self.parse('''
             User-agent: *
@@ -537,7 +537,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(not rules.allowed('/privatedir/', agent))
         self.assertTrue(not rules.allowed('/privatedir/foo', agent))
         self.assertTrue(not rules.allowed('/privatedir/foo/bar.html', agent))
-    
+
     def test_block_urls_with_question_marks(self):
         rules = self.parse('''
             User-agent: *
@@ -553,7 +553,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(not rules.allowed('/foo.html?q=param', agent))
         self.assertTrue(not rules.allowed('/foo/bar?q=param', agent))
         self.assertTrue(not rules.allowed('/foo/bar.html?q=param&bar=baz', agent))
-    
+
     def test_no_question_except_at_end(self):
         rules = self.parse('''
             User-agent: *
@@ -571,7 +571,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(not rules.allowed('/foo.html?q=param', agent))
         self.assertTrue(not rules.allowed('/foo/bar?q=param', agent))
         self.assertTrue(not rules.allowed('/foo/bar.html?q=param&bar=baz', agent))
-    
+
     def test_wildcard_edge_cases(self):
         rules = self.parse('''
             User-agent: *
@@ -611,7 +611,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(rules.allowed('/foo/aaa/tenaciousd', agent))
         self.assertTrue(not rules.allowed('/products/default.aspx', agent))
         self.assertTrue(not rules.allowed('/author/admin/feed/', agent))
-    
+
     def test_allow_edge_cases(self):
         rules = self.parse('''
             User-agent: *
@@ -633,7 +633,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(rules.allowed('/sales-secrets.php', agent))
         self.assertTrue(rules.allowed('/folder/page', agent))
         self.assertTrue(rules.allowed('/folder/page2', agent))
-    
+
     def test_redundant_allow(self):
         rules = self.parse('''
             User-agent: *
@@ -652,7 +652,7 @@ class TestParse(unittest.TestCase):
         self.assertTrue(not rules.allowed('/print_mode.yes/foo', agent))
         self.assertTrue(not rules.allowed('/search/', agent))
         self.assertTrue(not rules.allowed('/search/foo', agent))
-    
+
     def test_legacy(self):
         rules = self.parse('''
             user-agent: *  #a comment!

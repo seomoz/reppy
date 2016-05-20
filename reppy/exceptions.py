@@ -36,3 +36,22 @@ class ServerError(ReppyException):
             self.status = args[1]
         ReppyException.__init__(self, *args, **kwargs)
 
+class SSLException(ReppyException):
+    '''An SSL error.'''
+    pass
+
+class ConnectionException(ReppyException):
+    '''A connection error exception.'''
+    pass
+
+class MalformedUrl(ReppyException):
+    '''An exception for a missing or invalid url or schema.'''
+    pass
+
+class ExcessiveRedirects(ReppyException):
+    '''A TooManyRedirects error.'''
+    pass
+
+class BadStatusCode(ReppyException):
+    '''An exception for 5xx status codes.'''
+    pass
