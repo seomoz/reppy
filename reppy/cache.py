@@ -26,6 +26,8 @@
 
 import time
 import requests
+from requests.exceptions import (SSLError, ConnectionError, URLRequired, MissingSchema,
+InvalidSchema, InvalidURL, TooManyRedirects)
 
 from . import parser, logger, exceptions, Utility
 from .parser import string_types
@@ -82,6 +84,16 @@ class RobotsCache(object):
             return parser.Rules(robots_url, req.status_code, req.content,
                                 time.time() + ttl,
                                 disallow_forbidden=self.disallow_forbidden)
+        except SSLError as exc:
+            raise exceptions.SSLException(exc)
+        except ConnectionError as exc:
+            raise exceptions.ConnectionException(exc)
+        except (URLRequired, MissingSchema, InvalidSchema, InvalidURL) as exc:
+            raise exceptions.MalformedUrl(exc)
+        except TooManyRedirects as exc:
+            raise exceptions.ExcessiveRedirects(exc)
+        except exceptions.BadStatusCode as exc:
+            raise exceptions.BadStatusCode(exc)
         except Exception as exc:
             raise exceptions.ServerError(exc)
 

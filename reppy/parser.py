@@ -120,6 +120,9 @@ class Rules(object):
             logger.info('Assuming unrestricted access %s (%i)' % (
                 url, status))
             self.parse('')
+        elif status >= 500:
+            raise exceptions.BadStatusCode(
+                'Remote server returned ServerError %i' % status, status)
         else:
             raise exceptions.ReppyException(
                 exceptions.ServerError(
