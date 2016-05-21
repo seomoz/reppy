@@ -1,3 +1,3 @@
-url
-requests
-python-dateutil
+url==0.1.7
+requests==2.10.0
+python-dateutil==2.5.3
