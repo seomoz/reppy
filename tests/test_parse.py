@@ -975,5 +975,13 @@ class TestParse(unittest.TestCase):
         self.assertEqual('/foo/bar?a=b',
             Agent.extract_path('http://example.com/foo/bar?a=b'))
 
+    def test_malformed_crawl_delay(self):
+        '''Ignore crawl delays that are too malformed to parse.'''
+        rules = self.parse('''
+            User-agent: *
+            Crawl-delay: 
+            ''')
+        self.assertEqual(rules.delay('rogerbot'), None)
+
 if __name__ == '__main__':
     unittest.main()
