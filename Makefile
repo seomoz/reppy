@@ -1,12 +1,16 @@
+.PHONY: test
+test:
+	nosetests --with-coverage
+
+install:
+	python setup.py install
+
+dev-requirements:
+	pip freeze | grep -v -e reppy > dev-requirements.txt
+
+dev-requirements-py3:
+	pip freeze | grep -v -e reppy > dev-requirements-py3.txt
+
 clean:
-	# Remove the build
-	sudo rm -rf build dist
-	# And all of our pyc files
-	find . -name '*.pyc' | xargs -n 100 rm
-	# And lastly, .coverage files
-	find . -name .coverage | xargs rm
-
-nose:
-	nosetests --exe --cover-package=reppy --with-coverage --cover-branches -v
-
-test: nose
+	rm -rf build dist *.egg-info
+	find . -name '*.pyc' | xargs --no-run-if-empty rm
