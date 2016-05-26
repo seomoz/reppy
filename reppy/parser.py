@@ -228,7 +228,10 @@ class Rules(object):
                 cur.allowances.append(
                     (len(val), self._regex_rule(val), True))
             elif cur and key == 'crawl-delay':
-                cur.delay = float(val)
+                try:
+                    cur.delay = float(val)
+                except:
+                    logger.warn('Unable to parse crawl delay "%s" as float.', val)
             elif cur and key == 'sitemap':
                 self.sitemaps.append(val)
             else:

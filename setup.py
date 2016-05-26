@@ -21,16 +21,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-try:
-    from setuptools import setup
-    extra = {
-        'install_requires': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
-    }
-except ImportError:
-    from distutils.core import setup
-    extra = {
-        'dependencies': ['python-dateutil>=1.5, !=2.0', 'url', 'requests']
-    }
+from setuptools import setup
 
 setup(
     name             = 'reppy',
@@ -47,17 +38,22 @@ Sitemaps, Allow, and Crawl-delay. Main features:
 - Automatic refetching basing on expiration
 ''',
     author           = 'Dan Lecocq',
-    author_email     = 'dan@seomoz.org',
+    author_email     = 'dan@moz.com',
     url              = 'http://github.com/seomoz/reppy',
-    packages         = ['reppy'],
     license          = 'MIT',
     platforms        = 'Posix; MacOS X',
-    test_suite       = 'tests.testReppy',
+    packages         = [
+        'reppy'
+    ],
+    install_requires = [
+        'python-dateutil>=1.5, !=2.0',
+        'url<0.2.0',
+        'requests'
+    ],
     classifiers      = [
         'License :: OSI Approved :: MIT License',
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'Topic :: Internet :: WWW/HTTP'],
-    **extra
+        'Topic :: Internet :: WWW/HTTP']
 )
