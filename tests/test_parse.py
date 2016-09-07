@@ -612,6 +612,13 @@ class TestParse(unittest.TestCase):
         self.assertTrue(not rules.allowed('/products/default.aspx', agent))
         self.assertTrue(not rules.allowed('/author/admin/feed/', agent))
 
+    def test_many_wildcards(self):
+        rules = self.parse('''
+            User-agent: *
+            Allow: /***************************************.css''')
+        agent = 'dotbot'
+        self.assertTrue(rules.allowed('/blog/a-really-long-url-string-that-takes-a-very-long-time-to-process-without-combining-many-asterisks', agent))
+
     def test_allow_edge_cases(self):
         rules = self.parse('''
             User-agent: *

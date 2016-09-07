@@ -96,6 +96,7 @@ class Agent(object):
         else:
             return True
 
+RE_ASTERISK = re.compile(r'\*+')
 
 class Rules(object):
     '''A class that represents a set of agents, and can select them
@@ -149,6 +150,8 @@ class Rules(object):
         # '*' and '/'
         if rule and rule[0] != '/' and rule[0] != '*':
             rule = '/' + rule
+        # collapse many **** into a single one
+        rule = RE_ASTERISK.sub('*', rule)
         tmp = re.escape(unquote(rule.replace('%2f', '%252f')))
         return re.compile(tmp.replace('\*', '.*').replace('\$', '$'))
 
