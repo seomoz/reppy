@@ -1,6 +1,6 @@
 .PHONY: test
 test:
-	nosetests --with-coverage
+	nosetests --with-coverage tests
 
 install:
 	python setup.py install

@@ -81,7 +81,10 @@ class Utility(object):
     def short_user_agent(strng):
         '''Return a default user agent string to match, based on strng. For
         example, for 'MyUserAgent/1.0', it will generate 'MyUserAgent' '''
-        return re.sub('(\S+?)(\/.+)?', r'\1', strng)
+        index = strng.find('/')
+        if index == -1:
+            return strng
+        return strng[0:index]
 
     @staticmethod
     def parse_time(strng):
