@@ -114,7 +114,7 @@ class TestCache(unittest.TestCase):
 
     def test_server_error(self):
         '''Make sure we can catch server errors'''
-        with mock.patch.object(self.robots.session, 'get', side_effect=TypeError):
+        with mock.patch('reppy.cache.requests.get', side_effect=TypeError):
             self.assertRaises(ServerError, self.robots.allowed,
                 'http://localhost:8080/foo', 'rogerbot')
 

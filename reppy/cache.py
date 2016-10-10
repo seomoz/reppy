@@ -43,7 +43,6 @@ class RobotsCache(object):
     def __init__(self, *args, **kwargs):
         # The provided args and kwargs are used when fetching robots.txt with
         # a `requests.get`
-        self.session = kwargs.pop('session', requests.Session())
         self.args = args
         self.disallow_forbidden = kwargs.pop('disallow_forbidden', True)
         self.kwargs = kwargs
@@ -78,7 +77,7 @@ class RobotsCache(object):
             # First things first, fetch the thing
             robots_url = Utility.roboturl(url)
             logger.debug('Fetching %s' % robots_url)
-            req = self.session.get(robots_url, *args, **kwargs)
+            req = requests.get(robots_url, *args, **kwargs)
             ttl = max(self.min_ttl, Utility.get_ttl(req.headers, self.default_ttl))
             # And now parse the thing and return it
             return parser.Rules(robots_url, req.status_code, req.content,
