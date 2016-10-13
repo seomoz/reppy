@@ -22,17 +22,18 @@ class BaseDirective(object):
         return unquote(query.replace('%2f', '%252f'))
 
     @classmethod
-    def parse(cls, line):
-        '''Return a directive.'''
-        key, rule = line.split(':', 1)
-        key = key.lower().strip()
-        if key == 'allowed':
-            allowed = True
-        elif key == 'disallowed':
-            allowed = False
-        else:
-            raise ValueError('Unknown directive in line %s' % line)
+    def allow(cls, rule):
+        '''Return an allowed directive.'''
+        return cls.parse(rule, True)
 
+    @classmethod
+    def disallow(cls, rule):
+        '''Return a disallowed directive.'''
+        return cls.parse(rule, False)
+
+    @classmethod
+    def parse(cls, rule, allowed):
+        '''Return a directive.'''
         rule = rule.strip()
         priority = len(rule)
         if (not rule) or (rule == '/') or (rule == '*'):
@@ -54,13 +55,17 @@ class BaseDirective(object):
     def __lt__(self, other):
         return self.priority < other.priority
 
+    def __str__(self):
+        return '<%s priority=%s, pattern=%s, allowed=%s>' % (
+            type(self).__name__, self.priority, self.pattern, self.allowed)
+
 
 class StringDirective(BaseDirective):
     '''A directive that uses a string comparison.'''
 
-    def match(self, query):
+    def match(self, sanitized):
         '''Return true if the query matches this pattern.'''
-        return query.startswith(self.pattern)
+        return sanitized.startswith(self.pattern)
 
 
 class AllDirective(BaseDirective):
@@ -82,6 +87,6 @@ class RegexDirective(BaseDirective):
         pattern = re.escape(self.RE_ASTERISK.sub('*', self.pattern))
         self._regex = re.compile(pattern.replace('\*', '.*').replace('\$', '$'))
 
-    def match(self, query):
+    def match(self, sanitized):
         '''Return true if the query matches this pattern.'''
-        return self._regex.match(query)
+        return bool(self._regex.match(sanitized))
