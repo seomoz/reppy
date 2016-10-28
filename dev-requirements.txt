@@ -1,4 +1,4 @@
-asis==0.2.3
+asis==0.3.0
 bottle==0.12.9
 colorama==0.3.7
 coverage==4.0.3
@@ -14,5 +14,5 @@ python-termstyle==0.1.10
 rednose==1.1.1
 requests==2.10.0
 six==1.10.0
-url==0.1.7
+url==0.3.0
 wheel==0.24.0

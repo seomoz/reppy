@@ -1,10 +1,11 @@
 language: python
+dist: trusty
 
 python:
-  - "3.4"
-  - "3.3"
+  # - "3.4"
+  # - "3.3"
   - "2.7"
-  - "pypy"
+  # - "pypy"
 
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then travis_retry pip install -r dev-requirements.txt; fi

@@ -1,2 +1,2 @@
-HTTP/1.0 500 ServerError
+HTTP/1.0 404 Not Found
 Content-Type: text/plain
