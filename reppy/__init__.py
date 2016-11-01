@@ -13,3 +13,5 @@ formatter = logging.Formatter(
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 logger.setLevel(logging.ERROR)
+
+from .robots import Robots, Agent
