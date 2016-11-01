@@ -1,0 +1,3 @@
+[submodule "reppy/rep-cpp"]
+	path = reppy/rep-cpp
+	url = https://github.com/seomoz/rep-cpp
