@@ -48,7 +48,8 @@ Sitemaps, Allow, and Crawl-delay. Main features:
     install_requires = [
         'python-dateutil>=1.5, !=2.0',
         'url>=0.2.0',
-        'requests'
+        'requests',
+        'six'
     ],
     classifiers      = [
         'License :: OSI Approved :: MIT License',
