@@ -1,6 +1,9 @@
 .PHONY: test
-test:
+test: reppy/robots.so
 	nosetests --with-coverage tests
+
+reppy/%.so: reppy/%.* reppy/rep-cpp/src/* reppy/rep-cpp/include/* reppy/rep-cpp/deps/url-cpp/include/* reppy/rep-cpp/deps/url-cpp/src/*
+	python setup.py build_ext --inplace
 
 install:
 	python setup.py install

@@ -1,9 +1,16 @@
+# Binaries and build artifacts
 *.pyc
-build/*
-dist/*
-reppy.egg-info/*
+*.o
+*.so
+build/
+dist/
+reppy.egg-info/
+
+# Dev artifacts
+venv*
+
+# Coverage
 .coverage
-htmlcov/
-.tox
-*.egg
-*.egg-info
+
+# Vagrant
+.vagrant/

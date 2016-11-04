@@ -2,6 +2,7 @@ asis==0.3.0
 bottle==0.12.9
 colorama==0.3.7
 coverage==4.0.3
+cython==0.25.1
 funcsigs==1.0.2
 gevent==1.1.1
 greenlet==0.4.9

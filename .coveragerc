@@ -1,2 +1,2 @@
 [run]
-concurrency = gevent
+plugins = Cython.Coverage

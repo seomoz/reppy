@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 '''These are unit tests that are derived from the rfc at
 http://www.robotstxt.org/norobots-rfc.txt'''
 
@@ -9,8 +11,14 @@ import contextlib
 import os
 import unittest
 
-import asis
 import mock
+
+skip_asis = False
+try:
+    import asis
+except ImportError:
+    print('Skipping asis tests')
+    skip_asis = True
 
 from reppy import robots
 
@@ -131,7 +139,7 @@ class RobotsTest(unittest.TestCase):
             Sitemap: http://a.com/sitemap.xml
             Sitemap: http://b.com/sitemap.xml
         ''')
-        self.assertEqual(robot.sitemaps, [
+        self.assertEqual(list(robot.sitemaps), [
             'http://a.com/sitemap.xml', 'http://b.com/sitemap.xml'
         ])
 
@@ -139,14 +147,15 @@ class RobotsTest(unittest.TestCase):
         '''Make sure user agent matches are case insensitive'''
         robot = robots.Robots.parse('http://example.com/robots.txt', '''
             User-agent: agent
+            Disallow: /path
         ''')
-        self.assertEqual(robot.agent('agent'), robot.agent('aGeNt'))
+        self.assertFalse(robot.allowed('/path', 'agent'))
+        self.assertFalse(robot.allowed('/path', 'aGeNt'))
 
     def test_empty(self):
         '''Makes sure we can parse an empty robots.txt'''
         robot = robots.Robots.parse('http://example.com/robots.txt', '')
-        self.assertEqual(robot.agent('agent'), None)
-        self.assertEqual(robot.sitemaps, [])
+        self.assertEqual(list(robot.sitemaps), [])
         self.assertTrue(robot.allowed('/', 'agent'))
 
     def test_comments(self):
@@ -157,21 +166,13 @@ class RobotsTest(unittest.TestCase):
         ''')
         self.assertNotEqual(robot.agent('agent'), None)
 
-    def test_url_allowed(self):
+    def test_accepts_full_url(self):
         '''Can accept a url string.'''
         robot = robots.Robots.parse('http://example.com/robots.txt', '''
             User-Agent: agent
             Disallow: /
         ''')
-        self.assertFalse(robot.url_allowed('http://example.com/path', 'agent'))
-
-    def test_url_allowed_none_matching(self):
-        '''Can accept a url string when there are no matching agents.'''
-        robot = robots.Robots.parse('http://example.com/robots.txt', '''
-            User-Agent: other
-            Disallow: /
-        ''')
-        self.assertTrue(robot.url_allowed('http://example.com/path', 'agent'))
+        self.assertFalse(robot.allowed('http://example.com/path', 'agent'))
 
     def test_skip_malformed_line(self):
         '''If there is no colon in a line, then we must skip it'''
@@ -181,42 +182,49 @@ class RobotsTest(unittest.TestCase):
         ''')
         self.assertTrue(robot.allowed('/no/colon/in/this/line', 'agent'))
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_200(self):
         '''A 200 parses things normally.'''
         with self.server('test_fetch_status_200'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertFalse(robot.allowed('/path', 'agent'))
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_401(self):
         '''A 401 gives us an AllowNone Robots.'''
         with self.server('test_fetch_status_401'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertIsInstance(robot, robots.AllowNone)
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_403(self):
         '''A 403 gives us an AllowNone Robots.'''
         with self.server('test_fetch_status_403'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertIsInstance(robot, robots.AllowNone)
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_4XX(self):
         '''A 4XX gives us an AllowAll Robots.'''
         with self.server('test_fetch_status_4XX'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertIsInstance(robot, robots.AllowAll)
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_5XX(self):
         '''A server error raises an exception.'''
         with self.server('test_fetch_status_5XX'):
             with self.assertRaises(robots.exceptions.BadStatusCode):
                 robots.Robots.fetch('http://localhost:8080/robots.txt')
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_content_too_big(self):
         '''Raises an exception if the content is too big.'''
         with self.server('test_content_too_big'):
             with self.assertRaises(robots.exceptions.ReppyException):
                 robots.Robots.fetch('http://localhost:8080/robots.txt', max_size=5)
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_ssl_exception(self):
         '''Raises a ReppyException on SSL errors.'''
         with self.server('test_ssl_exception'):
@@ -233,11 +241,30 @@ class RobotsTest(unittest.TestCase):
         with self.assertRaises(robots.exceptions.MalformedUrl):
             robots.Robots.fetch('gobbledygook')
 
+    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_excessive_redirects(self):
         '''Raises a ReppyException on too many redirects.'''
         with self.server('test_excessive_redirects'):
             with self.assertRaises(robots.exceptions.ExcessiveRedirects):
                 robots.Robots.fetch('http://localhost:8080/robots.txt')
+
+    def test_robots_url_http(self):
+        '''Works with a http URL.'''
+        url = 'http://user@example.com:80/path;params?query#fragment'
+        expected = 'http://example.com/robots.txt'
+        self.assertEqual(robots.Robots.robots_url(url), expected)
+
+    def test_robots_url_https(self):
+        '''Works with a https URL.'''
+        url = 'https://user@example.com:443/path;params?query#fragment'
+        expected = 'https://example.com/robots.txt'
+        self.assertEqual(robots.Robots.robots_url(url), expected)
+
+    def test_robots_url_non_default_port(self):
+        '''Works with a URL with a non-default port.'''
+        url = 'http://user@example.com:8080/path;params?query#fragment'
+        expected = 'http://example.com:8080/robots.txt'
+        self.assertEqual(robots.Robots.robots_url(url), expected)
 
     def test_utf8_bom(self):
         '''If there's a utf-8 BOM, we should parse it as such'''
@@ -249,8 +276,8 @@ class RobotsTest(unittest.TestCase):
             User-Agent: other
             Disallow: /path
         ''')
-        self.assertTrue(robot.url_allowed('http://example.com/path', 'agent'))
-        self.assertFalse(robot.url_allowed('http://example.com/path', 'other'))
+        self.assertTrue(robot.allowed('http://example.com/path', 'agent'))
+        self.assertFalse(robot.allowed('http://example.com/path', 'other'))
 
     def test_utf16_bom(self):
         '''If there's a utf-16 BOM, we should parse it as such'''
@@ -262,8 +289,8 @@ class RobotsTest(unittest.TestCase):
             User-Agent: other
             Disallow: /path
         ''')
-        self.assertTrue(robot.url_allowed('http://example.com/path', 'agent'))
-        self.assertFalse(robot.url_allowed('http://example.com/path', 'other'))
+        self.assertTrue(robot.allowed('http://example.com/path', 'agent'))
+        self.assertFalse(robot.allowed('http://example.com/path', 'other'))
 
     def test_rfc_example(self):
         '''Tests the example provided by the RFC.'''
@@ -352,16 +379,6 @@ class AllowNoneTest(unittest.TestCase):
         robot = robots.AllowNone('http://example.com/robots.txt')
         self.assertTrue(robot.allowed('/robots.txt', 'agent'))
 
-    def test_allow_url(self):
-        '''Allows nothing.'''
-        robot = robots.AllowNone('http://example.com/robots.txt')
-        self.assertFalse(robot.url_allowed('http://example.com/', 'agent'))
-
-    def test_allow_robots_txt_url(self):
-        '''Allows robots.txt url.'''
-        robot = robots.AllowNone('http://example.com/robots.txt')
-        self.assertTrue(robot.url_allowed('http://example.com/robots.txt', 'agent'))
-
 
 class AllowAllTest(unittest.TestCase):
     '''Tests about the AllowAll Robots class.'''
@@ -370,8 +387,3 @@ class AllowAllTest(unittest.TestCase):
         '''Allows nothing.'''
         robot = robots.AllowAll('http://example.com/robots.txt')
         self.assertTrue(robot.allowed('/', 'agent'))
-
-    def test_allow_url(self):
-        '''Allows nothing.'''
-        robot = robots.AllowAll('http://example.com/robots.txt')
-        self.assertTrue(robot.url_allowed('http://example.com/', 'agent'))

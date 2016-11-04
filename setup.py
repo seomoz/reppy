@@ -21,11 +21,40 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from setuptools import setup
+from distutils.core import setup
+from distutils.extension import Extension
+
+ext_files = [
+    'reppy/rep-cpp/src/agent.cpp',
+    'reppy/rep-cpp/src/directive.cpp',
+    'reppy/rep-cpp/src/robots.cpp',
+    'reppy/rep-cpp/deps/url-cpp/src/url.cpp',
+    'reppy/rep-cpp/deps/url-cpp/src/utf8.cpp',
+    'reppy/rep-cpp/deps/url-cpp/src/punycode.cpp',
+    'reppy/rep-cpp/deps/url-cpp/src/psl.cpp'
+]
+
+kwargs = {}
+
+try:
+    from Cython.Distutils import build_ext
+    print('Building from Cython')
+    ext_files.append('reppy/robots.pyx')
+    kwargs['cmdclass'] = {'build_ext': build_ext}
+except ImportError:
+    print('Building from C++')
+    ext_files.append('reppy/robots.cpp')
+
+ext_modules = [
+    Extension('reppy.robots', ext_files,
+        language='c++',
+        extra_compile_args=['-std=c++11'],
+        include_dirs=['reppy/rep-cpp/include', 'reppy/rep-cpp/deps/url-cpp/include'])
+]
 
 setup(
     name             = 'reppy',
-    version          = '0.3.4',
+    version          = '0.4.0',
     description      = 'Replacement robots.txt Parser',
     long_description = '''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like
@@ -42,18 +71,22 @@ Sitemaps, Allow, and Crawl-delay. Main features:
     url              = 'http://github.com/seomoz/reppy',
     license          = 'MIT',
     platforms        = 'Posix; MacOS X',
+    ext_modules      = ext_modules,
     packages         = [
         'reppy'
     ],
     install_requires = [
         'python-dateutil>=1.5, !=2.0',
         'url>=0.2.0',
-        'requests'
+        'requests',
+        'six'
     ],
     classifiers      = [
         'License :: OSI Approved :: MIT License',
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'Topic :: Internet :: WWW/HTTP']
+        'Topic :: Internet :: WWW/HTTP'
+    ],
+    **kwargs
 )
