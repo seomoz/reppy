@@ -64,6 +64,15 @@ policy = HeaderWithDefaultPolicy(default=1800, minimum=600)
 robots = Robots.fetch('http://example.com/robots.txt', ttl_policy=policy)
 ```
 
+Customizing fetch
+-----------------
+The `fetch` method accepts `*args` and `**kwargs` that are passed on to `requests.get`,
+allowing you to customize the way the `fetch` is executed:
+
+```python
+robots = Robots.fetch('http://example.com/robots.txt', headers={...})
+```
+
 Matching Rules and Wildcards
 ----------------------------
 Both `*` and `$` are supported for wildcard matching.
@@ -104,9 +113,49 @@ Robots.robotsUrl('http://userinfo@example.com:8080/path;params?query#fragment')
 ```
 
 Caching
--------
-The caching functionality has temporarily been removed, but will be reintroduced in the
-next minor release.
+=======
+There are two cache classes provided -- `RobotsCache`, which caches entire `reppy.Robots`
+objects, and `AgentCache`, which only caches the `reppy.Agent` relevant to a client. These
+caches duck-type the class that they cache for the purposes of checking if a URL is
+allowed:
+
+```python
+from reppy.cache import RobotsCache
+cache = RobotsCache(capacity=100)
+cache.allowed('http://example.com/foo/bar', 'my-user-agent')
+
+from reppy.cache import AgentCache
+cache = AgentCache(agent='my-user-agent', capacity=100)
+cache.allowed('http://example.com/foo/bar')
+```
+
+Like `reppy.Robots.fetch`, the cache constructory accepts a `ttl_policy` to inform the
+expiration of the fetched `Robots` objects, as well as `*args` and `**kwargs` to be passed
+to `reppy.Robots.fetch`.
+
+Caching Failures
+----------------
+There's a piece of classic caching advice: "don't cache failures." However, this is not
+always appropriate in certain circumstances. For example, if the failure is a timeout,
+clients may want to cache this result so that every check doesn't take a very long time.
+
+To this end, the `cache` module provides a notion of a cache policy. It determines what
+to do in the case of an exception. The default is to cache a form of a disallowed response
+for 10 minutes, but you can configure it as you see fit:
+
+```python
+# Do not cache failures (note the `ttl=0`):
+from reppy.cache.policy import ReraiseExceptionPolicy
+cache = AgentCache('my-user-agent', cache_policy=ReraiseExceptionPolicy(ttl=0))
+
+# Cache and reraise failures for 10 minutes (note the `ttl=600`):
+cache = AgentCache('my-user-agent', cache_policy=ReraiseExceptionPolicy(ttl=600))
+
+# Treat failures as being disallowed
+cache = AgentCache(
+    'my-user-agent',
+    cache_policy=DefaultObjectPolicy(ttl=600, lambda _: Agent().disallow('/')))
+```
 
 Development
 ===========

@@ -73,9 +73,15 @@ Sitemaps, Allow, and Crawl-delay. Main features:
     platforms        = 'Posix; MacOS X',
     ext_modules      = ext_modules,
     packages         = [
-        'reppy'
+        'reppy',
+        'reppy.cache'
     ],
+    package_dir      = {
+        'reppy': 'reppy',
+        'reppy.cache': 'reppy/cache'
+    },
     install_requires = [
+        'cachetools',
         'python-dateutil>=1.5, !=2.0',
         'requests',
         'six'
