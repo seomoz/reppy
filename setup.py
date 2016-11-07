@@ -54,7 +54,7 @@ ext_modules = [
 
 setup(
     name             = 'reppy',
-    version          = '0.4.0',
+    version          = '0.4.1',
     description      = 'Replacement robots.txt Parser',
     long_description = '''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like
@@ -73,11 +73,16 @@ Sitemaps, Allow, and Crawl-delay. Main features:
     platforms        = 'Posix; MacOS X',
     ext_modules      = ext_modules,
     packages         = [
-        'reppy'
+        'reppy',
+        'reppy.cache'
     ],
+    package_dir      = {
+        'reppy': 'reppy',
+        'reppy.cache': 'reppy/cache'
+    },
     install_requires = [
+        'cachetools',
         'python-dateutil>=1.5, !=2.0',
-        'url>=0.2.0',
         'requests',
         'six'
     ],

@@ -151,6 +151,11 @@ cdef class Robots:
         return time.time() > self.expires
 
     @property
+    def expires(self):
+        '''The expiration of this robots.txt.'''
+        return self.expires
+
+    @property
     def ttl(self):
         '''Remaining time for this response to be considered valid.'''
         return max(self.expires - time.time(), 0)

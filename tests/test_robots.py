@@ -12,26 +12,16 @@ import os
 import unittest
 
 import mock
-
-skip_asis = False
-try:
-    import asis
-except ImportError:
-    print('Skipping asis tests')
-    skip_asis = True
+import requests_mock
+from requests.exceptions import SSLError
 
 from reppy import robots
+
+from .util import requests_fixtures
 
 
 class RobotsTest(unittest.TestCase):
     '''Tests about our Robots class.'''
-
-    @contextlib.contextmanager
-    def server(self, *segments):
-        '''Run an asis server with the provided path.'''
-        path = os.path.join('tests', 'asis', *segments)
-        with asis.Server(path, server='gevent', port=8080).greenlet():
-            yield
 
     def test_expired(self):
         '''Returns true if expired.'''
@@ -182,52 +172,45 @@ class RobotsTest(unittest.TestCase):
         ''')
         self.assertTrue(robot.allowed('/no/colon/in/this/line', 'agent'))
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_200(self):
         '''A 200 parses things normally.'''
-        with self.server('test_fetch_status_200'):
+        with requests_fixtures('test_fetch_status_200'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertFalse(robot.allowed('/path', 'agent'))
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_401(self):
         '''A 401 gives us an AllowNone Robots.'''
-        with self.server('test_fetch_status_401'):
+        with requests_fixtures('test_fetch_status_401'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertIsInstance(robot, robots.AllowNone)
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_403(self):
         '''A 403 gives us an AllowNone Robots.'''
-        with self.server('test_fetch_status_403'):
+        with requests_fixtures('test_fetch_status_403'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertIsInstance(robot, robots.AllowNone)
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_4XX(self):
         '''A 4XX gives us an AllowAll Robots.'''
-        with self.server('test_fetch_status_4XX'):
+        with requests_fixtures('test_fetch_status_4XX'):
             robot = robots.Robots.fetch('http://localhost:8080/robots.txt')
             self.assertIsInstance(robot, robots.AllowAll)
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_fetch_status_5XX(self):
         '''A server error raises an exception.'''
-        with self.server('test_fetch_status_5XX'):
+        with requests_fixtures('test_fetch_status_5XX'):
             with self.assertRaises(robots.exceptions.BadStatusCode):
                 robots.Robots.fetch('http://localhost:8080/robots.txt')
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_content_too_big(self):
         '''Raises an exception if the content is too big.'''
-        with self.server('test_content_too_big'):
+        with requests_fixtures('test_content_too_big'):
             with self.assertRaises(robots.exceptions.ReppyException):
                 robots.Robots.fetch('http://localhost:8080/robots.txt', max_size=5)
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_ssl_exception(self):
         '''Raises a ReppyException on SSL errors.'''
-        with self.server('test_ssl_exception'):
+        with mock.patch.object(robots.requests, 'get', side_effect=SSLError('Kaboom')):
             with self.assertRaises(robots.exceptions.SSLException):
                 robots.Robots.fetch('https://localhost:8080/robots.txt')
 
@@ -241,10 +224,9 @@ class RobotsTest(unittest.TestCase):
         with self.assertRaises(robots.exceptions.MalformedUrl):
             robots.Robots.fetch('gobbledygook')
 
-    @unittest.skipIf(skip_asis, 'Asis not installed')
     def test_excessive_redirects(self):
         '''Raises a ReppyException on too many redirects.'''
-        with self.server('test_excessive_redirects'):
+        with requests_fixtures('test_excessive_redirects'):
             with self.assertRaises(robots.exceptions.ExcessiveRedirects):
                 robots.Robots.fetch('http://localhost:8080/robots.txt')
 
