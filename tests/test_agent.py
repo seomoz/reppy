@@ -99,3 +99,21 @@ class AgentTest(unittest.TestCase):
             Disallow: /path;params?query
         ''', 'agent')
         self.assertFalse(agent.allowed('http://exmaple.com/path;params?query'))
+
+    def test_query_only(self):
+        '''Recognized query-only rules.'''
+        agent = self.parse('''
+            User-agent: agent
+            Disallow: /?
+        ''', 'agent')
+        self.assertFalse(agent.allowed('/?'))
+        self.assertTrue(agent.allowed('/'))
+
+    def test_params_only(self):
+        '''Recognized params-only rules.'''
+        agent = self.parse('''
+            User-agent: agent
+            Disallow: /;
+        ''', 'agent')
+        self.assertFalse(agent.allowed('/;'))
+        self.assertTrue(agent.allowed('/'))
