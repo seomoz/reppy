@@ -136,7 +136,7 @@ class RobotsTest(unittest.TestCase):
     def test_case_insensitivity(self):
         '''Make sure user agent matches are case insensitive'''
         robot = robots.Robots.parse('http://example.com/robots.txt', '''
-            User-agent: agent
+            User-agent: Agent
             Disallow: /path
         ''')
         self.assertFalse(robot.allowed('/path', 'agent'))
