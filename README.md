@@ -109,7 +109,7 @@ scheme).
 ```python
 # Get robots.txt URL for http://userinfo@example.com:8080/path;params?query#fragment
 # It's http://example.com:8080/robots.txt
-Robots.robotsUrl('http://userinfo@example.com:8080/path;params?query#fragment')
+Robots.robots_url('http://userinfo@example.com:8080/path;params?query#fragment')
 ```
 
 Caching
