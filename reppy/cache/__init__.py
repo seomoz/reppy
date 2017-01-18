@@ -9,6 +9,7 @@ from cachetools import LRUCache
 from .policy import DefaultObjectPolicy, ReraiseExceptionPolicy
 from ..robots import Robots, AllowNone, Agent
 
+
 class ExpiringObject(object):
     '''Wrap an object that expires over time.'''
 
@@ -33,7 +34,7 @@ class ExpiringObject(object):
             raise self.exception
         else:
             return self.obj
-        
+
 
 class BaseCache(object):
     '''A base cache class.'''
