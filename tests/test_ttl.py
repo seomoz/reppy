@@ -27,7 +27,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_no_store(self):
         '''Returns the minimum when no-store present.'''
         response = mock.Mock(headers={
-            'cache_control': 'no-store'
+            'cache-control': 'no-store'
         })
         policy = ttl.HeaderWithDefaultPolicy(20, 10)
         self.assertEqual(policy.ttl(response), 10)
@@ -35,7 +35,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_must_revalidate(self):
         '''Returns the minimum when must-revalidate present.'''
         response = mock.Mock(headers={
-            'cache_control': 'must-revalidate'
+            'cache-control': 'must-revalidate'
         })
         policy = ttl.HeaderWithDefaultPolicy(20, 10)
         self.assertEqual(policy.ttl(response), 10)
@@ -43,7 +43,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_no_cache(self):
         '''Returns the minimum when no-cache present.'''
         response = mock.Mock(headers={
-            'cache_control': 'no-cache'
+            'cache-control': 'no-cache'
         })
         policy = ttl.HeaderWithDefaultPolicy(20, 10)
         self.assertEqual(policy.ttl(response), 10)
@@ -51,7 +51,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_s_maxage(self):
         '''Returns the parsed s-maxage.'''
         response = mock.Mock(headers={
-            'cache_control': 's-maxage=15'
+            'cache-control': 's-maxage=15'
         })
         policy = ttl.HeaderWithDefaultPolicy(20, 10)
         self.assertEqual(policy.ttl(response), 15)
@@ -59,7 +59,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_max_age(self):
         '''Returns the parsed max-age.'''
         response = mock.Mock(headers={
-            'cache_control': 'max-age=15'
+            'cache-control': 'max-age=15'
         })
         policy = ttl.HeaderWithDefaultPolicy(20, 10)
         self.assertEqual(policy.ttl(response), 15)
@@ -67,7 +67,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_default_for_malformed_maxage(self):
         '''Returns the default when maxage cannot be parsed.'''
         response = mock.Mock(headers={
-            'cache_control': 'max-age=not-a-number'
+            'cache-control': 'max-age=not-a-number'
         })
         policy = ttl.HeaderWithDefaultPolicy(20, 10)
         self.assertEqual(policy.ttl(response), 20)
@@ -75,7 +75,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_multiple_cache_control(self):
         '''Can walk through multiple cache control configs.'''
         response = mock.Mock(headers={
-            'cache_control': 'foo, max-age=15'
+            'cache-control': 'foo, max-age=15'
         })
         policy = ttl.HeaderWithDefaultPolicy(20, 10)
         self.assertEqual(policy.ttl(response), 15)
@@ -125,7 +125,7 @@ class HeaderWithDefaultPolicyTest(unittest.TestCase):
     def test_cache_control_precedence(self):
         '''Cache control is used before expires.'''
         response = mock.Mock(headers={
-            'cache_control': 'max-age=30',
+            'cache-control': 'max-age=30',
             'expires': 'Thu, 13 Oct 2016 15:50:54 GMT',
             'date': 'Thu, 13 Oct 2016 15:49:54 GMT'
         })
