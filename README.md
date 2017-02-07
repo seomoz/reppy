@@ -279,5 +279,5 @@ git tag -a v0.1.0 -m 'Version 0.1.0
 This release contains an initial working version of the `crawl` and `parse`
 utilities.'
 
-git push origin
+git push --tags origin
 ```
