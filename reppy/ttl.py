@@ -29,7 +29,7 @@ class HeaderWithDefaultPolicy(TTLPolicyBase):
         '''Get the ttl from headers.'''
         # If max-age is specified in Cache-Control, use it and ignore any
         # Expires header, as per RFC2616 Sec. 13.2.4.
-        cache_control = response.headers.get('cache_control')
+        cache_control = response.headers.get('cache-control')
         if cache_control is not None:
             for directive in cache_control.split(','):
                 name, _, value = directive.lower().partition('=')
