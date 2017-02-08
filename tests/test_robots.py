@@ -49,6 +49,9 @@ class RobotsTest(unittest.TestCase):
             Crawl-delay: 7
         ''')
         self.assertNotEqual(robot.agent('agent'), None)
+        self.assertTrue(robot.allowed('/path/exception', 'agent'))
+        self.assertFalse(robot.allowed('/path', 'agent'))
+        self.assertTrue(robot.allowed('/', 'agent'))
         self.assertEquals(robot.agent('agent').delay, 7)
 
     def test_malformed_crawl_delay(self):
