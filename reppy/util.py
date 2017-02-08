@@ -1,7 +1,6 @@
 '''Utility functions.'''
 
 import email
-import string
 
 
 def parse_date(string):
