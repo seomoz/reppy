@@ -7,12 +7,9 @@ from __future__ import print_function
 http://www.robotstxt.org/norobots-rfc.txt'''
 
 import codecs
-import contextlib
-import os
 import unittest
 
 import mock
-import requests_mock
 from requests.exceptions import SSLError
 
 from reppy import robots
