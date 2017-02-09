@@ -41,12 +41,18 @@ class RobotsTest(unittest.TestCase):
             robot = robots.Robots.parse('http://example.com/robots.txt', '', expires=15)
             self.assertEqual(robot.ttl, 5)
 
-    def test_disallow_first(self):
-        '''Handles a missing User-Agent line.'''
-        with self.assertRaises(ValueError):
-            robot = robots.Robots.parse('http://example.com/robots.txt', '''
-                Disallow: /path
-            ''')
+    def test_no_leading_user_agent(self):
+        '''Treats missing User-Agent as default user agent'''
+        robot = robots.Robots.parse('http://example.com/robots.txt', '''
+            Disallow: /path
+            Allow: /path/exception
+            Crawl-delay: 7
+        ''')
+        self.assertNotEqual(robot.agent('agent'), None)
+        self.assertTrue(robot.allowed('/path/exception', 'agent'))
+        self.assertFalse(robot.allowed('/path', 'agent'))
+        self.assertTrue(robot.allowed('/', 'agent'))
+        self.assertEquals(robot.agent('agent').delay, 7)
 
     def test_malformed_crawl_delay(self):
         '''Handles a malformed delay.'''
