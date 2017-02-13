@@ -35,4 +35,4 @@ cdef extern from "rep-cpp/include/robots.h" namespace "Rep":
         const CppAgent& agent(const string& name) const
         bool allowed(const string& path, const string& name) const
         @staticmethod
-        string robotsUrl(const string& url)
+        string robotsUrl(const string& url) except +ValueError
