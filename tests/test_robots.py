@@ -251,6 +251,12 @@ class RobotsTest(unittest.TestCase):
         expected = 'http://example.com:8080/robots.txt'
         self.assertEqual(robots.Robots.robots_url(url), expected)
 
+    def test_robots_url_invalid_port(self):
+        '''Raises exception when given an invalid port.'''
+        url = 'http://:::cnn.com/'
+        with self.assertRaises(ValueError):
+            robots.Robots.robots_url(url)
+
     def test_utf8_bom(self):
         '''If there's a utf-8 BOM, we should parse it as such'''
         robot = robots.Robots.parse('http://example.com/robots.txt',
