@@ -46,17 +46,20 @@ except ImportError:
     ext_files.append('reppy/robots.cpp')
 
 ext_modules = [
-    Extension('reppy.robots', ext_files,
+    Extension(
+        'reppy.robots', ext_files,
         language='c++',
         extra_compile_args=['-std=c++11'],
-        include_dirs=['reppy/rep-cpp/include', 'reppy/rep-cpp/deps/url-cpp/include'])
+        include_dirs=[
+            'reppy/rep-cpp/include',
+            'reppy/rep-cpp/deps/url-cpp/include'])
 ]
 
 setup(
-    name             = 'reppy',
-    version          = '0.4.6',
-    description      = 'Replacement robots.txt Parser',
-    long_description = '''Replaces the built-in robotsparser with a
+    name='reppy',
+    version='0.4.6',
+    description='Replacement robots.txt Parser',
+    long_description='''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like
 Sitemaps, Allow, and Crawl-delay. Main features:
 
@@ -66,27 +69,27 @@ Sitemaps, Allow, and Crawl-delay. Main features:
 - Configurable user agent for fetching robots.txt
 - Automatic refetching basing on expiration
 ''',
-    author           = 'Dan Lecocq',
-    author_email     = 'dan@moz.com',
-    url              = 'http://github.com/seomoz/reppy',
-    license          = 'MIT',
-    platforms        = 'Posix; MacOS X',
-    ext_modules      = ext_modules,
-    packages         = [
+    author='Dan Lecocq',
+    author_email='dan@moz.com',
+    url='http://github.com/seomoz/reppy',
+    license='MIT',
+    platforms='Posix; MacOS X',
+    ext_modules=ext_modules,
+    packages=[
         'reppy',
         'reppy.cache'
     ],
-    package_dir      = {
+    package_dir={
         'reppy': 'reppy',
         'reppy.cache': 'reppy/cache'
     },
-    install_requires = [
+    install_requires=[
         'cachetools',
         'python-dateutil>=1.5, !=2.0',
         'requests',
         'six'
     ],
-    classifiers      = [
+    classifiers=[
         'License :: OSI Approved :: MIT License',
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
