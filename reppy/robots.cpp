@@ -3784,7 +3784,8 @@ static PyObject *__pyx_pf_5reppy_6robots_6RobotsUrlMethod(CYTHON_UNUSED PyObject
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   std::string __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
+  std::string __pyx_t_3;
+  PyObject *__pyx_t_4 = NULL;
   __Pyx_TraceFrameInit(__pyx_codeobj__8)
   __Pyx_RefNannySetupContext("RobotsUrlMethod", 0);
   __Pyx_TraceCall("RobotsUrlMethod", __pyx_f[1], 106, 0, __PYX_ERR(1, 106, __pyx_L1_error));
@@ -3802,13 +3803,19 @@ static PyObject *__pyx_pf_5reppy_6robots_6RobotsUrlMethod(CYTHON_UNUSED PyObject
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 108, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __pyx_convert_PyBytes_string_to_py_std__in_string(Rep::Robots::robotsUrl(__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 108, __pyx_L1_error)
+  try {
+    __pyx_t_3 = Rep::Robots::robotsUrl(__pyx_t_2);
+  } catch(...) {
+    try { throw; } catch(const std::exception& exn) { PyErr_SetString(__pyx_builtin_ValueError, exn.what()); } catch(...) { PyErr_SetNone(__pyx_builtin_ValueError); }
+    __PYX_ERR(1, 108, __pyx_L1_error)
+  }
+  __pyx_t_1 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 108, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __pyx_f_5reppy_6robots_as_string(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 108, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = __pyx_f_5reppy_6robots_as_string(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 108, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_r = __pyx_t_3;
-  __pyx_t_3 = 0;
+  __pyx_r = __pyx_t_4;
+  __pyx_t_4 = 0;
   goto __pyx_L0;
 
   /* "reppy/robots.pyx":106
@@ -3822,7 +3829,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6RobotsUrlMethod(CYTHON_UNUSED PyObject
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_AddTraceback("reppy.robots.RobotsUrlMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
