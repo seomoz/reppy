@@ -197,8 +197,6 @@ With a running `vagrant` instance, you can log in and run tests:
 
 ```bash
 vagrant ssh
-cd /vagrant
-
 make test
 ```
 

@@ -41,5 +41,11 @@ pushd /vagrant
 
     # Lastly, our dependencies
     pip install -r requirements.txt
+    pip install -r dev-requirements.txt
 
+    echo '
+    cd /vagrant
+    # Activate virtualenv
+    . /vagrant/venv/bin/activate
+    ' >> ~/.bash_profile
 popd
