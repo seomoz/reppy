@@ -41,6 +41,7 @@ pushd /vagrant
 
     # Lastly, our dependencies
     pip install -r requirements.txt
+    pip install -r dev-requirements.txt
 
     echo '
     cd /vagrant
