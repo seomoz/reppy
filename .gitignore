@@ -5,6 +5,7 @@
 build/
 dist/
 reppy.egg-info/
+MANIFEST
 
 # Dev artifacts
 venv*
