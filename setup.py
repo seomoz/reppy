@@ -86,7 +86,7 @@ Sitemaps, Allow, and Crawl-delay. Main features:
     install_requires=[
         'cachetools',
         'python-dateutil>=1.5, !=2.0',
-        'requests',
+        # 'requests',
         'six'
     ],
     classifiers=[
