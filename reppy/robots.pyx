@@ -81,6 +81,7 @@ def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
             if res.raw.read(amt=1, decode_content=True):
                 raise exceptions.ContentTooLong(
                     'Content larger than %s bytes' % max_size)
+            logger.debug('Content: %s', content)
 
             # Get the TTL policy's ruling on the ttl
             expires = (ttl_policy or cls.DEFAULT_TTL_POLICY).expires(res)
