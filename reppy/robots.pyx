@@ -129,6 +129,9 @@ cdef class Robots:
         self.robots = new CppRobots(content)
         self.expires = expires
 
+    def __str__(self):
+        return self.robots.str()
+
     def __dealloc__(self):
         del self.robots
 

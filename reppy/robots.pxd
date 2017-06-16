@@ -12,6 +12,7 @@ cdef extern from "rep-cpp/include/directive.h" namespace "Rep":
         priority_t priority() const
         bool match(const string& path) const
         bool allowed() const
+        string str() const
 
 cdef extern from "rep-cpp/include/agent.h" namespace "Rep":
     cpdef cppclass CppAgent "Rep::Agent":
@@ -24,6 +25,7 @@ cdef extern from "rep-cpp/include/agent.h" namespace "Rep":
         delay_t delay() const
         const vector[CppDirective]& directives() const
         bool allowed(const string& path) const
+        string str() const
         @staticmethod
         string escape(const string& query)
 
@@ -34,5 +36,6 @@ cdef extern from "rep-cpp/include/robots.h" namespace "Rep":
         const vector[string]& sitemaps() const
         const CppAgent& agent(const string& name) const
         bool allowed(const string& path, const string& name) const
+        string str() const
         @staticmethod
         string robotsUrl(const string& url) except +ValueError
