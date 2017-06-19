@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2011 SEOmoz
+# Copyright (c) 2011-2017 SEOmoz, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -57,7 +57,7 @@ ext_modules = [
 
 setup(
     name='reppy',
-    version='0.4.6',
+    version='0.4.7',
     description='Replacement robots.txt Parser',
     long_description='''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like
@@ -67,10 +67,10 @@ Sitemaps, Allow, and Crawl-delay. Main features:
 - Expiration taken from the `Expires` header
 - Batch queries
 - Configurable user agent for fetching robots.txt
-- Automatic refetching basing on expiration
+- Automatic refetching based on expiration
 ''',
-    author='Dan Lecocq',
-    author_email='dan@moz.com',
+    maintainer='Brandon Forehand',
+    maintainer_email='brandon@moz.com',
     url='http://github.com/seomoz/reppy',
     license='MIT',
     platforms='Posix; MacOS X',
@@ -91,10 +91,14 @@ Sitemaps, Allow, and Crawl-delay. Main features:
     ],
     classifiers=[
         'License :: OSI Approved :: MIT License',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'Topic :: Internet :: WWW/HTTP'
+        'Topic :: Internet :: WWW/HTTP',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5'
     ],
     **kwargs
 )
