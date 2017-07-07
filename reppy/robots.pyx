@@ -123,9 +123,11 @@ cdef class Robots:
     cdef CppRobots* robots
     cdef object url
     cdef object expires
+    cdef object content
 
     def __init__(self, url, const string& content, expires=None):
         self.url = url
+        self.content = content
         self.robots = new CppRobots(content)
         self.expires = expires
 
@@ -149,17 +151,17 @@ cdef class Robots:
         return Agent.from_robots(self, as_bytes(name))
 
     @property
-    def expiredy(self):
+    def expired(self):
         '''True if the current time is past its expiration.'''
         return time.time() > self.expires
 
     @property
-    def raww(self):
-        '''some stuff'''
-        return self.expires
+    def raw(self):
+        '''The raw content'''
+        return self.content
 
     @property
-    def expiresy(self):
+    def expires(self):
         '''The expiration of this robots.txt.'''
         return self.expires
 
