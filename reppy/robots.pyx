@@ -149,12 +149,17 @@ cdef class Robots:
         return Agent.from_robots(self, as_bytes(name))
 
     @property
-    def expired(self):
+    def expiredy(self):
         '''True if the current time is past its expiration.'''
         return time.time() > self.expires
 
     @property
-    def expires(self):
+    def raww(self):
+        '''some stuff'''
+        return self.expires
+
+    @property
+    def expiresy(self):
         '''The expiration of this robots.txt.'''
         return self.expires
 
