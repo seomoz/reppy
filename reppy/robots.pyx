@@ -43,6 +43,9 @@ cdef class Agent:
 
     from_robots = classmethod(FromRobotsMethod)
 
+    def __str__(self):
+        return self.agent.str()
+
     @property
     def delay(self):
         '''The delay associated with this agent.'''
