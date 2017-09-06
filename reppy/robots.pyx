@@ -144,7 +144,7 @@ cdef class Robots:
         return map(as_string, self.robots.sitemaps())
 
     def allowed(self, path, name):
-        '''Is the provided path allowed for the provided agant?'''
+        '''Is the provided path allowed for the provided agent?'''
         return self.robots.allowed(as_bytes(path), as_bytes(name))
 
     def agent(self, name):
