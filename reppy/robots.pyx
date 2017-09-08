@@ -33,6 +33,10 @@ cdef as_string(value):
 def FromRobotsMethod(cls, Robots robots, const string& name):
     '''Construct an Agent from a CppAgent.'''
     agent = Agent()
+    # This is somewhat inefficient due to the copying, but it is
+    # required to be copied because we often toss the containing
+    # Robots object as a temporary thus we'd leave the underlying
+    # Agent object dangling without a full copy.
     agent.agent = robots.robots.agent(name)
     return agent
 
@@ -124,12 +128,10 @@ cdef class Robots:
 
     # Data members
     cdef CppRobots* robots
-    cdef object url
     cdef object expires
 
     def __init__(self, url, const string& content, expires=None):
-        self.url = url
-        self.robots = new CppRobots(content)
+        self.robots = new CppRobots(content, as_bytes(url))
         self.expires = expires
 
     def __str__(self):
@@ -148,7 +150,12 @@ cdef class Robots:
         return self.robots.allowed(as_bytes(path), as_bytes(name))
 
     def agent(self, name):
-        '''Return the Agent that corresponds to name.'''
+        '''Return the Agent that corresponds to name.
+
+        Note modifications to the returned Agent will not be reflected
+        in this Robots object because it is a *copy*, not the original
+        Agent object.
+        '''
         return Agent.from_robots(self, as_bytes(name))
 
     @property
