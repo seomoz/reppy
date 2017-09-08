@@ -79,6 +79,8 @@ def ParseMethod(cls, url, content, expires=None):
 
 def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
     '''Get the robots.txt at the provided URL.'''
+    after_response_hook = kwargs.pop('after_response_hook', None)
+    after_parse_hook = kwargs.pop('after_parse_hook', None)
     try:
         # Limit the size of the request
         kwargs['stream'] = True
@@ -89,11 +91,17 @@ def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
                 raise exceptions.ContentTooLong(
                     'Content larger than %s bytes' % max_size)
 
+            if after_response_hook is not None:
+                after_response_hook(res)
+
             # Get the TTL policy's ruling on the ttl
             expires = (ttl_policy or cls.DEFAULT_TTL_POLICY).expires(res)
 
             if res.status_code == 200:
-                return cls.parse(url, content, expires)
+                robots = cls.parse(url, content, expires)
+                if after_parse_hook is not None:
+                    after_parse_hook(robots)
+                return robots
             elif res.status_code in (401, 403):
                 return AllowNone(url, expires)
             elif res.status_code >= 400 and res.status_code < 500:

@@ -661,7 +661,7 @@ struct __pyx_obj_5reppy_6robots_Agent {
 };
 
 
-/* "reppy/robots.pyx":117
+/* "reppy/robots.pyx":125
  *     return as_string(CppRobots.robotsUrl(as_bytes(url)))
  * 
  * cdef class Robots:             # <<<<<<<<<<<<<<
@@ -675,7 +675,7 @@ struct __pyx_obj_5reppy_6robots_Robots {
 };
 
 
-/* "reppy/robots.pyx":177
+/* "reppy/robots.pyx":185
  * 
  * 
  * cdef class AllowNone(Robots):             # <<<<<<<<<<<<<<
@@ -687,7 +687,7 @@ struct __pyx_obj_5reppy_6robots_AllowNone {
 };
 
 
-/* "reppy/robots.pyx":184
+/* "reppy/robots.pyx":192
  * 
  * 
  * cdef class AllowAll(Robots):             # <<<<<<<<<<<<<<
@@ -1308,13 +1308,14 @@ int __pyx_module_is_main_reppy__robots = 0;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_map;
 static PyObject *__pyx_builtin_range;
-static const char __pyx_k__9[] = "";
 static const char __pyx_k_PY3[] = "PY3";
+static const char __pyx_k__11[] = "";
 static const char __pyx_k_amt[] = "amt";
 static const char __pyx_k_cls[] = "cls";
 static const char __pyx_k_exc[] = "exc";
 static const char __pyx_k_get[] = "get";
 static const char __pyx_k_map[] = "map";
+static const char __pyx_k_pop[] = "pop";
 static const char __pyx_k_raw[] = "raw";
 static const char __pyx_k_res[] = "res";
 static const char __pyx_k_six[] = "six";
@@ -1379,10 +1380,12 @@ static const char __pyx_k_ConnectionError[] = "ConnectionError";
 static const char __pyx_k_RobotsUrlMethod[] = "RobotsUrlMethod";
 static const char __pyx_k_FromRobotsMethod[] = "FromRobotsMethod";
 static const char __pyx_k_TooManyRedirects[] = "TooManyRedirects";
+static const char __pyx_k_after_parse_hook[] = "after_parse_hook";
 static const char __pyx_k_DEFAULT_TTL_POLICY[] = "DEFAULT_TTL_POLICY";
 static const char __pyx_k_ExcessiveRedirects[] = "ExcessiveRedirects";
 static const char __pyx_k_ConnectionException[] = "ConnectionException";
 static const char __pyx_k_User_agent_Disallow[] = "User-agent: *\nDisallow: /";
+static const char __pyx_k_after_response_hook[] = "after_response_hook";
 static const char __pyx_k_requests_exceptions[] = "requests.exceptions";
 static const char __pyx_k_HeaderWithDefaultPolicy[] = "HeaderWithDefaultPolicy";
 static const char __pyx_k_vagrant_reppy_robots_pyx[] = "/vagrant/reppy/robots.pyx";
@@ -1413,8 +1416,10 @@ static PyObject *__pyx_n_s_TooManyRedirects;
 static PyObject *__pyx_n_s_URLRequired;
 static PyObject *__pyx_kp_b_User_agent_Disallow;
 static PyObject *__pyx_n_s_ValueError;
-static PyObject *__pyx_n_s__9;
-static PyObject *__pyx_kp_b__9;
+static PyObject *__pyx_n_s__11;
+static PyObject *__pyx_kp_b__11;
+static PyObject *__pyx_n_s_after_parse_hook;
+static PyObject *__pyx_n_s_after_response_hook;
 static PyObject *__pyx_n_s_agent;
 static PyObject *__pyx_n_s_amt;
 static PyObject *__pyx_n_s_args;
@@ -1446,6 +1451,7 @@ static PyObject *__pyx_n_s_minimum;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_parse;
 static PyObject *__pyx_n_s_path;
+static PyObject *__pyx_n_s_pop;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_raw;
 static PyObject *__pyx_n_s_read;
@@ -1508,16 +1514,18 @@ static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
-static PyObject *__pyx_tuple__10;
+static PyObject *__pyx_tuple__8;
+static PyObject *__pyx_tuple__9;
 static PyObject *__pyx_tuple__12;
-static PyObject *__pyx_tuple__13;
 static PyObject *__pyx_tuple__14;
 static PyObject *__pyx_tuple__15;
+static PyObject *__pyx_tuple__16;
+static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_codeobj__3;
 static PyObject *__pyx_codeobj__4;
 static PyObject *__pyx_codeobj__5;
-static PyObject *__pyx_codeobj__8;
-static PyObject *__pyx_codeobj__11;
+static PyObject *__pyx_codeobj__10;
+static PyObject *__pyx_codeobj__13;
 
 /* "reppy/robots.pyx":21
  * from . import util, logger, exceptions
@@ -2475,7 +2483,7 @@ static PyObject *__pyx_pf_5reppy_6robots_2ParseMethod(CYTHON_UNUSED PyObject *__
  * 
  * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):             # <<<<<<<<<<<<<<
  *     '''Get the robots.txt at the provided URL.'''
- *     try:
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
  */
 
 /* Python wrapper */
@@ -2584,9 +2592,12 @@ static PyObject *__pyx_pw_5reppy_6robots_5FetchMethod(PyObject *__pyx_self, PyOb
 }
 
 static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_url, PyObject *__pyx_v_ttl_policy, PyObject *__pyx_v_max_size, PyObject *__pyx_v_args, PyObject *__pyx_v_kwargs) {
+  PyObject *__pyx_v_after_response_hook = NULL;
+  PyObject *__pyx_v_after_parse_hook = NULL;
   PyObject *__pyx_v_res = NULL;
   PyObject *__pyx_v_content = NULL;
   PyObject *__pyx_v_expires = NULL;
+  PyObject *__pyx_v_robots = NULL;
   PyObject *__pyx_v_exc = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
@@ -2616,107 +2627,139 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
   /* "reppy/robots.pyx":82
  * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
  *     '''Get the robots.txt at the provided URL.'''
+ *     after_response_hook = kwargs.pop('after_response_hook', None)             # <<<<<<<<<<<<<<
+ *     after_parse_hook = kwargs.pop('after_parse_hook', None)
+ *     try:
+ */
+  __Pyx_TraceLine(82,0,__PYX_ERR(1, 82, __pyx_L1_error))
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_kwargs, __pyx_n_s_pop); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_after_response_hook = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "reppy/robots.pyx":83
+ *     '''Get the robots.txt at the provided URL.'''
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
+ *     after_parse_hook = kwargs.pop('after_parse_hook', None)             # <<<<<<<<<<<<<<
+ *     try:
+ *         # Limit the size of the request
+ */
+  __Pyx_TraceLine(83,0,__PYX_ERR(1, 83, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_kwargs, __pyx_n_s_pop); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 83, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 83, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_after_parse_hook = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "reppy/robots.pyx":84
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
+ *     after_parse_hook = kwargs.pop('after_parse_hook', None)
  *     try:             # <<<<<<<<<<<<<<
  *         # Limit the size of the request
  *         kwargs['stream'] = True
  */
-  __Pyx_TraceLine(82,0,__PYX_ERR(1, 82, __pyx_L3_error))
+  __Pyx_TraceLine(84,0,__PYX_ERR(1, 84, __pyx_L3_error))
   {
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
-    __Pyx_ExceptionSave(&__pyx_t_1, &__pyx_t_2, &__pyx_t_3);
-    __Pyx_XGOTREF(__pyx_t_1);
-    __Pyx_XGOTREF(__pyx_t_2);
+    __Pyx_ExceptionSave(&__pyx_t_3, &__pyx_t_4, &__pyx_t_5);
     __Pyx_XGOTREF(__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_5);
     /*try:*/ {
 
-      /* "reppy/robots.pyx":84
+      /* "reppy/robots.pyx":86
  *     try:
  *         # Limit the size of the request
  *         kwargs['stream'] = True             # <<<<<<<<<<<<<<
  *         with closing(requests.get(url, *args, **kwargs)) as res:
  *             content = res.raw.read(amt=max_size, decode_content=True)
  */
-      __Pyx_TraceLine(84,0,__PYX_ERR(1, 84, __pyx_L3_error))
-      if (unlikely(PyDict_SetItem(__pyx_v_kwargs, __pyx_n_s_stream, Py_True) < 0)) __PYX_ERR(1, 84, __pyx_L3_error)
+      __Pyx_TraceLine(86,0,__PYX_ERR(1, 86, __pyx_L3_error))
+      if (unlikely(PyDict_SetItem(__pyx_v_kwargs, __pyx_n_s_stream, Py_True) < 0)) __PYX_ERR(1, 86, __pyx_L3_error)
 
-      /* "reppy/robots.pyx":85
+      /* "reppy/robots.pyx":87
  *         # Limit the size of the request
  *         kwargs['stream'] = True
  *         with closing(requests.get(url, *args, **kwargs)) as res:             # <<<<<<<<<<<<<<
  *             content = res.raw.read(amt=max_size, decode_content=True)
  *             # Try to read an additional byte, to see if the response is too big
  */
-      __Pyx_TraceLine(85,0,__PYX_ERR(1, 85, __pyx_L3_error))
+      __Pyx_TraceLine(87,0,__PYX_ERR(1, 87, __pyx_L3_error))
       /*with:*/ {
-        __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_closing); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 85, __pyx_L3_error)
-        __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_requests); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 85, __pyx_L3_error)
+        __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_closing); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 87, __pyx_L3_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_requests); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 87, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_get); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 85, __pyx_L3_error)
+        __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_get); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 87, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 85, __pyx_L3_error)
+        __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 87, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_INCREF(__pyx_v_url);
         __Pyx_GIVEREF(__pyx_v_url);
         PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v_url);
-        __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_v_args); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 85, __pyx_L3_error)
+        __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_v_args); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 87, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_8);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_8, __pyx_v_kwargs); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 85, __pyx_L3_error)
+        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_8, __pyx_v_kwargs); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 87, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
         __pyx_t_8 = NULL;
-        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
-          __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_5);
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
+          __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_2);
           if (likely(__pyx_t_8)) {
-            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
             __Pyx_INCREF(__pyx_t_8);
             __Pyx_INCREF(function);
-            __Pyx_DECREF_SET(__pyx_t_5, function);
+            __Pyx_DECREF_SET(__pyx_t_2, function);
           }
         }
         if (!__pyx_t_8) {
-          __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 85, __pyx_L3_error)
+          __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 87, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __Pyx_GOTREF(__pyx_t_4);
+          __Pyx_GOTREF(__pyx_t_1);
         } else {
           #if CYTHON_FAST_PYCALL
-          if (PyFunction_Check(__pyx_t_5)) {
+          if (PyFunction_Check(__pyx_t_2)) {
             PyObject *__pyx_temp[2] = {__pyx_t_8, __pyx_t_6};
-            __pyx_t_4 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 85, __pyx_L3_error)
+            __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 87, __pyx_L3_error)
             __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-            __Pyx_GOTREF(__pyx_t_4);
+            __Pyx_GOTREF(__pyx_t_1);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           } else
           #endif
           #if CYTHON_FAST_PYCCALL
-          if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
+          if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
             PyObject *__pyx_temp[2] = {__pyx_t_8, __pyx_t_6};
-            __pyx_t_4 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 85, __pyx_L3_error)
+            __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 87, __pyx_L3_error)
             __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-            __Pyx_GOTREF(__pyx_t_4);
+            __Pyx_GOTREF(__pyx_t_1);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           } else
           #endif
           {
-            __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 85, __pyx_L3_error)
+            __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 87, __pyx_L3_error)
             __Pyx_GOTREF(__pyx_t_7);
             __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8); __pyx_t_8 = NULL;
             __Pyx_GIVEREF(__pyx_t_6);
             PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_t_6);
             __pyx_t_6 = 0;
-            __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_7, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 85, __pyx_L3_error)
-            __Pyx_GOTREF(__pyx_t_4);
+            __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 87, __pyx_L3_error)
+            __Pyx_GOTREF(__pyx_t_1);
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           }
         }
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_9 = __Pyx_PyObject_LookupSpecial(__pyx_t_4, __pyx_n_s_exit); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 85, __pyx_L3_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_9 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_exit); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 87, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_9);
-        __pyx_t_7 = __Pyx_PyObject_LookupSpecial(__pyx_t_4, __pyx_n_s_enter); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 85, __pyx_L11_error)
+        __pyx_t_7 = __Pyx_PyObject_LookupSpecial(__pyx_t_1, __pyx_n_s_enter); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 87, __pyx_L11_error)
         __Pyx_GOTREF(__pyx_t_7);
         __pyx_t_6 = NULL;
         if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -2729,16 +2772,16 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
           }
         }
         if (__pyx_t_6) {
-          __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 85, __pyx_L11_error)
+          __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 87, __pyx_L11_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         } else {
-          __pyx_t_5 = __Pyx_PyObject_CallNoArg(__pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 85, __pyx_L11_error)
+          __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 87, __pyx_L11_error)
         }
-        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-        __pyx_t_7 = __pyx_t_5;
-        __pyx_t_5 = 0;
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        __pyx_t_7 = __pyx_t_2;
+        __pyx_t_2 = 0;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         /*try:*/ {
           {
             __Pyx_PyThreadState_declare
@@ -2751,79 +2794,79 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
               __pyx_v_res = __pyx_t_7;
               __pyx_t_7 = 0;
 
-              /* "reppy/robots.pyx":86
+              /* "reppy/robots.pyx":88
  *         kwargs['stream'] = True
  *         with closing(requests.get(url, *args, **kwargs)) as res:
  *             content = res.raw.read(amt=max_size, decode_content=True)             # <<<<<<<<<<<<<<
  *             # Try to read an additional byte, to see if the response is too big
  *             if res.raw.read(amt=1, decode_content=True):
  */
-              __Pyx_TraceLine(86,0,__PYX_ERR(1, 86, __pyx_L17_error))
-              __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_raw); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 86, __pyx_L17_error)
+              __Pyx_TraceLine(88,0,__PYX_ERR(1, 88, __pyx_L17_error))
+              __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_raw); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 88, __pyx_L17_error)
               __Pyx_GOTREF(__pyx_t_7);
-              __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_read); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 86, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_4);
+              __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_read); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 88, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_1);
               __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-              __pyx_t_7 = PyDict_New(); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 86, __pyx_L17_error)
+              __pyx_t_7 = PyDict_New(); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 88, __pyx_L17_error)
               __Pyx_GOTREF(__pyx_t_7);
-              if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_amt, __pyx_v_max_size) < 0) __PYX_ERR(1, 86, __pyx_L17_error)
-              if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_decode_content, Py_True) < 0) __PYX_ERR(1, 86, __pyx_L17_error)
-              __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 86, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_5);
-              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+              if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_amt, __pyx_v_max_size) < 0) __PYX_ERR(1, 88, __pyx_L17_error)
+              if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_decode_content, Py_True) < 0) __PYX_ERR(1, 88, __pyx_L17_error)
+              __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 88, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
+              __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
               __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-              __pyx_v_content = __pyx_t_5;
-              __pyx_t_5 = 0;
+              __pyx_v_content = __pyx_t_2;
+              __pyx_t_2 = 0;
 
-              /* "reppy/robots.pyx":88
+              /* "reppy/robots.pyx":90
  *             content = res.raw.read(amt=max_size, decode_content=True)
  *             # Try to read an additional byte, to see if the response is too big
  *             if res.raw.read(amt=1, decode_content=True):             # <<<<<<<<<<<<<<
  *                 raise exceptions.ContentTooLong(
  *                     'Content larger than %s bytes' % max_size)
  */
-              __Pyx_TraceLine(88,0,__PYX_ERR(1, 88, __pyx_L17_error))
-              __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_raw); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 88, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_5);
-              __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_read); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 88, __pyx_L17_error)
+              __Pyx_TraceLine(90,0,__PYX_ERR(1, 90, __pyx_L17_error))
+              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_raw); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 90, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
+              __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_read); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 90, __pyx_L17_error)
               __Pyx_GOTREF(__pyx_t_7);
-              __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-              __pyx_t_5 = PyDict_New(); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 88, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_5);
-              if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_amt, __pyx_int_1) < 0) __PYX_ERR(1, 88, __pyx_L17_error)
-              if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_decode_content, Py_True) < 0) __PYX_ERR(1, 88, __pyx_L17_error)
-              __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_empty_tuple, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 88, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_4);
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 90, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
+              if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_amt, __pyx_int_1) < 0) __PYX_ERR(1, 90, __pyx_L17_error)
+              if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_decode_content, Py_True) < 0) __PYX_ERR(1, 90, __pyx_L17_error)
+              __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 90, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_1);
               __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-              __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 88, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 90, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
               if (__pyx_t_13) {
 
-                /* "reppy/robots.pyx":89
+                /* "reppy/robots.pyx":91
  *             # Try to read an additional byte, to see if the response is too big
  *             if res.raw.read(amt=1, decode_content=True):
  *                 raise exceptions.ContentTooLong(             # <<<<<<<<<<<<<<
  *                     'Content larger than %s bytes' % max_size)
  * 
  */
-                __Pyx_TraceLine(89,0,__PYX_ERR(1, 89, __pyx_L17_error))
-                __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 89, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_5);
-                __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_ContentTooLong); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 89, __pyx_L17_error)
+                __Pyx_TraceLine(91,0,__PYX_ERR(1, 91, __pyx_L17_error))
+                __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 91, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_2);
+                __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ContentTooLong); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 91, __pyx_L17_error)
                 __Pyx_GOTREF(__pyx_t_7);
-                __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+                __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-                /* "reppy/robots.pyx":90
+                /* "reppy/robots.pyx":92
  *             if res.raw.read(amt=1, decode_content=True):
  *                 raise exceptions.ContentTooLong(
  *                     'Content larger than %s bytes' % max_size)             # <<<<<<<<<<<<<<
  * 
- *             # Get the TTL policy's ruling on the ttl
+ *             if after_response_hook is not None:
  */
-                __Pyx_TraceLine(90,0,__PYX_ERR(1, 90, __pyx_L17_error))
-                __pyx_t_5 = __Pyx_PyString_Format(__pyx_kp_s_Content_larger_than_s_bytes, __pyx_v_max_size); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 90, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_5);
+                __Pyx_TraceLine(92,0,__PYX_ERR(1, 92, __pyx_L17_error))
+                __pyx_t_2 = __Pyx_PyString_Format(__pyx_kp_s_Content_larger_than_s_bytes, __pyx_v_max_size); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 92, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_2);
                 __pyx_t_6 = NULL;
                 if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
                   __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_7);
@@ -2835,46 +2878,46 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
                   }
                 }
                 if (!__pyx_t_6) {
-                  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 89, __pyx_L17_error)
-                  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-                  __Pyx_GOTREF(__pyx_t_4);
+                  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 91, __pyx_L17_error)
+                  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+                  __Pyx_GOTREF(__pyx_t_1);
                 } else {
                   #if CYTHON_FAST_PYCALL
                   if (PyFunction_Check(__pyx_t_7)) {
-                    PyObject *__pyx_temp[2] = {__pyx_t_6, __pyx_t_5};
-                    __pyx_t_4 = __Pyx_PyFunction_FastCall(__pyx_t_7, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 89, __pyx_L17_error)
+                    PyObject *__pyx_temp[2] = {__pyx_t_6, __pyx_t_2};
+                    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_7, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 91, __pyx_L17_error)
                     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-                    __Pyx_GOTREF(__pyx_t_4);
-                    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+                    __Pyx_GOTREF(__pyx_t_1);
+                    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
                   } else
                   #endif
                   #if CYTHON_FAST_PYCCALL
                   if (__Pyx_PyFastCFunction_Check(__pyx_t_7)) {
-                    PyObject *__pyx_temp[2] = {__pyx_t_6, __pyx_t_5};
-                    __pyx_t_4 = __Pyx_PyCFunction_FastCall(__pyx_t_7, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 89, __pyx_L17_error)
+                    PyObject *__pyx_temp[2] = {__pyx_t_6, __pyx_t_2};
+                    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_7, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 91, __pyx_L17_error)
                     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-                    __Pyx_GOTREF(__pyx_t_4);
-                    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+                    __Pyx_GOTREF(__pyx_t_1);
+                    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
                   } else
                   #endif
                   {
-                    __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 89, __pyx_L17_error)
+                    __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 91, __pyx_L17_error)
                     __Pyx_GOTREF(__pyx_t_8);
                     __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
-                    __Pyx_GIVEREF(__pyx_t_5);
-                    PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_t_5);
-                    __pyx_t_5 = 0;
-                    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_8, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 89, __pyx_L17_error)
-                    __Pyx_GOTREF(__pyx_t_4);
+                    __Pyx_GIVEREF(__pyx_t_2);
+                    PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_t_2);
+                    __pyx_t_2 = 0;
+                    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 91, __pyx_L17_error)
+                    __Pyx_GOTREF(__pyx_t_1);
                     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
                   }
                 }
                 __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                __Pyx_Raise(__pyx_t_4, 0, 0, 0);
-                __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-                __PYX_ERR(1, 89, __pyx_L17_error)
+                __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+                __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+                __PYX_ERR(1, 91, __pyx_L17_error)
 
-                /* "reppy/robots.pyx":88
+                /* "reppy/robots.pyx":90
  *             content = res.raw.read(amt=max_size, decode_content=True)
  *             # Try to read an additional byte, to see if the response is too big
  *             if res.raw.read(amt=1, decode_content=True):             # <<<<<<<<<<<<<<
@@ -2883,281 +2926,442 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
  */
               }
 
-              /* "reppy/robots.pyx":93
+              /* "reppy/robots.pyx":94
+ *                     'Content larger than %s bytes' % max_size)
+ * 
+ *             if after_response_hook is not None:             # <<<<<<<<<<<<<<
+ *                 after_response_hook(res)
+ * 
+ */
+              __Pyx_TraceLine(94,0,__PYX_ERR(1, 94, __pyx_L17_error))
+              __pyx_t_13 = (__pyx_v_after_response_hook != Py_None);
+              __pyx_t_14 = (__pyx_t_13 != 0);
+              if (__pyx_t_14) {
+
+                /* "reppy/robots.pyx":95
+ * 
+ *             if after_response_hook is not None:
+ *                 after_response_hook(res)             # <<<<<<<<<<<<<<
+ * 
+ *             # Get the TTL policy's ruling on the ttl
+ */
+                __Pyx_TraceLine(95,0,__PYX_ERR(1, 95, __pyx_L17_error))
+                __Pyx_INCREF(__pyx_v_after_response_hook);
+                __pyx_t_7 = __pyx_v_after_response_hook; __pyx_t_8 = NULL;
+                if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
+                  __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_7);
+                  if (likely(__pyx_t_8)) {
+                    PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
+                    __Pyx_INCREF(__pyx_t_8);
+                    __Pyx_INCREF(function);
+                    __Pyx_DECREF_SET(__pyx_t_7, function);
+                  }
+                }
+                if (!__pyx_t_8) {
+                  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_res); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 95, __pyx_L17_error)
+                  __Pyx_GOTREF(__pyx_t_1);
+                } else {
+                  #if CYTHON_FAST_PYCALL
+                  if (PyFunction_Check(__pyx_t_7)) {
+                    PyObject *__pyx_temp[2] = {__pyx_t_8, __pyx_v_res};
+                    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_7, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 95, __pyx_L17_error)
+                    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+                    __Pyx_GOTREF(__pyx_t_1);
+                  } else
+                  #endif
+                  #if CYTHON_FAST_PYCCALL
+                  if (__Pyx_PyFastCFunction_Check(__pyx_t_7)) {
+                    PyObject *__pyx_temp[2] = {__pyx_t_8, __pyx_v_res};
+                    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_7, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 95, __pyx_L17_error)
+                    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+                    __Pyx_GOTREF(__pyx_t_1);
+                  } else
+                  #endif
+                  {
+                    __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 95, __pyx_L17_error)
+                    __Pyx_GOTREF(__pyx_t_2);
+                    __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_8); __pyx_t_8 = NULL;
+                    __Pyx_INCREF(__pyx_v_res);
+                    __Pyx_GIVEREF(__pyx_v_res);
+                    PyTuple_SET_ITEM(__pyx_t_2, 0+1, __pyx_v_res);
+                    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 95, __pyx_L17_error)
+                    __Pyx_GOTREF(__pyx_t_1);
+                    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+                  }
+                }
+                __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+                __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+                /* "reppy/robots.pyx":94
+ *                     'Content larger than %s bytes' % max_size)
+ * 
+ *             if after_response_hook is not None:             # <<<<<<<<<<<<<<
+ *                 after_response_hook(res)
+ * 
+ */
+              }
+
+              /* "reppy/robots.pyx":98
  * 
  *             # Get the TTL policy's ruling on the ttl
  *             expires = (ttl_policy or cls.DEFAULT_TTL_POLICY).expires(res)             # <<<<<<<<<<<<<<
  * 
  *             if res.status_code == 200:
  */
-              __Pyx_TraceLine(93,0,__PYX_ERR(1, 93, __pyx_L17_error))
-              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_v_ttl_policy); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 93, __pyx_L17_error)
-              if (!__pyx_t_13) {
+              __Pyx_TraceLine(98,0,__PYX_ERR(1, 98, __pyx_L17_error))
+              __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_v_ttl_policy); if (unlikely(__pyx_t_14 < 0)) __PYX_ERR(1, 98, __pyx_L17_error)
+              if (!__pyx_t_14) {
               } else {
                 __Pyx_INCREF(__pyx_v_ttl_policy);
                 __pyx_t_7 = __pyx_v_ttl_policy;
-                goto __pyx_L26_bool_binop_done;
+                goto __pyx_L27_bool_binop_done;
               }
-              __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_n_s_DEFAULT_TTL_POLICY); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 93, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_8);
-              __Pyx_INCREF(__pyx_t_8);
-              __pyx_t_7 = __pyx_t_8;
-              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-              __pyx_L26_bool_binop_done:;
-              __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_expires); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 93, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_8);
+              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_n_s_DEFAULT_TTL_POLICY); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 98, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
+              __Pyx_INCREF(__pyx_t_2);
+              __pyx_t_7 = __pyx_t_2;
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __pyx_L27_bool_binop_done:;
+              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_expires); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 98, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
               __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
               __pyx_t_7 = NULL;
-              if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
-                __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_8);
+              if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+                __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_2);
                 if (likely(__pyx_t_7)) {
-                  PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+                  PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
                   __Pyx_INCREF(__pyx_t_7);
                   __Pyx_INCREF(function);
-                  __Pyx_DECREF_SET(__pyx_t_8, function);
+                  __Pyx_DECREF_SET(__pyx_t_2, function);
                 }
               }
               if (!__pyx_t_7) {
-                __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_v_res); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 93, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_4);
+                __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_res); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 98, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_1);
               } else {
                 #if CYTHON_FAST_PYCALL
-                if (PyFunction_Check(__pyx_t_8)) {
+                if (PyFunction_Check(__pyx_t_2)) {
                   PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_res};
-                  __pyx_t_4 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 93, __pyx_L17_error)
+                  __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 98, __pyx_L17_error)
                   __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-                  __Pyx_GOTREF(__pyx_t_4);
+                  __Pyx_GOTREF(__pyx_t_1);
                 } else
                 #endif
                 #if CYTHON_FAST_PYCCALL
-                if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
+                if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
                   PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_res};
-                  __pyx_t_4 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 93, __pyx_L17_error)
+                  __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 98, __pyx_L17_error)
                   __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-                  __Pyx_GOTREF(__pyx_t_4);
+                  __Pyx_GOTREF(__pyx_t_1);
                 } else
                 #endif
                 {
-                  __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 93, __pyx_L17_error)
-                  __Pyx_GOTREF(__pyx_t_5);
-                  __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_7); __pyx_t_7 = NULL;
+                  __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 98, __pyx_L17_error)
+                  __Pyx_GOTREF(__pyx_t_8);
+                  __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_7); __pyx_t_7 = NULL;
                   __Pyx_INCREF(__pyx_v_res);
                   __Pyx_GIVEREF(__pyx_v_res);
-                  PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_res);
-                  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 93, __pyx_L17_error)
-                  __Pyx_GOTREF(__pyx_t_4);
-                  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+                  PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_v_res);
+                  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 98, __pyx_L17_error)
+                  __Pyx_GOTREF(__pyx_t_1);
+                  __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
                 }
               }
-              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-              __pyx_v_expires = __pyx_t_4;
-              __pyx_t_4 = 0;
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __pyx_v_expires = __pyx_t_1;
+              __pyx_t_1 = 0;
 
-              /* "reppy/robots.pyx":95
+              /* "reppy/robots.pyx":100
  *             expires = (ttl_policy or cls.DEFAULT_TTL_POLICY).expires(res)
  * 
  *             if res.status_code == 200:             # <<<<<<<<<<<<<<
- *                 return cls.parse(url, content, expires)
- *             elif res.status_code in (401, 403):
+ *                 robots = cls.parse(url, content, expires)
+ *                 if after_parse_hook is not None:
  */
-              __Pyx_TraceLine(95,0,__PYX_ERR(1, 95, __pyx_L17_error))
-              __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 95, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_4);
-              __pyx_t_8 = __Pyx_PyInt_EqObjC(__pyx_t_4, __pyx_int_200, 0xC8, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 95, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_8);
-              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_8); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 95, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-              if (__pyx_t_13) {
+              __Pyx_TraceLine(100,0,__PYX_ERR(1, 100, __pyx_L17_error))
+              __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 100, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_1);
+              __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_200, 0xC8, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 100, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
+              __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+              __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_14 < 0)) __PYX_ERR(1, 100, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              if (__pyx_t_14) {
 
-                /* "reppy/robots.pyx":96
+                /* "reppy/robots.pyx":101
  * 
  *             if res.status_code == 200:
- *                 return cls.parse(url, content, expires)             # <<<<<<<<<<<<<<
- *             elif res.status_code in (401, 403):
- *                 return AllowNone(url, expires)
+ *                 robots = cls.parse(url, content, expires)             # <<<<<<<<<<<<<<
+ *                 if after_parse_hook is not None:
+ *                     after_parse_hook(robots)
  */
-                __Pyx_TraceLine(96,0,__PYX_ERR(1, 96, __pyx_L17_error))
-                __Pyx_XDECREF(__pyx_r);
-                __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_n_s_parse); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 96, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_4);
-                __pyx_t_5 = NULL;
-                __pyx_t_14 = 0;
-                if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
-                  __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_4);
-                  if (likely(__pyx_t_5)) {
-                    PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-                    __Pyx_INCREF(__pyx_t_5);
+                __Pyx_TraceLine(101,0,__PYX_ERR(1, 101, __pyx_L17_error))
+                __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_n_s_parse); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 101, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_1);
+                __pyx_t_8 = NULL;
+                __pyx_t_15 = 0;
+                if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_1))) {
+                  __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_1);
+                  if (likely(__pyx_t_8)) {
+                    PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+                    __Pyx_INCREF(__pyx_t_8);
                     __Pyx_INCREF(function);
-                    __Pyx_DECREF_SET(__pyx_t_4, function);
-                    __pyx_t_14 = 1;
+                    __Pyx_DECREF_SET(__pyx_t_1, function);
+                    __pyx_t_15 = 1;
                   }
                 }
                 #if CYTHON_FAST_PYCALL
-                if (PyFunction_Check(__pyx_t_4)) {
-                  PyObject *__pyx_temp[4] = {__pyx_t_5, __pyx_v_url, __pyx_v_content, __pyx_v_expires};
-                  __pyx_t_8 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_14, 3+__pyx_t_14); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 96, __pyx_L17_error)
-                  __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-                  __Pyx_GOTREF(__pyx_t_8);
+                if (PyFunction_Check(__pyx_t_1)) {
+                  PyObject *__pyx_temp[4] = {__pyx_t_8, __pyx_v_url, __pyx_v_content, __pyx_v_expires};
+                  __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_15, 3+__pyx_t_15); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 101, __pyx_L17_error)
+                  __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+                  __Pyx_GOTREF(__pyx_t_2);
                 } else
                 #endif
                 #if CYTHON_FAST_PYCCALL
-                if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
-                  PyObject *__pyx_temp[4] = {__pyx_t_5, __pyx_v_url, __pyx_v_content, __pyx_v_expires};
-                  __pyx_t_8 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_14, 3+__pyx_t_14); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 96, __pyx_L17_error)
-                  __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-                  __Pyx_GOTREF(__pyx_t_8);
+                if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
+                  PyObject *__pyx_temp[4] = {__pyx_t_8, __pyx_v_url, __pyx_v_content, __pyx_v_expires};
+                  __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-__pyx_t_15, 3+__pyx_t_15); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 101, __pyx_L17_error)
+                  __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+                  __Pyx_GOTREF(__pyx_t_2);
                 } else
                 #endif
                 {
-                  __pyx_t_7 = PyTuple_New(3+__pyx_t_14); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 96, __pyx_L17_error)
+                  __pyx_t_7 = PyTuple_New(3+__pyx_t_15); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 101, __pyx_L17_error)
                   __Pyx_GOTREF(__pyx_t_7);
-                  if (__pyx_t_5) {
-                    __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
+                  if (__pyx_t_8) {
+                    __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8); __pyx_t_8 = NULL;
                   }
                   __Pyx_INCREF(__pyx_v_url);
                   __Pyx_GIVEREF(__pyx_v_url);
-                  PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_14, __pyx_v_url);
+                  PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_15, __pyx_v_url);
                   __Pyx_INCREF(__pyx_v_content);
                   __Pyx_GIVEREF(__pyx_v_content);
-                  PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_14, __pyx_v_content);
+                  PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_15, __pyx_v_content);
                   __Pyx_INCREF(__pyx_v_expires);
                   __Pyx_GIVEREF(__pyx_v_expires);
-                  PyTuple_SET_ITEM(__pyx_t_7, 2+__pyx_t_14, __pyx_v_expires);
-                  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_7, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 96, __pyx_L17_error)
-                  __Pyx_GOTREF(__pyx_t_8);
+                  PyTuple_SET_ITEM(__pyx_t_7, 2+__pyx_t_15, __pyx_v_expires);
+                  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_7, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 101, __pyx_L17_error)
+                  __Pyx_GOTREF(__pyx_t_2);
                   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
                 }
-                __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-                __pyx_r = __pyx_t_8;
-                __pyx_t_8 = 0;
+                __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+                __pyx_v_robots = __pyx_t_2;
+                __pyx_t_2 = 0;
+
+                /* "reppy/robots.pyx":102
+ *             if res.status_code == 200:
+ *                 robots = cls.parse(url, content, expires)
+ *                 if after_parse_hook is not None:             # <<<<<<<<<<<<<<
+ *                     after_parse_hook(robots)
+ *                 return robots
+ */
+                __Pyx_TraceLine(102,0,__PYX_ERR(1, 102, __pyx_L17_error))
+                __pyx_t_14 = (__pyx_v_after_parse_hook != Py_None);
+                __pyx_t_13 = (__pyx_t_14 != 0);
+                if (__pyx_t_13) {
+
+                  /* "reppy/robots.pyx":103
+ *                 robots = cls.parse(url, content, expires)
+ *                 if after_parse_hook is not None:
+ *                     after_parse_hook(robots)             # <<<<<<<<<<<<<<
+ *                 return robots
+ *             elif res.status_code in (401, 403):
+ */
+                  __Pyx_TraceLine(103,0,__PYX_ERR(1, 103, __pyx_L17_error))
+                  __Pyx_INCREF(__pyx_v_after_parse_hook);
+                  __pyx_t_1 = __pyx_v_after_parse_hook; __pyx_t_7 = NULL;
+                  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
+                    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_1);
+                    if (likely(__pyx_t_7)) {
+                      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+                      __Pyx_INCREF(__pyx_t_7);
+                      __Pyx_INCREF(function);
+                      __Pyx_DECREF_SET(__pyx_t_1, function);
+                    }
+                  }
+                  if (!__pyx_t_7) {
+                    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_robots); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 103, __pyx_L17_error)
+                    __Pyx_GOTREF(__pyx_t_2);
+                  } else {
+                    #if CYTHON_FAST_PYCALL
+                    if (PyFunction_Check(__pyx_t_1)) {
+                      PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_robots};
+                      __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 103, __pyx_L17_error)
+                      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+                      __Pyx_GOTREF(__pyx_t_2);
+                    } else
+                    #endif
+                    #if CYTHON_FAST_PYCCALL
+                    if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
+                      PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_robots};
+                      __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 103, __pyx_L17_error)
+                      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+                      __Pyx_GOTREF(__pyx_t_2);
+                    } else
+                    #endif
+                    {
+                      __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 103, __pyx_L17_error)
+                      __Pyx_GOTREF(__pyx_t_8);
+                      __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_7); __pyx_t_7 = NULL;
+                      __Pyx_INCREF(__pyx_v_robots);
+                      __Pyx_GIVEREF(__pyx_v_robots);
+                      PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_v_robots);
+                      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 103, __pyx_L17_error)
+                      __Pyx_GOTREF(__pyx_t_2);
+                      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+                    }
+                  }
+                  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+                  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+                  /* "reppy/robots.pyx":102
+ *             if res.status_code == 200:
+ *                 robots = cls.parse(url, content, expires)
+ *                 if after_parse_hook is not None:             # <<<<<<<<<<<<<<
+ *                     after_parse_hook(robots)
+ *                 return robots
+ */
+                }
+
+                /* "reppy/robots.pyx":104
+ *                 if after_parse_hook is not None:
+ *                     after_parse_hook(robots)
+ *                 return robots             # <<<<<<<<<<<<<<
+ *             elif res.status_code in (401, 403):
+ *                 return AllowNone(url, expires)
+ */
+                __Pyx_TraceLine(104,0,__PYX_ERR(1, 104, __pyx_L17_error))
+                __Pyx_XDECREF(__pyx_r);
+                __Pyx_INCREF(__pyx_v_robots);
+                __pyx_r = __pyx_v_robots;
                 goto __pyx_L21_try_return;
 
-                /* "reppy/robots.pyx":95
+                /* "reppy/robots.pyx":100
  *             expires = (ttl_policy or cls.DEFAULT_TTL_POLICY).expires(res)
  * 
  *             if res.status_code == 200:             # <<<<<<<<<<<<<<
- *                 return cls.parse(url, content, expires)
- *             elif res.status_code in (401, 403):
+ *                 robots = cls.parse(url, content, expires)
+ *                 if after_parse_hook is not None:
  */
               }
 
-              /* "reppy/robots.pyx":97
- *             if res.status_code == 200:
- *                 return cls.parse(url, content, expires)
+              /* "reppy/robots.pyx":105
+ *                     after_parse_hook(robots)
+ *                 return robots
  *             elif res.status_code in (401, 403):             # <<<<<<<<<<<<<<
  *                 return AllowNone(url, expires)
  *             elif res.status_code >= 400 and res.status_code < 500:
  */
-              __Pyx_TraceLine(97,0,__PYX_ERR(1, 97, __pyx_L17_error))
-              __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 97, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_8);
-              __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_t_8, __pyx_int_401, 0x191, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 97, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_4);
-              __pyx_t_15 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_15 < 0)) __PYX_ERR(1, 97, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-              if (!__pyx_t_15) {
+              __Pyx_TraceLine(105,0,__PYX_ERR(1, 105, __pyx_L17_error))
+              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 105, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
+              __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_401, 0x191, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 105, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_1);
+              __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_14 < 0)) __PYX_ERR(1, 105, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+              if (!__pyx_t_14) {
               } else {
-                __pyx_t_13 = __pyx_t_15;
-                goto __pyx_L29_bool_binop_done;
+                __pyx_t_13 = __pyx_t_14;
+                goto __pyx_L31_bool_binop_done;
               }
-              __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_t_8, __pyx_int_403, 0x193, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 97, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_4);
-              __pyx_t_15 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_15 < 0)) __PYX_ERR(1, 97, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-              __pyx_t_13 = __pyx_t_15;
-              __pyx_L29_bool_binop_done:;
-              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-              __pyx_t_15 = (__pyx_t_13 != 0);
-              if (__pyx_t_15) {
+              __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_403, 0x193, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 105, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_1);
+              __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_14 < 0)) __PYX_ERR(1, 105, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+              __pyx_t_13 = __pyx_t_14;
+              __pyx_L31_bool_binop_done:;
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __pyx_t_14 = (__pyx_t_13 != 0);
+              if (__pyx_t_14) {
 
-                /* "reppy/robots.pyx":98
- *                 return cls.parse(url, content, expires)
+                /* "reppy/robots.pyx":106
+ *                 return robots
  *             elif res.status_code in (401, 403):
  *                 return AllowNone(url, expires)             # <<<<<<<<<<<<<<
  *             elif res.status_code >= 400 and res.status_code < 500:
  *                 return AllowAll(url, expires)
  */
-                __Pyx_TraceLine(98,0,__PYX_ERR(1, 98, __pyx_L17_error))
+                __Pyx_TraceLine(106,0,__PYX_ERR(1, 106, __pyx_L17_error))
                 __Pyx_XDECREF(__pyx_r);
-                __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 98, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_8);
+                __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 106, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_2);
                 __Pyx_INCREF(__pyx_v_url);
                 __Pyx_GIVEREF(__pyx_v_url);
-                PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_v_url);
+                PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_url);
                 __Pyx_INCREF(__pyx_v_expires);
                 __Pyx_GIVEREF(__pyx_v_expires);
-                PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_v_expires);
-                __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_5reppy_6robots_AllowNone), __pyx_t_8, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 98, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_4);
-                __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-                __pyx_r = __pyx_t_4;
-                __pyx_t_4 = 0;
+                PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v_expires);
+                __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_5reppy_6robots_AllowNone), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 106, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_1);
+                __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+                __pyx_r = __pyx_t_1;
+                __pyx_t_1 = 0;
                 goto __pyx_L21_try_return;
 
-                /* "reppy/robots.pyx":97
- *             if res.status_code == 200:
- *                 return cls.parse(url, content, expires)
+                /* "reppy/robots.pyx":105
+ *                     after_parse_hook(robots)
+ *                 return robots
  *             elif res.status_code in (401, 403):             # <<<<<<<<<<<<<<
  *                 return AllowNone(url, expires)
  *             elif res.status_code >= 400 and res.status_code < 500:
  */
               }
 
-              /* "reppy/robots.pyx":99
+              /* "reppy/robots.pyx":107
  *             elif res.status_code in (401, 403):
  *                 return AllowNone(url, expires)
  *             elif res.status_code >= 400 and res.status_code < 500:             # <<<<<<<<<<<<<<
  *                 return AllowAll(url, expires)
  *             else:
  */
-              __Pyx_TraceLine(99,0,__PYX_ERR(1, 99, __pyx_L17_error))
-              __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 99, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_4);
-              __pyx_t_8 = PyObject_RichCompare(__pyx_t_4, __pyx_int_400, Py_GE); __Pyx_XGOTREF(__pyx_t_8); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 99, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_8); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 99, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+              __Pyx_TraceLine(107,0,__PYX_ERR(1, 107, __pyx_L17_error))
+              __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 107, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_1);
+              __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_400, Py_GE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 107, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 107, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
               if (__pyx_t_13) {
               } else {
-                __pyx_t_15 = __pyx_t_13;
-                goto __pyx_L31_bool_binop_done;
+                __pyx_t_14 = __pyx_t_13;
+                goto __pyx_L33_bool_binop_done;
               }
-              __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 99, __pyx_L17_error)
-              __Pyx_GOTREF(__pyx_t_8);
-              __pyx_t_4 = PyObject_RichCompare(__pyx_t_8, __pyx_int_500, Py_LT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 99, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 99, __pyx_L17_error)
-              __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-              __pyx_t_15 = __pyx_t_13;
-              __pyx_L31_bool_binop_done:;
-              if (__pyx_t_15) {
+              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 107, __pyx_L17_error)
+              __Pyx_GOTREF(__pyx_t_2);
+              __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_int_500, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 107, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_13 < 0)) __PYX_ERR(1, 107, __pyx_L17_error)
+              __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+              __pyx_t_14 = __pyx_t_13;
+              __pyx_L33_bool_binop_done:;
+              if (__pyx_t_14) {
 
-                /* "reppy/robots.pyx":100
+                /* "reppy/robots.pyx":108
  *                 return AllowNone(url, expires)
  *             elif res.status_code >= 400 and res.status_code < 500:
  *                 return AllowAll(url, expires)             # <<<<<<<<<<<<<<
  *             else:
  *                 raise exceptions.BadStatusCode(
  */
-                __Pyx_TraceLine(100,0,__PYX_ERR(1, 100, __pyx_L17_error))
+                __Pyx_TraceLine(108,0,__PYX_ERR(1, 108, __pyx_L17_error))
                 __Pyx_XDECREF(__pyx_r);
-                __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 100, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_4);
+                __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 108, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_1);
                 __Pyx_INCREF(__pyx_v_url);
                 __Pyx_GIVEREF(__pyx_v_url);
-                PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_url);
+                PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_url);
                 __Pyx_INCREF(__pyx_v_expires);
                 __Pyx_GIVEREF(__pyx_v_expires);
-                PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_v_expires);
-                __pyx_t_8 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_5reppy_6robots_AllowAll), __pyx_t_4, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 100, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_8);
-                __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-                __pyx_r = __pyx_t_8;
-                __pyx_t_8 = 0;
+                PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_expires);
+                __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_5reppy_6robots_AllowAll), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 108, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_2);
+                __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+                __pyx_r = __pyx_t_2;
+                __pyx_t_2 = 0;
                 goto __pyx_L21_try_return;
 
-                /* "reppy/robots.pyx":99
+                /* "reppy/robots.pyx":107
  *             elif res.status_code in (401, 403):
  *                 return AllowNone(url, expires)
  *             elif res.status_code >= 400 and res.status_code < 500:             # <<<<<<<<<<<<<<
@@ -3166,99 +3370,99 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
  */
               }
 
-              /* "reppy/robots.pyx":102
+              /* "reppy/robots.pyx":110
  *                 return AllowAll(url, expires)
  *             else:
  *                 raise exceptions.BadStatusCode(             # <<<<<<<<<<<<<<
  *                     'Got %i for %s' % (res.status_code, url), res.status_code)
  *     except SSLError as exc:
  */
-              __Pyx_TraceLine(102,0,__PYX_ERR(1, 102, __pyx_L17_error))
+              __Pyx_TraceLine(110,0,__PYX_ERR(1, 110, __pyx_L17_error))
               /*else*/ {
-                __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 102, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_4);
-                __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_BadStatusCode); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 102, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_7);
-                __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+                __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 110, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_1);
+                __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_BadStatusCode); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 110, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_8);
+                __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-                /* "reppy/robots.pyx":103
+                /* "reppy/robots.pyx":111
  *             else:
  *                 raise exceptions.BadStatusCode(
  *                     'Got %i for %s' % (res.status_code, url), res.status_code)             # <<<<<<<<<<<<<<
  *     except SSLError as exc:
  *         raise exceptions.SSLException(exc)
  */
-                __Pyx_TraceLine(103,0,__PYX_ERR(1, 103, __pyx_L17_error))
-                __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 103, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_4);
-                __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 103, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_5);
-                __Pyx_GIVEREF(__pyx_t_4);
-                PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4);
+                __Pyx_TraceLine(111,0,__PYX_ERR(1, 111, __pyx_L17_error))
+                __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 111, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_1);
+                __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 111, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_7);
+                __Pyx_GIVEREF(__pyx_t_1);
+                PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_1);
                 __Pyx_INCREF(__pyx_v_url);
                 __Pyx_GIVEREF(__pyx_v_url);
-                PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_v_url);
-                __pyx_t_4 = 0;
-                __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Got_i_for_s, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 103, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_4);
-                __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-                __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 103, __pyx_L17_error)
-                __Pyx_GOTREF(__pyx_t_5);
+                PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_v_url);
+                __pyx_t_1 = 0;
+                __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_Got_i_for_s, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 111, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_1);
+                __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+                __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_res, __pyx_n_s_status_code); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 111, __pyx_L17_error)
+                __Pyx_GOTREF(__pyx_t_7);
                 __pyx_t_6 = NULL;
-                __pyx_t_14 = 0;
-                if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
-                  __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_7);
+                __pyx_t_15 = 0;
+                if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
+                  __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_8);
                   if (likely(__pyx_t_6)) {
-                    PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
+                    PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
                     __Pyx_INCREF(__pyx_t_6);
                     __Pyx_INCREF(function);
-                    __Pyx_DECREF_SET(__pyx_t_7, function);
-                    __pyx_t_14 = 1;
+                    __Pyx_DECREF_SET(__pyx_t_8, function);
+                    __pyx_t_15 = 1;
                   }
                 }
                 #if CYTHON_FAST_PYCALL
-                if (PyFunction_Check(__pyx_t_7)) {
-                  PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_4, __pyx_t_5};
-                  __pyx_t_8 = __Pyx_PyFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_14, 2+__pyx_t_14); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 102, __pyx_L17_error)
+                if (PyFunction_Check(__pyx_t_8)) {
+                  PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_1, __pyx_t_7};
+                  __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_15, 2+__pyx_t_15); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 110, __pyx_L17_error)
                   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-                  __Pyx_GOTREF(__pyx_t_8);
-                  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-                  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+                  __Pyx_GOTREF(__pyx_t_2);
+                  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+                  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
                 } else
                 #endif
                 #if CYTHON_FAST_PYCCALL
-                if (__Pyx_PyFastCFunction_Check(__pyx_t_7)) {
-                  PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_4, __pyx_t_5};
-                  __pyx_t_8 = __Pyx_PyCFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_14, 2+__pyx_t_14); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 102, __pyx_L17_error)
+                if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
+                  PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_1, __pyx_t_7};
+                  __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_15, 2+__pyx_t_15); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 110, __pyx_L17_error)
                   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-                  __Pyx_GOTREF(__pyx_t_8);
-                  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-                  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+                  __Pyx_GOTREF(__pyx_t_2);
+                  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+                  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
                 } else
                 #endif
                 {
-                  __pyx_t_16 = PyTuple_New(2+__pyx_t_14); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 102, __pyx_L17_error)
+                  __pyx_t_16 = PyTuple_New(2+__pyx_t_15); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 110, __pyx_L17_error)
                   __Pyx_GOTREF(__pyx_t_16);
                   if (__pyx_t_6) {
                     __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_6); __pyx_t_6 = NULL;
                   }
-                  __Pyx_GIVEREF(__pyx_t_4);
-                  PyTuple_SET_ITEM(__pyx_t_16, 0+__pyx_t_14, __pyx_t_4);
-                  __Pyx_GIVEREF(__pyx_t_5);
-                  PyTuple_SET_ITEM(__pyx_t_16, 1+__pyx_t_14, __pyx_t_5);
-                  __pyx_t_4 = 0;
-                  __pyx_t_5 = 0;
-                  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_16, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 102, __pyx_L17_error)
-                  __Pyx_GOTREF(__pyx_t_8);
+                  __Pyx_GIVEREF(__pyx_t_1);
+                  PyTuple_SET_ITEM(__pyx_t_16, 0+__pyx_t_15, __pyx_t_1);
+                  __Pyx_GIVEREF(__pyx_t_7);
+                  PyTuple_SET_ITEM(__pyx_t_16, 1+__pyx_t_15, __pyx_t_7);
+                  __pyx_t_1 = 0;
+                  __pyx_t_7 = 0;
+                  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_16, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 110, __pyx_L17_error)
+                  __Pyx_GOTREF(__pyx_t_2);
                   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
                 }
-                __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-                __Pyx_Raise(__pyx_t_8, 0, 0, 0);
                 __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-                __PYX_ERR(1, 102, __pyx_L17_error)
+                __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+                __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+                __PYX_ERR(1, 110, __pyx_L17_error)
               }
 
-              /* "reppy/robots.pyx":85
+              /* "reppy/robots.pyx":87
  *         # Limit the size of the request
  *         kwargs['stream'] = True
  *         with closing(requests.get(url, *args, **kwargs)) as res:             # <<<<<<<<<<<<<<
@@ -3269,38 +3473,38 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
             __pyx_L17_error:;
             __Pyx_PyThreadState_assign
             __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-            __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-            __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-            __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
+            __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
             __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+            __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
             __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+            __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
             /*except:*/ {
               __Pyx_AddTraceback("reppy.robots.FetchMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
-              if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_7, &__pyx_t_16) < 0) __PYX_ERR(1, 85, __pyx_L19_except_error)
+              if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_8, &__pyx_t_16) < 0) __PYX_ERR(1, 87, __pyx_L19_except_error)
+              __Pyx_GOTREF(__pyx_t_2);
               __Pyx_GOTREF(__pyx_t_8);
-              __Pyx_GOTREF(__pyx_t_7);
               __Pyx_GOTREF(__pyx_t_16);
-              __pyx_t_5 = PyTuple_Pack(3, __pyx_t_8, __pyx_t_7, __pyx_t_16); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 85, __pyx_L19_except_error)
-              __Pyx_GOTREF(__pyx_t_5);
-              __pyx_t_17 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_5, NULL);
+              __pyx_t_7 = PyTuple_Pack(3, __pyx_t_2, __pyx_t_8, __pyx_t_16); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 87, __pyx_L19_except_error)
+              __Pyx_GOTREF(__pyx_t_7);
+              __pyx_t_17 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_7, NULL);
               __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-              __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-              if (unlikely(!__pyx_t_17)) __PYX_ERR(1, 85, __pyx_L19_except_error)
-              __Pyx_GOTREF(__pyx_t_17);
-              __pyx_t_15 = __Pyx_PyObject_IsTrue(__pyx_t_17);
-              __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
-              if (__pyx_t_15 < 0) __PYX_ERR(1, 85, __pyx_L19_except_error)
-              __pyx_t_13 = ((!(__pyx_t_15 != 0)) != 0);
-              if (__pyx_t_13) {
-                __Pyx_GIVEREF(__pyx_t_8);
-                __Pyx_GIVEREF(__pyx_t_7);
-                __Pyx_XGIVEREF(__pyx_t_16);
-                __Pyx_ErrRestoreWithState(__pyx_t_8, __pyx_t_7, __pyx_t_16);
-                __pyx_t_8 = 0; __pyx_t_7 = 0; __pyx_t_16 = 0; 
-                __PYX_ERR(1, 85, __pyx_L19_except_error)
-              }
-              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
               __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+              if (unlikely(!__pyx_t_17)) __PYX_ERR(1, 87, __pyx_L19_except_error)
+              __Pyx_GOTREF(__pyx_t_17);
+              __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_t_17);
+              __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
+              if (__pyx_t_14 < 0) __PYX_ERR(1, 87, __pyx_L19_except_error)
+              __pyx_t_13 = ((!(__pyx_t_14 != 0)) != 0);
+              if (__pyx_t_13) {
+                __Pyx_GIVEREF(__pyx_t_2);
+                __Pyx_GIVEREF(__pyx_t_8);
+                __Pyx_XGIVEREF(__pyx_t_16);
+                __Pyx_ErrRestoreWithState(__pyx_t_2, __pyx_t_8, __pyx_t_16);
+                __pyx_t_2 = 0; __pyx_t_8 = 0; __pyx_t_16 = 0; 
+                __PYX_ERR(1, 87, __pyx_L19_except_error)
+              }
+              __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+              __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
               __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
               goto __pyx_L18_exception_handled;
             }
@@ -3329,9 +3533,9 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
         /*finally:*/ {
           /*normal exit:*/{
             if (__pyx_t_9) {
-              __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__6, NULL);
+              __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__8, NULL);
               __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-              if (unlikely(!__pyx_t_12)) __PYX_ERR(1, 85, __pyx_L3_error)
+              if (unlikely(!__pyx_t_12)) __PYX_ERR(1, 87, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_12);
               __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
             }
@@ -3341,9 +3545,9 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
             __pyx_t_12 = __pyx_r;
             __pyx_r = 0;
             if (__pyx_t_9) {
-              __pyx_t_11 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__7, NULL);
+              __pyx_t_11 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__9, NULL);
               __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-              if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 85, __pyx_L3_error)
+              if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 87, __pyx_L3_error)
               __Pyx_GOTREF(__pyx_t_11);
               __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
             }
@@ -3353,148 +3557,148 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
           }
           __pyx_L16:;
         }
-        goto __pyx_L36;
+        goto __pyx_L38;
         __pyx_L11_error:;
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         goto __pyx_L3_error;
-        __pyx_L36:;
+        __pyx_L38:;
       }
 
-      /* "reppy/robots.pyx":82
- * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
- *     '''Get the robots.txt at the provided URL.'''
+      /* "reppy/robots.pyx":84
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
+ *     after_parse_hook = kwargs.pop('after_parse_hook', None)
  *     try:             # <<<<<<<<<<<<<<
  *         # Limit the size of the request
  *         kwargs['stream'] = True
  */
     }
-    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     goto __pyx_L10_try_end;
     __pyx_L3_error:;
     __Pyx_PyThreadState_assign
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "reppy/robots.pyx":104
+    /* "reppy/robots.pyx":112
  *                 raise exceptions.BadStatusCode(
  *                     'Got %i for %s' % (res.status_code, url), res.status_code)
  *     except SSLError as exc:             # <<<<<<<<<<<<<<
  *         raise exceptions.SSLException(exc)
  *     except ConnectionError as exc:
  */
-    __Pyx_TraceLine(104,0,__PYX_ERR(1, 104, __pyx_L5_except_error))
-    __pyx_t_16 = __Pyx_GetModuleGlobalName(__pyx_n_s_SSLError); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 104, __pyx_L5_except_error)
+    __Pyx_TraceLine(112,0,__PYX_ERR(1, 112, __pyx_L5_except_error))
+    __pyx_t_16 = __Pyx_GetModuleGlobalName(__pyx_n_s_SSLError); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 112, __pyx_L5_except_error)
     __Pyx_GOTREF(__pyx_t_16);
-    __pyx_t_14 = __Pyx_PyErr_ExceptionMatches(__pyx_t_16);
+    __pyx_t_15 = __Pyx_PyErr_ExceptionMatches(__pyx_t_16);
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-    if (__pyx_t_14) {
+    if (__pyx_t_15) {
       __Pyx_AddTraceback("reppy.robots.FetchMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_16, &__pyx_t_7, &__pyx_t_8) < 0) __PYX_ERR(1, 104, __pyx_L5_except_error)
+      if (__Pyx_GetException(&__pyx_t_16, &__pyx_t_8, &__pyx_t_2) < 0) __PYX_ERR(1, 112, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_16);
-      __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_INCREF(__pyx_t_7);
-      __pyx_v_exc = __pyx_t_7;
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_8);
+      __pyx_v_exc = __pyx_t_8;
 
-      /* "reppy/robots.pyx":105
+      /* "reppy/robots.pyx":113
  *                     'Got %i for %s' % (res.status_code, url), res.status_code)
  *     except SSLError as exc:
  *         raise exceptions.SSLException(exc)             # <<<<<<<<<<<<<<
  *     except ConnectionError as exc:
  *         raise exceptions.ConnectionException(exc)
  */
-      __Pyx_TraceLine(105,0,__PYX_ERR(1, 105, __pyx_L5_except_error))
-      __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 105, __pyx_L5_except_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_SSLException); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 105, __pyx_L5_except_error)
+      __Pyx_TraceLine(113,0,__PYX_ERR(1, 113, __pyx_L5_except_error))
+      __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 113, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_SSLException); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 113, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_4 = NULL;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
-        __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_6);
-        if (likely(__pyx_t_4)) {
+        __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_6);
+        if (likely(__pyx_t_1)) {
           PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-          __Pyx_INCREF(__pyx_t_4);
+          __Pyx_INCREF(__pyx_t_1);
           __Pyx_INCREF(function);
           __Pyx_DECREF_SET(__pyx_t_6, function);
         }
       }
-      if (!__pyx_t_4) {
-        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_exc); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 105, __pyx_L5_except_error)
-        __Pyx_GOTREF(__pyx_t_5);
+      if (!__pyx_t_1) {
+        __pyx_t_7 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_exc); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 113, __pyx_L5_except_error)
+        __Pyx_GOTREF(__pyx_t_7);
       } else {
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_6)) {
-          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_exc};
-          __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 105, __pyx_L5_except_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __Pyx_GOTREF(__pyx_t_5);
+          PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_v_exc};
+          __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 113, __pyx_L5_except_error)
+          __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+          __Pyx_GOTREF(__pyx_t_7);
         } else
         #endif
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_6)) {
-          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_exc};
-          __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 105, __pyx_L5_except_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __Pyx_GOTREF(__pyx_t_5);
+          PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_v_exc};
+          __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 113, __pyx_L5_except_error)
+          __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+          __Pyx_GOTREF(__pyx_t_7);
         } else
         #endif
         {
-          __pyx_t_18 = PyTuple_New(1+1); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 105, __pyx_L5_except_error)
+          __pyx_t_18 = PyTuple_New(1+1); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 113, __pyx_L5_except_error)
           __Pyx_GOTREF(__pyx_t_18);
-          __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_4); __pyx_t_4 = NULL;
+          __Pyx_GIVEREF(__pyx_t_1); PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_1); __pyx_t_1 = NULL;
           __Pyx_INCREF(__pyx_v_exc);
           __Pyx_GIVEREF(__pyx_v_exc);
           PyTuple_SET_ITEM(__pyx_t_18, 0+1, __pyx_v_exc);
-          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_18, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 105, __pyx_L5_except_error)
-          __Pyx_GOTREF(__pyx_t_5);
+          __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_18, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 113, __pyx_L5_except_error)
+          __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
         }
       }
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __Pyx_Raise(__pyx_t_5, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __PYX_ERR(1, 105, __pyx_L5_except_error)
+      __Pyx_Raise(__pyx_t_7, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __PYX_ERR(1, 113, __pyx_L5_except_error)
     }
 
-    /* "reppy/robots.pyx":106
+    /* "reppy/robots.pyx":114
  *     except SSLError as exc:
  *         raise exceptions.SSLException(exc)
  *     except ConnectionError as exc:             # <<<<<<<<<<<<<<
  *         raise exceptions.ConnectionException(exc)
  *     except (URLRequired, MissingSchema, InvalidSchema, InvalidURL) as exc:
  */
-    __Pyx_TraceLine(106,0,__PYX_ERR(1, 106, __pyx_L5_except_error))
-    __pyx_t_8 = __Pyx_GetModuleGlobalName(__pyx_n_s_ConnectionError); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 106, __pyx_L5_except_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_14 = __Pyx_PyErr_ExceptionMatches(__pyx_t_8);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (__pyx_t_14) {
+    __Pyx_TraceLine(114,0,__PYX_ERR(1, 114, __pyx_L5_except_error))
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_ConnectionError); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 114, __pyx_L5_except_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_15 = __Pyx_PyErr_ExceptionMatches(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (__pyx_t_15) {
       __Pyx_AddTraceback("reppy.robots.FetchMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_7, &__pyx_t_16) < 0) __PYX_ERR(1, 106, __pyx_L5_except_error)
+      if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_8, &__pyx_t_16) < 0) __PYX_ERR(1, 114, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GOTREF(__pyx_t_16);
-      __Pyx_INCREF(__pyx_t_7);
-      __pyx_v_exc = __pyx_t_7;
+      __Pyx_INCREF(__pyx_t_8);
+      __pyx_v_exc = __pyx_t_8;
 
-      /* "reppy/robots.pyx":107
+      /* "reppy/robots.pyx":115
  *         raise exceptions.SSLException(exc)
  *     except ConnectionError as exc:
  *         raise exceptions.ConnectionException(exc)             # <<<<<<<<<<<<<<
  *     except (URLRequired, MissingSchema, InvalidSchema, InvalidURL) as exc:
  *         raise exceptions.MalformedUrl(exc)
  */
-      __Pyx_TraceLine(107,0,__PYX_ERR(1, 107, __pyx_L5_except_error))
-      __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 107, __pyx_L5_except_error)
+      __Pyx_TraceLine(115,0,__PYX_ERR(1, 115, __pyx_L5_except_error))
+      __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 115, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_18 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_ConnectionException); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 107, __pyx_L5_except_error)
+      __pyx_t_18 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_ConnectionException); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 115, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_18);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __pyx_t_6 = NULL;
@@ -3508,206 +3712,206 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
         }
       }
       if (!__pyx_t_6) {
-        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_18, __pyx_v_exc); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 107, __pyx_L5_except_error)
-        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_t_7 = __Pyx_PyObject_CallOneArg(__pyx_t_18, __pyx_v_exc); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 115, __pyx_L5_except_error)
+        __Pyx_GOTREF(__pyx_t_7);
       } else {
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_18)) {
           PyObject *__pyx_temp[2] = {__pyx_t_6, __pyx_v_exc};
-          __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_18, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 107, __pyx_L5_except_error)
+          __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_18, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 115, __pyx_L5_except_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __Pyx_GOTREF(__pyx_t_5);
+          __Pyx_GOTREF(__pyx_t_7);
         } else
         #endif
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_18)) {
           PyObject *__pyx_temp[2] = {__pyx_t_6, __pyx_v_exc};
-          __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_18, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 107, __pyx_L5_except_error)
+          __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_18, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 115, __pyx_L5_except_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __Pyx_GOTREF(__pyx_t_5);
+          __Pyx_GOTREF(__pyx_t_7);
         } else
         #endif
         {
-          __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 107, __pyx_L5_except_error)
-          __Pyx_GOTREF(__pyx_t_4);
-          __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_6); __pyx_t_6 = NULL;
+          __pyx_t_1 = PyTuple_New(1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 115, __pyx_L5_except_error)
+          __Pyx_GOTREF(__pyx_t_1);
+          __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_6); __pyx_t_6 = NULL;
           __Pyx_INCREF(__pyx_v_exc);
           __Pyx_GIVEREF(__pyx_v_exc);
-          PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_exc);
-          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_18, __pyx_t_4, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 107, __pyx_L5_except_error)
-          __Pyx_GOTREF(__pyx_t_5);
-          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          PyTuple_SET_ITEM(__pyx_t_1, 0+1, __pyx_v_exc);
+          __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_18, __pyx_t_1, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 115, __pyx_L5_except_error)
+          __Pyx_GOTREF(__pyx_t_7);
+          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         }
       }
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
-      __Pyx_Raise(__pyx_t_5, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __PYX_ERR(1, 107, __pyx_L5_except_error)
+      __Pyx_Raise(__pyx_t_7, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __PYX_ERR(1, 115, __pyx_L5_except_error)
     }
 
-    /* "reppy/robots.pyx":108
+    /* "reppy/robots.pyx":116
  *     except ConnectionError as exc:
  *         raise exceptions.ConnectionException(exc)
  *     except (URLRequired, MissingSchema, InvalidSchema, InvalidURL) as exc:             # <<<<<<<<<<<<<<
  *         raise exceptions.MalformedUrl(exc)
  *     except TooManyRedirects as exc:
  */
-    __Pyx_TraceLine(108,0,__PYX_ERR(1, 108, __pyx_L5_except_error))
-    __pyx_t_16 = __Pyx_GetModuleGlobalName(__pyx_n_s_URLRequired); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 108, __pyx_L5_except_error)
+    __Pyx_TraceLine(116,0,__PYX_ERR(1, 116, __pyx_L5_except_error))
+    __pyx_t_16 = __Pyx_GetModuleGlobalName(__pyx_n_s_URLRequired); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 116, __pyx_L5_except_error)
     __Pyx_GOTREF(__pyx_t_16);
-    __pyx_t_7 = __Pyx_GetModuleGlobalName(__pyx_n_s_MissingSchema); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 108, __pyx_L5_except_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_8 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidSchema); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 108, __pyx_L5_except_error)
+    __pyx_t_8 = __Pyx_GetModuleGlobalName(__pyx_n_s_MissingSchema); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 116, __pyx_L5_except_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidURL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 108, __pyx_L5_except_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_14 = __Pyx_PyErr_ExceptionMatches(__pyx_t_16) || __Pyx_PyErr_ExceptionMatches(__pyx_t_7) || __Pyx_PyErr_ExceptionMatches(__pyx_t_8) || __Pyx_PyErr_ExceptionMatches(__pyx_t_5);
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidSchema); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 116, __pyx_L5_except_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_7 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidURL); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 116, __pyx_L5_except_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_15 = __Pyx_PyErr_ExceptionMatches(__pyx_t_16) || __Pyx_PyErr_ExceptionMatches(__pyx_t_8) || __Pyx_PyErr_ExceptionMatches(__pyx_t_2) || __Pyx_PyErr_ExceptionMatches(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (__pyx_t_14) {
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    if (__pyx_t_15) {
       __Pyx_AddTraceback("reppy.robots.FetchMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_8, &__pyx_t_7) < 0) __PYX_ERR(1, 108, __pyx_L5_except_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_GOTREF(__pyx_t_8);
+      if (__Pyx_GetException(&__pyx_t_7, &__pyx_t_2, &__pyx_t_8) < 0) __PYX_ERR(1, 116, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __Pyx_INCREF(__pyx_t_8);
-      __pyx_v_exc = __pyx_t_8;
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_8);
+      __Pyx_INCREF(__pyx_t_2);
+      __pyx_v_exc = __pyx_t_2;
 
-      /* "reppy/robots.pyx":109
+      /* "reppy/robots.pyx":117
  *         raise exceptions.ConnectionException(exc)
  *     except (URLRequired, MissingSchema, InvalidSchema, InvalidURL) as exc:
  *         raise exceptions.MalformedUrl(exc)             # <<<<<<<<<<<<<<
  *     except TooManyRedirects as exc:
  *         raise exceptions.ExcessiveRedirects(exc)
  */
-      __Pyx_TraceLine(109,0,__PYX_ERR(1, 109, __pyx_L5_except_error))
-      __pyx_t_18 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 109, __pyx_L5_except_error)
+      __Pyx_TraceLine(117,0,__PYX_ERR(1, 117, __pyx_L5_except_error))
+      __pyx_t_18 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 117, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_18);
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_18, __pyx_n_s_MalformedUrl); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 109, __pyx_L5_except_error)
-      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_18, __pyx_n_s_MalformedUrl); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 117, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
       __pyx_t_18 = NULL;
-      if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
-        __pyx_t_18 = PyMethod_GET_SELF(__pyx_t_4);
+      if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
+        __pyx_t_18 = PyMethod_GET_SELF(__pyx_t_1);
         if (likely(__pyx_t_18)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
           __Pyx_INCREF(__pyx_t_18);
           __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_4, function);
+          __Pyx_DECREF_SET(__pyx_t_1, function);
         }
       }
       if (!__pyx_t_18) {
-        __pyx_t_16 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_exc); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 109, __pyx_L5_except_error)
+        __pyx_t_16 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_exc); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 117, __pyx_L5_except_error)
         __Pyx_GOTREF(__pyx_t_16);
       } else {
         #if CYTHON_FAST_PYCALL
-        if (PyFunction_Check(__pyx_t_4)) {
+        if (PyFunction_Check(__pyx_t_1)) {
           PyObject *__pyx_temp[2] = {__pyx_t_18, __pyx_v_exc};
-          __pyx_t_16 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 109, __pyx_L5_except_error)
+          __pyx_t_16 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 117, __pyx_L5_except_error)
           __Pyx_XDECREF(__pyx_t_18); __pyx_t_18 = 0;
           __Pyx_GOTREF(__pyx_t_16);
         } else
         #endif
         #if CYTHON_FAST_PYCCALL
-        if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
+        if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
           PyObject *__pyx_temp[2] = {__pyx_t_18, __pyx_v_exc};
-          __pyx_t_16 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 109, __pyx_L5_except_error)
+          __pyx_t_16 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 117, __pyx_L5_except_error)
           __Pyx_XDECREF(__pyx_t_18); __pyx_t_18 = 0;
           __Pyx_GOTREF(__pyx_t_16);
         } else
         #endif
         {
-          __pyx_t_6 = PyTuple_New(1+1); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 109, __pyx_L5_except_error)
+          __pyx_t_6 = PyTuple_New(1+1); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 117, __pyx_L5_except_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_GIVEREF(__pyx_t_18); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_18); __pyx_t_18 = NULL;
           __Pyx_INCREF(__pyx_v_exc);
           __Pyx_GIVEREF(__pyx_v_exc);
           PyTuple_SET_ITEM(__pyx_t_6, 0+1, __pyx_v_exc);
-          __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_6, NULL); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 109, __pyx_L5_except_error)
+          __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_6, NULL); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 117, __pyx_L5_except_error)
           __Pyx_GOTREF(__pyx_t_16);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         }
       }
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_Raise(__pyx_t_16, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-      __PYX_ERR(1, 109, __pyx_L5_except_error)
+      __PYX_ERR(1, 117, __pyx_L5_except_error)
     }
 
-    /* "reppy/robots.pyx":110
+    /* "reppy/robots.pyx":118
  *     except (URLRequired, MissingSchema, InvalidSchema, InvalidURL) as exc:
  *         raise exceptions.MalformedUrl(exc)
  *     except TooManyRedirects as exc:             # <<<<<<<<<<<<<<
  *         raise exceptions.ExcessiveRedirects(exc)
  * 
  */
-    __Pyx_TraceLine(110,0,__PYX_ERR(1, 110, __pyx_L5_except_error))
-    __pyx_t_7 = __Pyx_GetModuleGlobalName(__pyx_n_s_TooManyRedirects); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 110, __pyx_L5_except_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_14 = __Pyx_PyErr_ExceptionMatches(__pyx_t_7);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (__pyx_t_14) {
+    __Pyx_TraceLine(118,0,__PYX_ERR(1, 118, __pyx_L5_except_error))
+    __pyx_t_8 = __Pyx_GetModuleGlobalName(__pyx_n_s_TooManyRedirects); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 118, __pyx_L5_except_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __pyx_t_15 = __Pyx_PyErr_ExceptionMatches(__pyx_t_8);
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    if (__pyx_t_15) {
       __Pyx_AddTraceback("reppy.robots.FetchMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_7, &__pyx_t_8, &__pyx_t_5) < 0) __PYX_ERR(1, 110, __pyx_L5_except_error)
-      __Pyx_GOTREF(__pyx_t_7);
+      if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_2, &__pyx_t_7) < 0) __PYX_ERR(1, 118, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_INCREF(__pyx_t_8);
-      __pyx_v_exc = __pyx_t_8;
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_2);
+      __pyx_v_exc = __pyx_t_2;
 
-      /* "reppy/robots.pyx":111
+      /* "reppy/robots.pyx":119
  *         raise exceptions.MalformedUrl(exc)
  *     except TooManyRedirects as exc:
  *         raise exceptions.ExcessiveRedirects(exc)             # <<<<<<<<<<<<<<
  * 
  * def RobotsUrlMethod(cls, url):
  */
-      __Pyx_TraceLine(111,0,__PYX_ERR(1, 111, __pyx_L5_except_error))
-      __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 111, __pyx_L5_except_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ExcessiveRedirects); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 111, __pyx_L5_except_error)
+      __Pyx_TraceLine(119,0,__PYX_ERR(1, 119, __pyx_L5_except_error))
+      __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_exceptions); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 119, __pyx_L5_except_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_ExcessiveRedirects); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 119, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_4 = NULL;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
-        __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_6);
-        if (likely(__pyx_t_4)) {
+        __pyx_t_1 = PyMethod_GET_SELF(__pyx_t_6);
+        if (likely(__pyx_t_1)) {
           PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-          __Pyx_INCREF(__pyx_t_4);
+          __Pyx_INCREF(__pyx_t_1);
           __Pyx_INCREF(function);
           __Pyx_DECREF_SET(__pyx_t_6, function);
         }
       }
-      if (!__pyx_t_4) {
-        __pyx_t_16 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_exc); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 111, __pyx_L5_except_error)
+      if (!__pyx_t_1) {
+        __pyx_t_16 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_exc); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 119, __pyx_L5_except_error)
         __Pyx_GOTREF(__pyx_t_16);
       } else {
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_6)) {
-          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_exc};
-          __pyx_t_16 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 111, __pyx_L5_except_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_v_exc};
+          __pyx_t_16 = __Pyx_PyFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 119, __pyx_L5_except_error)
+          __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_GOTREF(__pyx_t_16);
         } else
         #endif
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_6)) {
-          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_exc};
-          __pyx_t_16 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 111, __pyx_L5_except_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_v_exc};
+          __pyx_t_16 = __Pyx_PyCFunction_FastCall(__pyx_t_6, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 119, __pyx_L5_except_error)
+          __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
           __Pyx_GOTREF(__pyx_t_16);
         } else
         #endif
         {
-          __pyx_t_18 = PyTuple_New(1+1); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 111, __pyx_L5_except_error)
+          __pyx_t_18 = PyTuple_New(1+1); if (unlikely(!__pyx_t_18)) __PYX_ERR(1, 119, __pyx_L5_except_error)
           __Pyx_GOTREF(__pyx_t_18);
-          __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_4); __pyx_t_4 = NULL;
+          __Pyx_GIVEREF(__pyx_t_1); PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_1); __pyx_t_1 = NULL;
           __Pyx_INCREF(__pyx_v_exc);
           __Pyx_GIVEREF(__pyx_v_exc);
           PyTuple_SET_ITEM(__pyx_t_18, 0+1, __pyx_v_exc);
-          __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_18, NULL); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 111, __pyx_L5_except_error)
+          __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_18, NULL); if (unlikely(!__pyx_t_16)) __PYX_ERR(1, 119, __pyx_L5_except_error)
           __Pyx_GOTREF(__pyx_t_16);
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
         }
@@ -3715,30 +3919,30 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_Raise(__pyx_t_16, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-      __PYX_ERR(1, 111, __pyx_L5_except_error)
+      __PYX_ERR(1, 119, __pyx_L5_except_error)
     }
     goto __pyx_L5_except_error;
     __pyx_L5_except_error:;
 
-    /* "reppy/robots.pyx":82
- * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
- *     '''Get the robots.txt at the provided URL.'''
+    /* "reppy/robots.pyx":84
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
+ *     after_parse_hook = kwargs.pop('after_parse_hook', None)
  *     try:             # <<<<<<<<<<<<<<
  *         # Limit the size of the request
  *         kwargs['stream'] = True
  */
     __Pyx_PyThreadState_assign
-    __Pyx_XGIVEREF(__pyx_t_1);
-    __Pyx_XGIVEREF(__pyx_t_2);
     __Pyx_XGIVEREF(__pyx_t_3);
-    __Pyx_ExceptionReset(__pyx_t_1, __pyx_t_2, __pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
     goto __pyx_L1_error;
     __pyx_L7_try_return:;
     __Pyx_PyThreadState_assign
-    __Pyx_XGIVEREF(__pyx_t_1);
-    __Pyx_XGIVEREF(__pyx_t_2);
     __Pyx_XGIVEREF(__pyx_t_3);
-    __Pyx_ExceptionReset(__pyx_t_1, __pyx_t_2, __pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
     goto __pyx_L0;
     __pyx_L10_try_end:;
   }
@@ -3748,15 +3952,15 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
  * 
  * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):             # <<<<<<<<<<<<<<
  *     '''Get the robots.txt at the provided URL.'''
- *     try:
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
  */
 
   /* function exit code */
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
@@ -3765,9 +3969,12 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
   __Pyx_AddTraceback("reppy.robots.FetchMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_after_response_hook);
+  __Pyx_XDECREF(__pyx_v_after_parse_hook);
   __Pyx_XDECREF(__pyx_v_res);
   __Pyx_XDECREF(__pyx_v_content);
   __Pyx_XDECREF(__pyx_v_expires);
+  __Pyx_XDECREF(__pyx_v_robots);
   __Pyx_XDECREF(__pyx_v_exc);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
@@ -3775,7 +3982,7 @@ static PyObject *__pyx_pf_5reppy_6robots_4FetchMethod(CYTHON_UNUSED PyObject *__
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":113
+/* "reppy/robots.pyx":121
  *         raise exceptions.ExcessiveRedirects(exc)
  * 
  * def RobotsUrlMethod(cls, url):             # <<<<<<<<<<<<<<
@@ -3813,11 +4020,11 @@ static PyObject *__pyx_pw_5reppy_6robots_7RobotsUrlMethod(PyObject *__pyx_self, 
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_url)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("RobotsUrlMethod", 1, 2, 2, 1); __PYX_ERR(1, 113, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("RobotsUrlMethod", 1, 2, 2, 1); __PYX_ERR(1, 121, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "RobotsUrlMethod") < 0)) __PYX_ERR(1, 113, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "RobotsUrlMethod") < 0)) __PYX_ERR(1, 121, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -3830,7 +4037,7 @@ static PyObject *__pyx_pw_5reppy_6robots_7RobotsUrlMethod(PyObject *__pyx_self, 
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("RobotsUrlMethod", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 113, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("RobotsUrlMethod", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 121, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("reppy.robots.RobotsUrlMethod", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3851,39 +4058,39 @@ static PyObject *__pyx_pf_5reppy_6robots_6RobotsUrlMethod(CYTHON_UNUSED PyObject
   std::string __pyx_t_2;
   std::string __pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__8)
+  __Pyx_TraceFrameInit(__pyx_codeobj__10)
   __Pyx_RefNannySetupContext("RobotsUrlMethod", 0);
-  __Pyx_TraceCall("RobotsUrlMethod", __pyx_f[1], 113, 0, __PYX_ERR(1, 113, __pyx_L1_error));
+  __Pyx_TraceCall("RobotsUrlMethod", __pyx_f[1], 121, 0, __PYX_ERR(1, 121, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":115
+  /* "reppy/robots.pyx":123
  * def RobotsUrlMethod(cls, url):
  *     '''Get the robots.txt URL that corresponds to the provided one.'''
  *     return as_string(CppRobots.robotsUrl(as_bytes(url)))             # <<<<<<<<<<<<<<
  * 
  * cdef class Robots:
  */
-  __Pyx_TraceLine(115,0,__PYX_ERR(1, 115, __pyx_L1_error))
+  __Pyx_TraceLine(123,0,__PYX_ERR(1, 123, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_url); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 115, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_url); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 115, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 123, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_3 = Rep::Robots::robotsUrl(__pyx_t_2);
   } catch(...) {
     try { throw; } catch(const std::exception& exn) { PyErr_SetString(__pyx_builtin_ValueError, exn.what()); } catch(...) { PyErr_SetNone(__pyx_builtin_ValueError); }
-    __PYX_ERR(1, 115, __pyx_L1_error)
+    __PYX_ERR(1, 123, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 115, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __pyx_f_5reppy_6robots_as_string(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 115, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_5reppy_6robots_as_string(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_4;
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":113
+  /* "reppy/robots.pyx":121
  *         raise exceptions.ExcessiveRedirects(exc)
  * 
  * def RobotsUrlMethod(cls, url):             # <<<<<<<<<<<<<<
@@ -3904,7 +4111,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6RobotsUrlMethod(CYTHON_UNUSED PyObject
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":133
+/* "reppy/robots.pyx":141
  *     cdef object expires
  * 
  *     def __init__(self, url, const string& content, expires=None):             # <<<<<<<<<<<<<<
@@ -3943,7 +4150,7 @@ static int __pyx_pw_5reppy_6robots_6Robots_1__init__(PyObject *__pyx_v_self, PyO
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_content)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, 1); __PYX_ERR(1, 133, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, 1); __PYX_ERR(1, 141, __pyx_L3_error)
         }
         case  2:
         if (kw_args > 0) {
@@ -3952,7 +4159,7 @@ static int __pyx_pw_5reppy_6robots_6Robots_1__init__(PyObject *__pyx_v_self, PyO
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(1, 133, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(1, 141, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3964,12 +4171,12 @@ static int __pyx_pw_5reppy_6robots_6Robots_1__init__(PyObject *__pyx_v_self, PyO
       }
     }
     __pyx_v_url = values[0];
-    __pyx_v_content = __pyx_convert_string_from_py_std__in_string(values[1]); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 133, __pyx_L3_error)
+    __pyx_v_content = __pyx_convert_string_from_py_std__in_string(values[1]); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 141, __pyx_L3_error)
     __pyx_v_expires = values[2];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 133, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 141, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("reppy.robots.Robots.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3990,43 +4197,43 @@ static int __pyx_pf_5reppy_6robots_6Robots___init__(struct __pyx_obj_5reppy_6rob
   std::string __pyx_t_2;
   Rep::Robots *__pyx_t_3;
   __Pyx_RefNannySetupContext("__init__", 0);
-  __Pyx_TraceCall("__init__", __pyx_f[1], 133, 0, __PYX_ERR(1, 133, __pyx_L1_error));
+  __Pyx_TraceCall("__init__", __pyx_f[1], 141, 0, __PYX_ERR(1, 141, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":134
+  /* "reppy/robots.pyx":142
  * 
  *     def __init__(self, url, const string& content, expires=None):
  *         self.robots = new CppRobots(content, as_bytes(url))             # <<<<<<<<<<<<<<
  *         self.expires = expires
  * 
  */
-  __Pyx_TraceLine(134,0,__PYX_ERR(1, 134, __pyx_L1_error))
-  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_url); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 134, __pyx_L1_error)
+  __Pyx_TraceLine(142,0,__PYX_ERR(1, 142, __pyx_L1_error))
+  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_url); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 142, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 134, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 142, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
     __pyx_t_3 = new Rep::Robots(__pyx_v_content, __pyx_t_2);
   } catch(...) {
     try { throw; } catch(const std::exception& exn) { PyErr_SetString(__pyx_builtin_ValueError, exn.what()); } catch(...) { PyErr_SetNone(__pyx_builtin_ValueError); }
-    __PYX_ERR(1, 134, __pyx_L1_error)
+    __PYX_ERR(1, 142, __pyx_L1_error)
   }
   __pyx_v_self->robots = __pyx_t_3;
 
-  /* "reppy/robots.pyx":135
+  /* "reppy/robots.pyx":143
  *     def __init__(self, url, const string& content, expires=None):
  *         self.robots = new CppRobots(content, as_bytes(url))
  *         self.expires = expires             # <<<<<<<<<<<<<<
  * 
  *     def __str__(self):
  */
-  __Pyx_TraceLine(135,0,__PYX_ERR(1, 135, __pyx_L1_error))
+  __Pyx_TraceLine(143,0,__PYX_ERR(1, 143, __pyx_L1_error))
   __Pyx_INCREF(__pyx_v_expires);
   __Pyx_GIVEREF(__pyx_v_expires);
   __Pyx_GOTREF(__pyx_v_self->expires);
   __Pyx_DECREF(__pyx_v_self->expires);
   __pyx_v_self->expires = __pyx_v_expires;
 
-  /* "reppy/robots.pyx":133
+  /* "reppy/robots.pyx":141
  *     cdef object expires
  * 
  *     def __init__(self, url, const string& content, expires=None):             # <<<<<<<<<<<<<<
@@ -4047,7 +4254,7 @@ static int __pyx_pf_5reppy_6robots_6Robots___init__(struct __pyx_obj_5reppy_6rob
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":137
+/* "reppy/robots.pyx":145
  *         self.expires = expires
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -4074,24 +4281,24 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_2__str__(struct __pyx_obj_5repp
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("__str__", 0);
-  __Pyx_TraceCall("__str__", __pyx_f[1], 137, 0, __PYX_ERR(1, 137, __pyx_L1_error));
+  __Pyx_TraceCall("__str__", __pyx_f[1], 145, 0, __PYX_ERR(1, 145, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":138
+  /* "reppy/robots.pyx":146
  * 
  *     def __str__(self):
  *         return self.robots.str()             # <<<<<<<<<<<<<<
  * 
  *     def __dealloc__(self):
  */
-  __Pyx_TraceLine(138,0,__PYX_ERR(1, 138, __pyx_L1_error))
+  __Pyx_TraceLine(146,0,__PYX_ERR(1, 146, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_v_self->robots->str()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 138, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_v_self->robots->str()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 146, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":137
+  /* "reppy/robots.pyx":145
  *         self.expires = expires
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -4111,7 +4318,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_2__str__(struct __pyx_obj_5repp
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":140
+/* "reppy/robots.pyx":148
  *         return self.robots.str()
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -4134,19 +4341,19 @@ static void __pyx_pf_5reppy_6robots_6Robots_4__dealloc__(struct __pyx_obj_5reppy
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
-  __Pyx_TraceCall("__dealloc__", __pyx_f[1], 140, 0, __PYX_ERR(1, 140, __pyx_L1_error));
+  __Pyx_TraceCall("__dealloc__", __pyx_f[1], 148, 0, __PYX_ERR(1, 148, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":141
+  /* "reppy/robots.pyx":149
  * 
  *     def __dealloc__(self):
  *         del self.robots             # <<<<<<<<<<<<<<
  * 
  *     @property
  */
-  __Pyx_TraceLine(141,0,__PYX_ERR(1, 141, __pyx_L1_error))
+  __Pyx_TraceLine(149,0,__PYX_ERR(1, 149, __pyx_L1_error))
   delete __pyx_v_self->robots;
 
-  /* "reppy/robots.pyx":140
+  /* "reppy/robots.pyx":148
  *         return self.robots.str()
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -4163,7 +4370,7 @@ static void __pyx_pf_5reppy_6robots_6Robots_4__dealloc__(struct __pyx_obj_5reppy
   __Pyx_RefNannyFinishContext();
 }
 
-/* "reppy/robots.pyx":144
+/* "reppy/robots.pyx":152
  * 
  *     @property
  *     def sitemaps(self):             # <<<<<<<<<<<<<<
@@ -4192,22 +4399,22 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8sitemaps___get__(struct __pyx_
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[1], 144, 0, __PYX_ERR(1, 144, __pyx_L1_error));
+  __Pyx_TraceCall("__get__", __pyx_f[1], 152, 0, __PYX_ERR(1, 152, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":146
+  /* "reppy/robots.pyx":154
  *     def sitemaps(self):
  *         '''Get all the sitemaps in this robots.txt.'''
  *         return map(as_string, self.robots.sitemaps())             # <<<<<<<<<<<<<<
  * 
  *     def allowed(self, path, name):
  */
-  __Pyx_TraceLine(146,0,__PYX_ERR(1, 146, __pyx_L1_error))
+  __Pyx_TraceLine(154,0,__PYX_ERR(1, 154, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_CFunc_object____object___to_py(__pyx_f_5reppy_6robots_as_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 146, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CFunc_object____object___to_py(__pyx_f_5reppy_6robots_as_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_vector_to_py_std_3a__3a_string(__pyx_v_self->robots->sitemaps()); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 146, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_to_py_std_3a__3a_string(__pyx_v_self->robots->sitemaps()); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 146, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
@@ -4215,14 +4422,14 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8sitemaps___get__(struct __pyx_
   PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_2);
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_map, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 146, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_map, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 154, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":144
+  /* "reppy/robots.pyx":152
  * 
  *     @property
  *     def sitemaps(self):             # <<<<<<<<<<<<<<
@@ -4244,7 +4451,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8sitemaps___get__(struct __pyx_
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":148
+/* "reppy/robots.pyx":156
  *         return map(as_string, self.robots.sitemaps())
  * 
  *     def allowed(self, path, name):             # <<<<<<<<<<<<<<
@@ -4281,11 +4488,11 @@ static PyObject *__pyx_pw_5reppy_6robots_6Robots_7allowed(PyObject *__pyx_v_self
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_name)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("allowed", 1, 2, 2, 1); __PYX_ERR(1, 148, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("allowed", 1, 2, 2, 1); __PYX_ERR(1, 156, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "allowed") < 0)) __PYX_ERR(1, 148, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "allowed") < 0)) __PYX_ERR(1, 156, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -4298,7 +4505,7 @@ static PyObject *__pyx_pw_5reppy_6robots_6Robots_7allowed(PyObject *__pyx_v_self
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("allowed", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 148, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("allowed", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 156, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("reppy.robots.Robots.allowed", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4319,32 +4526,32 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_6allowed(struct __pyx_obj_5repp
   std::string __pyx_t_2;
   std::string __pyx_t_3;
   __Pyx_RefNannySetupContext("allowed", 0);
-  __Pyx_TraceCall("allowed", __pyx_f[1], 148, 0, __PYX_ERR(1, 148, __pyx_L1_error));
+  __Pyx_TraceCall("allowed", __pyx_f[1], 156, 0, __PYX_ERR(1, 156, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":150
+  /* "reppy/robots.pyx":158
  *     def allowed(self, path, name):
  *         '''Is the provided path allowed for the provided agent?'''
  *         return self.robots.allowed(as_bytes(path), as_bytes(name))             # <<<<<<<<<<<<<<
  * 
  *     def agent(self, name):
  */
-  __Pyx_TraceLine(150,0,__PYX_ERR(1, 150, __pyx_L1_error))
+  __Pyx_TraceLine(158,0,__PYX_ERR(1, 158, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_path); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 150, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_path); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 158, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 150, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 158, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_name); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 150, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_name); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 158, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 150, __pyx_L1_error)
+  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 158, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->robots->allowed(__pyx_t_2, __pyx_t_3)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 150, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->robots->allowed(__pyx_t_2, __pyx_t_3)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 158, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":148
+  /* "reppy/robots.pyx":156
  *         return map(as_string, self.robots.sitemaps())
  * 
  *     def allowed(self, path, name):             # <<<<<<<<<<<<<<
@@ -4364,7 +4571,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_6allowed(struct __pyx_obj_5repp
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":152
+/* "reppy/robots.pyx":160
  *         return self.robots.allowed(as_bytes(path), as_bytes(name))
  * 
  *     def agent(self, name):             # <<<<<<<<<<<<<<
@@ -4397,20 +4604,20 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8agent(struct __pyx_obj_5reppy_
   int __pyx_t_5;
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("agent", 0);
-  __Pyx_TraceCall("agent", __pyx_f[1], 152, 0, __PYX_ERR(1, 152, __pyx_L1_error));
+  __Pyx_TraceCall("agent", __pyx_f[1], 160, 0, __PYX_ERR(1, 160, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":159
+  /* "reppy/robots.pyx":167
  *         Agent object.
  *         '''
  *         return Agent.from_robots(self, as_bytes(name))             # <<<<<<<<<<<<<<
  * 
  *     @property
  */
-  __Pyx_TraceLine(159,0,__PYX_ERR(1, 159, __pyx_L1_error))
+  __Pyx_TraceLine(167,0,__PYX_ERR(1, 167, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_ptype_5reppy_6robots_Agent), __pyx_n_s_from_robots); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 159, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_ptype_5reppy_6robots_Agent), __pyx_n_s_from_robots); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_name); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 159, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_5reppy_6robots_as_bytes(__pyx_v_name); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -4427,7 +4634,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8agent(struct __pyx_obj_5reppy_
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_4, ((PyObject *)__pyx_v_self), __pyx_t_3};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 159, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 167, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -4436,14 +4643,14 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8agent(struct __pyx_obj_5reppy_
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_4, ((PyObject *)__pyx_v_self), __pyx_t_3};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 159, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 167, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else
   #endif
   {
-    __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 159, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     if (__pyx_t_4) {
       __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -4454,7 +4661,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8agent(struct __pyx_obj_5reppy_
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 159, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
@@ -4463,7 +4670,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8agent(struct __pyx_obj_5reppy_
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":152
+  /* "reppy/robots.pyx":160
  *         return self.robots.allowed(as_bytes(path), as_bytes(name))
  * 
  *     def agent(self, name):             # <<<<<<<<<<<<<<
@@ -4487,7 +4694,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_8agent(struct __pyx_obj_5reppy_
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":162
+/* "reppy/robots.pyx":170
  * 
  *     @property
  *     def expired(self):             # <<<<<<<<<<<<<<
@@ -4516,20 +4723,20 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_7expired___get__(struct __pyx_o
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[1], 162, 0, __PYX_ERR(1, 162, __pyx_L1_error));
+  __Pyx_TraceCall("__get__", __pyx_f[1], 170, 0, __PYX_ERR(1, 170, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":164
+  /* "reppy/robots.pyx":172
  *     def expired(self):
  *         '''True if the current time is past its expiration.'''
  *         return time.time() > self.expires             # <<<<<<<<<<<<<<
  * 
  *     @property
  */
-  __Pyx_TraceLine(164,0,__PYX_ERR(1, 164, __pyx_L1_error))
+  __Pyx_TraceLine(172,0,__PYX_ERR(1, 172, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 164, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 172, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 164, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 172, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -4543,20 +4750,20 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_7expired___get__(struct __pyx_o
     }
   }
   if (__pyx_t_2) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 164, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 172, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 164, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 172, __pyx_L1_error)
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_v_self->expires, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 164, __pyx_L1_error)
+  __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_v_self->expires, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 172, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":162
+  /* "reppy/robots.pyx":170
  * 
  *     @property
  *     def expired(self):             # <<<<<<<<<<<<<<
@@ -4578,7 +4785,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_7expired___get__(struct __pyx_o
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":167
+/* "reppy/robots.pyx":175
  * 
  *     @property
  *     def expires(self):             # <<<<<<<<<<<<<<
@@ -4604,22 +4811,22 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_7expires___get__(struct __pyx_o
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[1], 167, 0, __PYX_ERR(1, 167, __pyx_L1_error));
+  __Pyx_TraceCall("__get__", __pyx_f[1], 175, 0, __PYX_ERR(1, 175, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":169
+  /* "reppy/robots.pyx":177
  *     def expires(self):
  *         '''The expiration of this robots.txt.'''
  *         return self.expires             # <<<<<<<<<<<<<<
  * 
  *     @property
  */
-  __Pyx_TraceLine(169,0,__PYX_ERR(1, 169, __pyx_L1_error))
+  __Pyx_TraceLine(177,0,__PYX_ERR(1, 177, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_self->expires);
   __pyx_r = __pyx_v_self->expires;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":167
+  /* "reppy/robots.pyx":175
  * 
  *     @property
  *     def expires(self):             # <<<<<<<<<<<<<<
@@ -4638,7 +4845,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_7expires___get__(struct __pyx_o
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":172
+/* "reppy/robots.pyx":180
  * 
  *     @property
  *     def ttl(self):             # <<<<<<<<<<<<<<
@@ -4670,21 +4877,21 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_3ttl___get__(struct __pyx_obj_5
   PyObject *__pyx_t_5 = NULL;
   int __pyx_t_6;
   __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_TraceCall("__get__", __pyx_f[1], 172, 0, __PYX_ERR(1, 172, __pyx_L1_error));
+  __Pyx_TraceCall("__get__", __pyx_f[1], 180, 0, __PYX_ERR(1, 180, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":174
+  /* "reppy/robots.pyx":182
  *     def ttl(self):
  *         '''Remaining time for this response to be considered valid.'''
  *         return max(self.expires - time.time(), 0)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __Pyx_TraceLine(174,0,__PYX_ERR(1, 174, __pyx_L1_error))
+  __Pyx_TraceLine(182,0,__PYX_ERR(1, 182, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = 0;
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_time); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 174, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_time); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 182, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_time); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 174, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_time); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 182, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -4698,24 +4905,24 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_3ttl___get__(struct __pyx_obj_5
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 174, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 182, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 174, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 182, __pyx_L1_error)
   }
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyNumber_Subtract(__pyx_v_self->expires, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 174, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_Subtract(__pyx_v_self->expires, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 182, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_long(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 174, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_long(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 182, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = PyObject_RichCompare(__pyx_t_3, __pyx_t_4, Py_GT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 174, __pyx_L1_error)
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_3, __pyx_t_4, Py_GT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 182, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(1, 174, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(1, 182, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   if (__pyx_t_6) {
-    __pyx_t_5 = __Pyx_PyInt_From_long(__pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 174, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_From_long(__pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 182, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_2 = __pyx_t_5;
     __pyx_t_5 = 0;
@@ -4729,7 +4936,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_3ttl___get__(struct __pyx_obj_5
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "reppy/robots.pyx":172
+  /* "reppy/robots.pyx":180
  * 
  *     @property
  *     def ttl(self):             # <<<<<<<<<<<<<<
@@ -4752,7 +4959,7 @@ static PyObject *__pyx_pf_5reppy_6robots_6Robots_3ttl___get__(struct __pyx_obj_5
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":180
+/* "reppy/robots.pyx":188
  *     '''No requests are allowed.'''
  * 
  *     def __init__(self, url, expires=None):             # <<<<<<<<<<<<<<
@@ -4793,7 +5000,7 @@ static int __pyx_pw_5reppy_6robots_9AllowNone_1__init__(PyObject *__pyx_v_self, 
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(1, 180, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(1, 188, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -4808,7 +5015,7 @@ static int __pyx_pw_5reppy_6robots_9AllowNone_1__init__(PyObject *__pyx_v_self, 
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 180, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 188, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("reppy.robots.AllowNone.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4831,17 +5038,17 @@ static int __pyx_pf_5reppy_6robots_9AllowNone___init__(struct __pyx_obj_5reppy_6
   int __pyx_t_4;
   PyObject *__pyx_t_5 = NULL;
   __Pyx_RefNannySetupContext("__init__", 0);
-  __Pyx_TraceCall("__init__", __pyx_f[1], 180, 0, __PYX_ERR(1, 180, __pyx_L1_error));
+  __Pyx_TraceCall("__init__", __pyx_f[1], 188, 0, __PYX_ERR(1, 188, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":181
+  /* "reppy/robots.pyx":189
  * 
  *     def __init__(self, url, expires=None):
  *         Robots.__init__(self, url, b'User-agent: *\nDisallow: /', expires)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __Pyx_TraceLine(181,0,__PYX_ERR(1, 181, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_ptype_5reppy_6robots_Robots), __pyx_n_s_init); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 181, __pyx_L1_error)
+  __Pyx_TraceLine(189,0,__PYX_ERR(1, 189, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_ptype_5reppy_6robots_Robots), __pyx_n_s_init); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 189, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -4858,7 +5065,7 @@ static int __pyx_pf_5reppy_6robots_9AllowNone___init__(struct __pyx_obj_5reppy_6
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[5] = {__pyx_t_3, ((PyObject *)__pyx_v_self), __pyx_v_url, __pyx_kp_b_User_agent_Disallow, __pyx_v_expires};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 181, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 189, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
@@ -4866,13 +5073,13 @@ static int __pyx_pf_5reppy_6robots_9AllowNone___init__(struct __pyx_obj_5reppy_6
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[5] = {__pyx_t_3, ((PyObject *)__pyx_v_self), __pyx_v_url, __pyx_kp_b_User_agent_Disallow, __pyx_v_expires};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 181, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 189, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_5 = PyTuple_New(4+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 181, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(4+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 189, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -4889,14 +5096,14 @@ static int __pyx_pf_5reppy_6robots_9AllowNone___init__(struct __pyx_obj_5reppy_6
     __Pyx_INCREF(__pyx_v_expires);
     __Pyx_GIVEREF(__pyx_v_expires);
     PyTuple_SET_ITEM(__pyx_t_5, 3+__pyx_t_4, __pyx_v_expires);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 181, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 189, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "reppy/robots.pyx":180
+  /* "reppy/robots.pyx":188
  *     '''No requests are allowed.'''
  * 
  *     def __init__(self, url, expires=None):             # <<<<<<<<<<<<<<
@@ -4920,7 +5127,7 @@ static int __pyx_pf_5reppy_6robots_9AllowNone___init__(struct __pyx_obj_5reppy_6
   return __pyx_r;
 }
 
-/* "reppy/robots.pyx":187
+/* "reppy/robots.pyx":195
  *     '''All requests are allowed.'''
  * 
  *     def __init__(self, url, expires=None):             # <<<<<<<<<<<<<<
@@ -4960,7 +5167,7 @@ static int __pyx_pw_5reppy_6robots_8AllowAll_1__init__(PyObject *__pyx_v_self, P
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(1, 187, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(1, 195, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -4975,7 +5182,7 @@ static int __pyx_pw_5reppy_6robots_8AllowAll_1__init__(PyObject *__pyx_v_self, P
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 187, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 195, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("reppy.robots.AllowAll.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4998,15 +5205,15 @@ static int __pyx_pf_5reppy_6robots_8AllowAll___init__(struct __pyx_obj_5reppy_6r
   int __pyx_t_4;
   PyObject *__pyx_t_5 = NULL;
   __Pyx_RefNannySetupContext("__init__", 0);
-  __Pyx_TraceCall("__init__", __pyx_f[1], 187, 0, __PYX_ERR(1, 187, __pyx_L1_error));
+  __Pyx_TraceCall("__init__", __pyx_f[1], 195, 0, __PYX_ERR(1, 195, __pyx_L1_error));
 
-  /* "reppy/robots.pyx":188
+  /* "reppy/robots.pyx":196
  * 
  *     def __init__(self, url, expires=None):
  *         Robots.__init__(self, url, b'', expires)             # <<<<<<<<<<<<<<
  */
-  __Pyx_TraceLine(188,0,__PYX_ERR(1, 188, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_ptype_5reppy_6robots_Robots), __pyx_n_s_init); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 188, __pyx_L1_error)
+  __Pyx_TraceLine(196,0,__PYX_ERR(1, 196, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_ptype_5reppy_6robots_Robots), __pyx_n_s_init); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 196, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -5022,22 +5229,22 @@ static int __pyx_pf_5reppy_6robots_8AllowAll___init__(struct __pyx_obj_5reppy_6r
   }
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_2)) {
-    PyObject *__pyx_temp[5] = {__pyx_t_3, ((PyObject *)__pyx_v_self), __pyx_v_url, __pyx_kp_b__9, __pyx_v_expires};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 188, __pyx_L1_error)
+    PyObject *__pyx_temp[5] = {__pyx_t_3, ((PyObject *)__pyx_v_self), __pyx_v_url, __pyx_kp_b__11, __pyx_v_expires};
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 196, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
-    PyObject *__pyx_temp[5] = {__pyx_t_3, ((PyObject *)__pyx_v_self), __pyx_v_url, __pyx_kp_b__9, __pyx_v_expires};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 188, __pyx_L1_error)
+    PyObject *__pyx_temp[5] = {__pyx_t_3, ((PyObject *)__pyx_v_self), __pyx_v_url, __pyx_kp_b__11, __pyx_v_expires};
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_4, 4+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 196, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_5 = PyTuple_New(4+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 188, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(4+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 196, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     if (__pyx_t_3) {
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __pyx_t_3 = NULL;
@@ -5048,20 +5255,20 @@ static int __pyx_pf_5reppy_6robots_8AllowAll___init__(struct __pyx_obj_5reppy_6r
     __Pyx_INCREF(__pyx_v_url);
     __Pyx_GIVEREF(__pyx_v_url);
     PyTuple_SET_ITEM(__pyx_t_5, 1+__pyx_t_4, __pyx_v_url);
-    __Pyx_INCREF(__pyx_kp_b__9);
-    __Pyx_GIVEREF(__pyx_kp_b__9);
-    PyTuple_SET_ITEM(__pyx_t_5, 2+__pyx_t_4, __pyx_kp_b__9);
+    __Pyx_INCREF(__pyx_kp_b__11);
+    __Pyx_GIVEREF(__pyx_kp_b__11);
+    PyTuple_SET_ITEM(__pyx_t_5, 2+__pyx_t_4, __pyx_kp_b__11);
     __Pyx_INCREF(__pyx_v_expires);
     __Pyx_GIVEREF(__pyx_v_expires);
     PyTuple_SET_ITEM(__pyx_t_5, 3+__pyx_t_4, __pyx_v_expires);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 188, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 196, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "reppy/robots.pyx":187
+  /* "reppy/robots.pyx":195
  *     '''All requests are allowed.'''
  * 
  *     def __init__(self, url, expires=None):             # <<<<<<<<<<<<<<
@@ -5500,7 +5707,7 @@ static PyObject *__Pyx_CFunc_object____object___to_py(PyObject *(*__pyx_v_f)(PyO
  *         return f(value)
  */
   __Pyx_TraceLine(65,0,__PYX_ERR(2, 65, __pyx_L1_error))
-  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_11cfunc_dot_to_py_36__Pyx_CFunc_object____object___to_py_1wrap, 0, __pyx_n_s_Pyx_CFunc_object____object___t, ((PyObject*)__pyx_cur_scope), __pyx_n_s_cfunc_to_py, __pyx_d, ((PyObject *)__pyx_codeobj__11)); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 65, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CyFunction_NewEx(&__pyx_mdef_11cfunc_dot_to_py_36__Pyx_CFunc_object____object___to_py_1wrap, 0, __pyx_n_s_Pyx_CFunc_object____object___t, ((PyObject*)__pyx_cur_scope), __pyx_n_s_cfunc_to_py, __pyx_d, ((PyObject *)__pyx_codeobj__13)); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_wrap = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -6117,8 +6324,10 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_URLRequired, __pyx_k_URLRequired, sizeof(__pyx_k_URLRequired), 0, 0, 1, 1},
   {&__pyx_kp_b_User_agent_Disallow, __pyx_k_User_agent_Disallow, sizeof(__pyx_k_User_agent_Disallow), 0, 0, 0, 0},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
-  {&__pyx_n_s__9, __pyx_k__9, sizeof(__pyx_k__9), 0, 0, 1, 1},
-  {&__pyx_kp_b__9, __pyx_k__9, sizeof(__pyx_k__9), 0, 0, 0, 0},
+  {&__pyx_n_s__11, __pyx_k__11, sizeof(__pyx_k__11), 0, 0, 1, 1},
+  {&__pyx_kp_b__11, __pyx_k__11, sizeof(__pyx_k__11), 0, 0, 0, 0},
+  {&__pyx_n_s_after_parse_hook, __pyx_k_after_parse_hook, sizeof(__pyx_k_after_parse_hook), 0, 0, 1, 1},
+  {&__pyx_n_s_after_response_hook, __pyx_k_after_response_hook, sizeof(__pyx_k_after_response_hook), 0, 0, 1, 1},
   {&__pyx_n_s_agent, __pyx_k_agent, sizeof(__pyx_k_agent), 0, 0, 1, 1},
   {&__pyx_n_s_amt, __pyx_k_amt, sizeof(__pyx_k_amt), 0, 0, 1, 1},
   {&__pyx_n_s_args, __pyx_k_args, sizeof(__pyx_k_args), 0, 0, 1, 1},
@@ -6150,6 +6359,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_parse, __pyx_k_parse, sizeof(__pyx_k_parse), 0, 0, 1, 1},
   {&__pyx_n_s_path, __pyx_k_path, sizeof(__pyx_k_path), 0, 0, 1, 1},
+  {&__pyx_n_s_pop, __pyx_k_pop, sizeof(__pyx_k_pop), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_raw, __pyx_k_raw, sizeof(__pyx_k_raw), 0, 0, 1, 1},
   {&__pyx_n_s_read, __pyx_k_read, sizeof(__pyx_k_read), 0, 0, 1, 1},
@@ -6177,7 +6387,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 static int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 34, __pyx_L1_error)
-  __pyx_builtin_map = __Pyx_GetBuiltinName(__pyx_n_s_map); if (!__pyx_builtin_map) __PYX_ERR(1, 146, __pyx_L1_error)
+  __pyx_builtin_map = __Pyx_GetBuiltinName(__pyx_n_s_map); if (!__pyx_builtin_map) __PYX_ERR(1, 154, __pyx_L1_error)
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(2, 68, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
@@ -6210,19 +6420,41 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "reppy/robots.pyx":85
+  /* "reppy/robots.pyx":82
+ * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
+ *     '''Get the robots.txt at the provided URL.'''
+ *     after_response_hook = kwargs.pop('after_response_hook', None)             # <<<<<<<<<<<<<<
+ *     after_parse_hook = kwargs.pop('after_parse_hook', None)
+ *     try:
+ */
+  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_n_s_after_response_hook, Py_None); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(1, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
+
+  /* "reppy/robots.pyx":83
+ *     '''Get the robots.txt at the provided URL.'''
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
+ *     after_parse_hook = kwargs.pop('after_parse_hook', None)             # <<<<<<<<<<<<<<
+ *     try:
+ *         # Limit the size of the request
+ */
+  __pyx_tuple__7 = PyTuple_Pack(2, __pyx_n_s_after_parse_hook, Py_None); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(1, 83, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+
+  /* "reppy/robots.pyx":87
  *         # Limit the size of the request
  *         kwargs['stream'] = True
  *         with closing(requests.get(url, *args, **kwargs)) as res:             # <<<<<<<<<<<<<<
  *             content = res.raw.read(amt=max_size, decode_content=True)
  *             # Try to read an additional byte, to see if the response is too big
  */
-  __pyx_tuple__6 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(1, 85, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
-  __pyx_tuple__7 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(1, 85, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__7);
-  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_tuple__8 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(1, 87, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
+  __pyx_tuple__9 = PyTuple_Pack(3, Py_None, Py_None, Py_None); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(1, 87, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
 
   /* "cfunc.to_py":65
  * @cname("__Pyx_CFunc_object____object___to_py")
@@ -6231,10 +6463,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         """wrap(value)"""
  *         return f(value)
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_n_s_value); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(2, 65, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__10);
-  __Pyx_GIVEREF(__pyx_tuple__10);
-  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_wrap, 65, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) __PYX_ERR(2, 65, __pyx_L1_error)
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_n_s_value); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(2, 65, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_wrap, 65, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(2, 65, __pyx_L1_error)
 
   /* "reppy/robots.pyx":33
  * 
@@ -6243,10 +6475,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     '''Construct an Agent from a CppAgent.'''
  *     agent = Agent()
  */
-  __pyx_tuple__12 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_robots, __pyx_n_s_name, __pyx_n_s_agent); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(1, 33, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__12);
-  __Pyx_GIVEREF(__pyx_tuple__12);
-  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(3, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_FromRobotsMethod, 33, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(1, 33, __pyx_L1_error)
+  __pyx_tuple__14 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_robots, __pyx_n_s_name, __pyx_n_s_agent); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(1, 33, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
+  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(3, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_FromRobotsMethod, 33, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(1, 33, __pyx_L1_error)
 
   /* "reppy/robots.pyx":76
  * 
@@ -6255,34 +6487,34 @@ static int __Pyx_InitCachedConstants(void) {
  *     '''Parse a robots.txt file.'''
  *     return cls(url, as_bytes(content), expires)
  */
-  __pyx_tuple__13 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_url, __pyx_n_s_content, __pyx_n_s_expires); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(1, 76, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__13);
-  __Pyx_GIVEREF(__pyx_tuple__13);
-  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(4, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__13, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_ParseMethod, 76, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(1, 76, __pyx_L1_error)
+  __pyx_tuple__15 = PyTuple_Pack(4, __pyx_n_s_cls, __pyx_n_s_url, __pyx_n_s_content, __pyx_n_s_expires); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(1, 76, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(4, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_ParseMethod, 76, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(1, 76, __pyx_L1_error)
 
   /* "reppy/robots.pyx":80
  *     return cls(url, as_bytes(content), expires)
  * 
  * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):             # <<<<<<<<<<<<<<
  *     '''Get the robots.txt at the provided URL.'''
- *     try:
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
  */
-  __pyx_tuple__14 = PyTuple_Pack(10, __pyx_n_s_cls, __pyx_n_s_url, __pyx_n_s_ttl_policy, __pyx_n_s_max_size, __pyx_n_s_args, __pyx_n_s_kwargs, __pyx_n_s_res, __pyx_n_s_content, __pyx_n_s_expires, __pyx_n_s_exc); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(1, 80, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 10, 0, CO_VARARGS|CO_VARKEYWORDS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_FetchMethod, 80, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(1, 80, __pyx_L1_error)
+  __pyx_tuple__16 = PyTuple_Pack(13, __pyx_n_s_cls, __pyx_n_s_url, __pyx_n_s_ttl_policy, __pyx_n_s_max_size, __pyx_n_s_args, __pyx_n_s_kwargs, __pyx_n_s_after_response_hook, __pyx_n_s_after_parse_hook, __pyx_n_s_res, __pyx_n_s_content, __pyx_n_s_expires, __pyx_n_s_robots, __pyx_n_s_exc); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(1, 80, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 13, 0, CO_VARARGS|CO_VARKEYWORDS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_FetchMethod, 80, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(1, 80, __pyx_L1_error)
 
-  /* "reppy/robots.pyx":113
+  /* "reppy/robots.pyx":121
  *         raise exceptions.ExcessiveRedirects(exc)
  * 
  * def RobotsUrlMethod(cls, url):             # <<<<<<<<<<<<<<
  *     '''Get the robots.txt URL that corresponds to the provided one.'''
  *     return as_string(CppRobots.robotsUrl(as_bytes(url)))
  */
-  __pyx_tuple__15 = PyTuple_Pack(2, __pyx_n_s_cls, __pyx_n_s_url); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(1, 113, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__15);
-  __Pyx_GIVEREF(__pyx_tuple__15);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_RobotsUrlMethod, 113, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(1, 113, __pyx_L1_error)
+  __pyx_tuple__17 = PyTuple_Pack(2, __pyx_n_s_cls, __pyx_n_s_url); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(1, 121, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
+  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_vagrant_reppy_robots_pyx, __pyx_n_s_RobotsUrlMethod, 121, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(1, 121, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -6397,19 +6629,19 @@ PyMODINIT_FUNC PyInit_robots(void)
   __pyx_type_5reppy_6robots_Agent.tp_print = 0;
   if (PyObject_SetAttrString(__pyx_m, "Agent", (PyObject *)&__pyx_type_5reppy_6robots_Agent) < 0) __PYX_ERR(1, 43, __pyx_L1_error)
   __pyx_ptype_5reppy_6robots_Agent = &__pyx_type_5reppy_6robots_Agent;
-  if (PyType_Ready(&__pyx_type_5reppy_6robots_Robots) < 0) __PYX_ERR(1, 117, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_5reppy_6robots_Robots) < 0) __PYX_ERR(1, 125, __pyx_L1_error)
   __pyx_type_5reppy_6robots_Robots.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "Robots", (PyObject *)&__pyx_type_5reppy_6robots_Robots) < 0) __PYX_ERR(1, 117, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "Robots", (PyObject *)&__pyx_type_5reppy_6robots_Robots) < 0) __PYX_ERR(1, 125, __pyx_L1_error)
   __pyx_ptype_5reppy_6robots_Robots = &__pyx_type_5reppy_6robots_Robots;
   __pyx_type_5reppy_6robots_AllowNone.tp_base = __pyx_ptype_5reppy_6robots_Robots;
-  if (PyType_Ready(&__pyx_type_5reppy_6robots_AllowNone) < 0) __PYX_ERR(1, 177, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_5reppy_6robots_AllowNone) < 0) __PYX_ERR(1, 185, __pyx_L1_error)
   __pyx_type_5reppy_6robots_AllowNone.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "AllowNone", (PyObject *)&__pyx_type_5reppy_6robots_AllowNone) < 0) __PYX_ERR(1, 177, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "AllowNone", (PyObject *)&__pyx_type_5reppy_6robots_AllowNone) < 0) __PYX_ERR(1, 185, __pyx_L1_error)
   __pyx_ptype_5reppy_6robots_AllowNone = &__pyx_type_5reppy_6robots_AllowNone;
   __pyx_type_5reppy_6robots_AllowAll.tp_base = __pyx_ptype_5reppy_6robots_Robots;
-  if (PyType_Ready(&__pyx_type_5reppy_6robots_AllowAll) < 0) __PYX_ERR(1, 184, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_5reppy_6robots_AllowAll) < 0) __PYX_ERR(1, 192, __pyx_L1_error)
   __pyx_type_5reppy_6robots_AllowAll.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "AllowAll", (PyObject *)&__pyx_type_5reppy_6robots_AllowAll) < 0) __PYX_ERR(1, 184, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "AllowAll", (PyObject *)&__pyx_type_5reppy_6robots_AllowAll) < 0) __PYX_ERR(1, 192, __pyx_L1_error)
   __pyx_ptype_5reppy_6robots_AllowAll = &__pyx_type_5reppy_6robots_AllowAll;
   if (PyType_Ready(&__pyx_scope_struct____Pyx_CFunc_object____object___to_py) < 0) __PYX_ERR(2, 64, __pyx_L1_error)
   __pyx_scope_struct____Pyx_CFunc_object____object___to_py.tp_print = 0;
@@ -6598,7 +6830,7 @@ PyMODINIT_FUNC PyInit_robots(void)
   __Pyx_INCREF(__pyx_n_s_exceptions);
   __Pyx_GIVEREF(__pyx_n_s_exceptions);
   PyList_SET_ITEM(__pyx_t_2, 2, __pyx_n_s_exceptions);
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s__9, __pyx_t_2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 19, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s__11, __pyx_t_2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_util); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 19, __pyx_L1_error)
@@ -6663,7 +6895,7 @@ PyMODINIT_FUNC PyInit_robots(void)
  * 
  * def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):             # <<<<<<<<<<<<<<
  *     '''Get the robots.txt at the provided URL.'''
- *     try:
+ *     after_response_hook = kwargs.pop('after_response_hook', None)
  */
   __Pyx_TraceLine(80,0,__PYX_ERR(1, 80, __pyx_L1_error))
   __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_5reppy_6robots_5FetchMethod, NULL, __pyx_n_s_reppy_robots); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 80, __pyx_L1_error)
@@ -6671,89 +6903,89 @@ PyMODINIT_FUNC PyInit_robots(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_FetchMethod, __pyx_t_2) < 0) __PYX_ERR(1, 80, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "reppy/robots.pyx":113
+  /* "reppy/robots.pyx":121
  *         raise exceptions.ExcessiveRedirects(exc)
  * 
  * def RobotsUrlMethod(cls, url):             # <<<<<<<<<<<<<<
  *     '''Get the robots.txt URL that corresponds to the provided one.'''
  *     return as_string(CppRobots.robotsUrl(as_bytes(url)))
  */
-  __Pyx_TraceLine(113,0,__PYX_ERR(1, 113, __pyx_L1_error))
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_5reppy_6robots_7RobotsUrlMethod, NULL, __pyx_n_s_reppy_robots); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 113, __pyx_L1_error)
+  __Pyx_TraceLine(121,0,__PYX_ERR(1, 121, __pyx_L1_error))
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_5reppy_6robots_7RobotsUrlMethod, NULL, __pyx_n_s_reppy_robots); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 121, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_RobotsUrlMethod, __pyx_t_2) < 0) __PYX_ERR(1, 113, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_RobotsUrlMethod, __pyx_t_2) < 0) __PYX_ERR(1, 121, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "reppy/robots.pyx":122
+  /* "reppy/robots.pyx":130
  *     # The default TTL policy is to cache for 3600 seconds or what's provided in the
  *     # headers, and a minimum of 600 seconds
  *     DEFAULT_TTL_POLICY = HeaderWithDefaultPolicy(default=3600, minimum=600)             # <<<<<<<<<<<<<<
  * 
  *     # Class methods
  */
-  __Pyx_TraceLine(122,0,__PYX_ERR(1, 122, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_HeaderWithDefaultPolicy); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 122, __pyx_L1_error)
+  __Pyx_TraceLine(130,0,__PYX_ERR(1, 130, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_HeaderWithDefaultPolicy); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 130, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 122, __pyx_L1_error)
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 130, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_default, __pyx_int_3600) < 0) __PYX_ERR(1, 122, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_minimum, __pyx_int_600) < 0) __PYX_ERR(1, 122, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 122, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_default, __pyx_int_3600) < 0) __PYX_ERR(1, 130, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_minimum, __pyx_int_600) < 0) __PYX_ERR(1, 130, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 130, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_DEFAULT_TTL_POLICY, __pyx_t_3) < 0) __PYX_ERR(1, 122, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_DEFAULT_TTL_POLICY, __pyx_t_3) < 0) __PYX_ERR(1, 130, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_5reppy_6robots_Robots);
 
-  /* "reppy/robots.pyx":125
+  /* "reppy/robots.pyx":133
  * 
  *     # Class methods
  *     parse = classmethod(ParseMethod)             # <<<<<<<<<<<<<<
  *     fetch = classmethod(FetchMethod)
  *     robots_url = classmethod(RobotsUrlMethod)
  */
-  __Pyx_TraceLine(125,0,__PYX_ERR(1, 125, __pyx_L1_error))
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_ParseMethod); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 125, __pyx_L1_error)
+  __Pyx_TraceLine(133,0,__PYX_ERR(1, 133, __pyx_L1_error))
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_ParseMethod); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_Method_ClassMethod(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 125, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Method_ClassMethod(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_parse, __pyx_t_1) < 0) __PYX_ERR(1, 125, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_parse, __pyx_t_1) < 0) __PYX_ERR(1, 133, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   PyType_Modified(__pyx_ptype_5reppy_6robots_Robots);
 
-  /* "reppy/robots.pyx":126
+  /* "reppy/robots.pyx":134
  *     # Class methods
  *     parse = classmethod(ParseMethod)
  *     fetch = classmethod(FetchMethod)             # <<<<<<<<<<<<<<
  *     robots_url = classmethod(RobotsUrlMethod)
  * 
  */
-  __Pyx_TraceLine(126,0,__PYX_ERR(1, 126, __pyx_L1_error))
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_FetchMethod); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 126, __pyx_L1_error)
+  __Pyx_TraceLine(134,0,__PYX_ERR(1, 134, __pyx_L1_error))
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_FetchMethod); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 134, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_Method_ClassMethod(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 126, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_Method_ClassMethod(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 134, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_fetch, __pyx_t_3) < 0) __PYX_ERR(1, 126, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_fetch, __pyx_t_3) < 0) __PYX_ERR(1, 134, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_5reppy_6robots_Robots);
 
-  /* "reppy/robots.pyx":127
+  /* "reppy/robots.pyx":135
  *     parse = classmethod(ParseMethod)
  *     fetch = classmethod(FetchMethod)
  *     robots_url = classmethod(RobotsUrlMethod)             # <<<<<<<<<<<<<<
  * 
  *     # Data members
  */
-  __Pyx_TraceLine(127,0,__PYX_ERR(1, 127, __pyx_L1_error))
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_RobotsUrlMethod); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 127, __pyx_L1_error)
+  __Pyx_TraceLine(135,0,__PYX_ERR(1, 135, __pyx_L1_error))
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_RobotsUrlMethod); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_Method_ClassMethod(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 127, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Method_ClassMethod(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_robots_url, __pyx_t_1) < 0) __PYX_ERR(1, 127, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_5reppy_6robots_Robots->tp_dict, __pyx_n_s_robots_url, __pyx_t_1) < 0) __PYX_ERR(1, 135, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   PyType_Modified(__pyx_ptype_5reppy_6robots_Robots);
 

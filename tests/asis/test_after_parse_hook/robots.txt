@@ -1,0 +1,6 @@
+HTTP/1.0 200 OK
+Content-Type: text/plain
+
+User-Agent: *
+Disallow: /disallowed
+Allow: /allowed
