@@ -57,7 +57,7 @@ class AgentTest(unittest.TestCase):
         self.assertTrue(agent.allowed('/anything'))
 
     def test_escaped_rule(self):
-        '''Handles the case where the rule is escaped.'''
+        '''Handles an escaped rule.'''
         agent = self.parse('''
             User-agent: agent
             Disallow: /a%3cd.html
@@ -66,7 +66,7 @@ class AgentTest(unittest.TestCase):
         self.assertFalse(agent.allowed('/a%3cd.html'))
 
     def test_unescaped_rule(self):
-        '''Handles the case where the rule is unescaped.'''
+        '''Handles an unescaped rule.'''
         agent = self.parse('''
             User-agent: agent
             Disallow: /a<d.html
