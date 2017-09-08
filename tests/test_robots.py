@@ -356,6 +356,30 @@ class RobotsTest(unittest.TestCase):
         self.assertFalse(robot.allowed('/%7Ejim/jim.html', 'anything'))
         self.assertTrue(robot.allowed('/%7Emak/mak.html', 'anything'))
 
+    def test_after_response_hook(self):
+        '''Calls after_response_hook when response is received'''
+        state = {"called": False}
+
+        def hook(response):
+            state["called"] = True
+            self.assertEquals(response.status_code, 200)
+        with requests_fixtures('test_after_response_hook'):
+            robots.Robots.fetch(
+                'http://example.com/robots.txt', after_response_hook=hook)
+            self.assertTrue(state["called"])
+
+    def test_after_parse_hook(self):
+        '''Calls after_parse_hook after parsing robots.txt'''
+        state = {"called": False}
+
+        def hook(robots):
+            state["called"] = True
+            self.assertFalse(robots.allowed('/disallowed', 'me'))
+        with requests_fixtures('test_after_parse_hook'):
+            robots.Robots.fetch(
+                'http://example.com/robots.txt', after_parse_hook=hook)
+            self.assertTrue(state["called"])
+
 
 class AllowNoneTest(unittest.TestCase):
     '''Tests about the AllowNone Robots class.'''
