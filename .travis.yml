@@ -11,7 +11,7 @@ python:
 
 matrix:
   allow_failures:
-    - "3.7-dev"
+    - python: "3.7-dev"
 
 install: pip install -r dev-requirements.txt
 
