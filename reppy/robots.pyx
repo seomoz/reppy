@@ -81,6 +81,12 @@ def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
     '''Get the robots.txt at the provided URL.'''
     after_response_hook = kwargs.pop('after_response_hook', None)
     after_parse_hook = kwargs.pop('after_parse_hook', None)
+    def wrap_exception(etype, cause):
+        wrapped = etype(cause)
+        wrapped.url = url
+        if after_response_hook is not None:
+            after_response_hook(wrapped)
+        raise wrapped
     try:
         # Limit the size of the request
         kwargs['stream'] = True
@@ -110,13 +116,13 @@ def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
                 raise exceptions.BadStatusCode(
                     'Got %i for %s' % (res.status_code, url), res.status_code)
     except SSLError as exc:
-        raise exceptions.SSLException(exc)
+        wrap_exception(exceptions.SSLException, exc)
     except ConnectionError as exc:
-        raise exceptions.ConnectionException(exc)
+        wrap_exception(exceptions.ConnectionException, exc)
     except (URLRequired, MissingSchema, InvalidSchema, InvalidURL) as exc:
-        raise exceptions.MalformedUrl(exc)
+        wrap_exception(exceptions.MalformedUrl, exc)
     except TooManyRedirects as exc:
-        raise exceptions.ExcessiveRedirects(exc)
+        wrap_exception(exceptions.ExcessiveRedirects, exc)
 
 def RobotsUrlMethod(cls, url):
     '''Get the robots.txt URL that corresponds to the provided one.'''

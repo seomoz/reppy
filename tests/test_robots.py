@@ -368,6 +368,20 @@ class RobotsTest(unittest.TestCase):
                 'http://example.com/robots.txt', after_response_hook=hook)
             self.assertTrue(state["called"])
 
+    def test_after_response_hook_on_error(self):
+        '''Calls after_response_hook when error occurs during fetch'''
+        state = {"called": False}
+        expected_url = 'http://localhost:8080/robots.txt'
+
+        def hook(response):
+            state["called"] = True
+            self.assertIsInstance(
+                response, robots.exceptions.ConnectionException)
+            self.assertEquals(response.url, expected_url)
+        with self.assertRaises(robots.exceptions.ConnectionException):
+            robots.Robots.fetch(expected_url, after_response_hook=hook)
+        self.assertTrue(state["called"])
+
     def test_after_parse_hook(self):
         '''Calls after_parse_hook after parsing robots.txt'''
         state = {"called": False}
