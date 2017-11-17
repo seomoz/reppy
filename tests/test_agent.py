@@ -117,3 +117,21 @@ class AgentTest(unittest.TestCase):
         ''', 'agent')
         self.assertFalse(agent.allowed('/;'))
         self.assertTrue(agent.allowed('/'))
+
+    def test_str(self):
+        '''str() shows directives.'''
+        agent = self.parse('''
+            User-agent: agent
+            Disallow: /
+        ''', 'agent')
+        self.assertEquals(str(agent), '[Directive(Disallow: /)]')
+
+    def test_str_crawl_delay(self):
+        '''str() shows crawl-delay.'''
+        agent = self.parse('''
+            User-agent: agent
+            Crawl-Delay: 1
+            Disallow: /
+        ''', 'agent')
+        self.assertEquals(
+            str(agent), 'Crawl-Delay: 1 [Directive(Disallow: /)]')
