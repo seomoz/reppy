@@ -40,7 +40,8 @@ class HeaderWithDefaultPolicy(TTLPolicyBase):
                     try:
                         return max(self.minimum, int(value.strip()))
                     except ValueError:
-                        logger.exception('Could not parse %s=%s', name, value)
+                        logger.warn(
+                            'Could not parse %s=%s', name, value, exc_info=1)
 
         # Check the Expires header
         expires = response.headers.get('expires')
@@ -51,7 +52,8 @@ class HeaderWithDefaultPolicy(TTLPolicyBase):
                 try:
                     date = parse_date(date)
                 except ValueError:
-                    logger.exception('Could not parse date string %s', date)
+                    logger.warn(
+                        'Could not parse date string %s', date, exc_info=1)
                     date = time.time()
             else:
                 date = time.time()
@@ -59,6 +61,7 @@ class HeaderWithDefaultPolicy(TTLPolicyBase):
             try:
                 return max(self.minimum, parse_date(expires) - date)
             except ValueError:
-                logger.exception('Could not parse date string %s', expires)
+                logger.warn(
+                    'Could not parse date string %s', expires, exc_info=1)
 
         return self.default
