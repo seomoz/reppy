@@ -48,7 +48,7 @@ cdef class Agent:
     from_robots = classmethod(FromRobotsMethod)
 
     def __str__(self):
-        return self.agent.str()
+        return self.agent.str().decode('utf8')
 
     @property
     def delay(self):
@@ -149,7 +149,7 @@ cdef class Robots:
         self.expires = expires
 
     def __str__(self):
-        return self.robots.str()
+        return self.robots.str().decode('utf8')
 
     def __dealloc__(self):
         del self.robots
