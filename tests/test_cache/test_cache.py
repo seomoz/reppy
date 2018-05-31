@@ -2,11 +2,8 @@ from __future__ import print_function
 
 '''Tests about our caching utilities.'''
 
-import contextlib
-import os
 import unittest
 
-import requests_mock
 import mock
 
 from reppy import cache
