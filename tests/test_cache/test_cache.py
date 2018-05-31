@@ -38,6 +38,30 @@ class TestExpiringObject(unittest.TestCase):
             obj.get()
         self.assertEqual(obj.expires, 10)
 
+    def test_expired(self):
+        '''Returns true if expired.'''
+        factory = mock.Mock(return_value=(10, 'result'))
+        obj = cache.ExpiringObject(factory)
+        obj.get()
+        with mock.patch.object(cache.time, 'time', return_value=11):
+            self.assertTrue(obj.expired)
+
+    def test_not_expired(self):
+        '''Returns false if not expired.'''
+        factory = mock.Mock(return_value=(10, 'result'))
+        obj = cache.ExpiringObject(factory)
+        obj.get()
+        with mock.patch.object(cache.time, 'time', return_value=9):
+            self.assertFalse(obj.expired)
+
+    def test_ttl(self):
+        '''Returns the time remaining until expiration.'''
+        factory = mock.Mock(return_value=(10, 'result'))
+        obj = cache.ExpiringObject(factory)
+        obj.get()
+        with mock.patch.object(cache.time, 'time', return_value=5):
+            self.assertEqual(obj.ttl, 5)
+
 
 class TestBaseCache(unittest.TestCase):
     '''Tests about BaseCache.'''
@@ -93,6 +117,13 @@ class TestRobotsCache(unittest.TestCase):
         self.assertTrue(
             self.cache.allowed('http://example.com/allowed', 'agent'))
 
+    def test_calls_after_response_hook(self):
+        hook = mock.Mock()
+        self.cache = cache.RobotsCache(10, after_response_hook=hook)
+        with requests_fixtures('test_caches_agent'):
+            self.cache.get('http://example.com/')
+        self.assertEqual(hook.call_count, 1)
+
 
 class TestAgentCache(unittest.TestCase):
     '''Tests about AgentCache.'''
@@ -138,3 +169,10 @@ class TestAgentCache(unittest.TestCase):
             self.cache.allowed('http://example.com/disallowed'))
         self.assertTrue(
             self.cache.allowed('http://example.com/allowed'))
+
+    def test_calls_after_response_hook(self):
+        hook = mock.Mock()
+        self.cache = cache.AgentCache('agent', 10, after_response_hook=hook)
+        with requests_fixtures('test_caches_agent'):
+            self.cache.get('http://example.com/')
+        self.assertEqual(hook.call_count, 1)
