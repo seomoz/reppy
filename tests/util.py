@@ -1,7 +1,6 @@
 '''Testing utilities.'''
 
 import contextlib
-import json
 import os
 
 import six
