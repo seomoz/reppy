@@ -1,17 +1,20 @@
 language: python
-dist: trusty
-
-python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
+sudo: false
 
 matrix:
-  allow_failures:
-    - python: "3.7-dev"
+  include:
+    - python: "2.7"
+      dist: xenial
+    - python: "3.3"
+      dist: trusty
+    - python: "3.4"
+      dist: trusty
+    - python: "3.5"
+      dist: xenial
+    - python: "3.6"
+      dist: xenial
+    - python: "3.7"
+      dist: xenial
 
 install: pip install -r dev-requirements.txt
 
