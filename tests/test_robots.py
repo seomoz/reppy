@@ -20,24 +20,6 @@ from .util import requests_fixtures
 class RobotsTest(unittest.TestCase):
     '''Tests about our Robots class.'''
 
-    def test_expired(self):
-        '''Returns true if expired.'''
-        with mock.patch.object(robots.time, 'time', return_value=10):
-            robot = robots.Robots.parse('http://example.com/robots.txt', '', expires=5)
-            self.assertTrue(robot.expired)
-
-    def test_not_expired(self):
-        '''Returns false if not expired.'''
-        with mock.patch.object(robots.time, 'time', return_value=10):
-            robot = robots.Robots.parse('http://example.com/robots.txt', '', expires=15)
-            self.assertFalse(robot.expired)
-
-    def test_ttl(self):
-        '''Returns the time remaining until expiration.'''
-        with mock.patch.object(robots.time, 'time', return_value=10):
-            robot = robots.Robots.parse('http://example.com/robots.txt', '', expires=15)
-            self.assertEqual(robot.ttl, 5)
-
     def test_no_leading_user_agent(self):
         '''Treats missing User-Agent as default user agent'''
         robot = robots.Robots.parse('http://example.com/robots.txt', '''

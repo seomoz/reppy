@@ -8,6 +8,7 @@ from cachetools import LRUCache
 
 from .policy import DefaultObjectPolicy, ReraiseExceptionPolicy
 from ..robots import Robots, AllowNone, Agent
+from ..ttl import HeaderWithDefaultPolicy
 
 
 class ExpiringObject(object):
@@ -17,14 +18,14 @@ class ExpiringObject(object):
         self.factory = factory
         self.lock = threading.Lock()
         self.obj = None
-        self.expires = 0
+        self._expires = 0
         self.exception = None
 
     def get(self):
         '''Get the wrapped object.'''
-        if (self.obj is None) or (time.time() >= self.expires):
+        if self.obj is None or self.expired:
             with self.lock:
-                self.expires, self.obj = self.factory()
+                self._expires, self.obj = self.factory()
                 if isinstance(self.obj, BaseException):
                     self.exception = self.obj
                 else:
@@ -35,18 +36,36 @@ class ExpiringObject(object):
         else:
             return self.obj
 
+    @property
+    def expired(self):
+        '''True if the current time is past its expiration.'''
+        return time.time() > self.expires
+
+    @property
+    def expires(self):
+        '''The expiration of this robots.txt.'''
+        return self._expires
+
+    @property
+    def ttl(self):
+        '''Remaining time for this response to be considered valid.'''
+        return max(self.expires - time.time(), 0)
+
 
 class BaseCache(object):
     '''A base cache class.'''
 
     DEFAULT_CACHE_POLICY = ReraiseExceptionPolicy(ttl=600)
-    DEFAULT_TTL_POLICY = Robots.DEFAULT_TTL_POLICY
+    # The default TTL policy is to cache for 3600 seconds or what's
+    # provided in the headers, and a minimum of 600 seconds
+    DEFAULT_TTL_POLICY = HeaderWithDefaultPolicy(default=3600, minimum=600)
 
     def __init__(self, capacity, cache_policy=None, ttl_policy=None, *args, **kwargs):
         self.cache_policy = cache_policy or self.DEFAULT_CACHE_POLICY
         self.ttl_policy = ttl_policy or self.DEFAULT_TTL_POLICY
         self.cache = LRUCache(maxsize=capacity, missing=self.missing)
         self.args = args
+        self.after_response_hook = kwargs.pop('after_response_hook', None)
         self.kwargs = kwargs
 
     def get(self, url):
@@ -83,9 +102,17 @@ class RobotsCache(BaseCache):
 
     def fetch(self, url):
         '''Return (expiration, Robots) for the robots.txt at the provided URL.'''
+        expires = [0]
+
+        def check_ttl_hook(response):
+            if not isinstance(response, Exception):
+                expires[0] = self.ttl_policy.expires(response)
+            if self.after_response_hook is not None:
+                self.after_response_hook(response)
+
         robots = Robots.fetch(
-            url, ttl_policy=self.ttl_policy, *self.args, **self.kwargs)
-        return (robots.expires, robots)
+            url, after_response_hook=check_ttl_hook, *self.args, **self.kwargs)
+        return (expires[0], robots)
 
 
 class AgentCache(BaseCache):
@@ -104,6 +131,14 @@ class AgentCache(BaseCache):
 
     def fetch(self, url):
         '''Return (expiration, Agent) for the robots.txt at the provided URL.'''
+        expires = [0]
+
+        def check_ttl_hook(response):
+            if not isinstance(response, Exception):
+                expires[0] = self.ttl_policy.expires(response)
+            if self.after_response_hook is not None:
+                self.after_response_hook(response)
+
         robots = Robots.fetch(
-            url, ttl_policy=self.ttl_policy, *self.args, **self.kwargs)
-        return (robots.expires, robots.agent(self.agent))
+            url, after_response_hook=check_ttl_hook, *self.args, **self.kwargs)
+        return (expires[0], robots.agent(self.agent))
