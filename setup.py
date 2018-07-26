@@ -57,7 +57,7 @@ ext_modules = [
 
 setup(
     name='reppy',
-    version='0.4.9',
+    version='0.4.10rc1',
     description='Replacement robots.txt Parser',
     long_description='''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like
@@ -96,9 +96,12 @@ Sitemaps, Allow, and Crawl-delay. Main features:
         'Intended Audience :: Developers',
         'Topic :: Internet :: WWW/HTTP',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5'
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7'
     ],
     **kwargs
 )
