@@ -52,6 +52,10 @@ class ExcessiveRedirects(ReppyException):
     '''A TooManyRedirects error.'''
     pass
 
+class ReadTimeout(ReppyException):
+    '''A ReadTimeout error from the HTTP library.'''
+    pass
+
 class BadStatusCode(ReppyException):
     '''An exception for 5xx status codes.'''
     pass

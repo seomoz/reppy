@@ -12,7 +12,8 @@ from requests.exceptions import (
     MissingSchema,
     InvalidSchema,
     InvalidURL,
-    TooManyRedirects)
+    TooManyRedirects,
+    ReadTimeout)
 import six
 
 from .ttl import HeaderWithDefaultPolicy
@@ -123,6 +124,8 @@ def FetchMethod(cls, url, ttl_policy=None, max_size=1048576, *args, **kwargs):
         wrap_exception(exceptions.MalformedUrl, exc)
     except TooManyRedirects as exc:
         wrap_exception(exceptions.ExcessiveRedirects, exc)
+    except ReadTimeout as exc:
+        wrap_exception(exceptions.ReadTimeout, exc)
 
 def RobotsUrlMethod(cls, url):
     '''Get the robots.txt URL that corresponds to the provided one.'''
