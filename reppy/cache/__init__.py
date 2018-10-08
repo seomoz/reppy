@@ -8,6 +8,7 @@ from cachetools import LRUCache
 
 from .policy import DefaultObjectPolicy, ReraiseExceptionPolicy
 from ..robots import Robots, AllowNone, Agent
+from .. import logger
 
 
 class ExpiringObject(object):
@@ -61,6 +62,7 @@ class BaseCache(object):
         try:
             return self.fetch(url)
         except BaseException as exc:
+            logger.exception('Reppy error on %s' % url)
             return self.cache_policy.exception(url, exc)
 
     def fetch(self, url):
