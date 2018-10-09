@@ -270,6 +270,23 @@ class RobotsTest(unittest.TestCase):
         self.assertTrue(robot.allowed('http://example.com/path', 'agent'))
         self.assertFalse(robot.allowed('http://example.com/path', 'other'))
 
+    def test_str_function(self):
+        '''
+        If there is valid UTF-8, str() should return a representation of the
+        directives.
+
+        This came out of a UnicodeDecodeError happening in Python 2, when we
+        were unduly decoding the bytes (via UTF-8) to unicode, then implictly
+        converting back to bytes via UTF-8.
+        '''
+        robot = robots.Robots.parse('http://example.com/robots.txt',
+            codecs.BOM_UTF8 + b'''
+            User-Agent: \xc3\xa4gent
+            Allow: /swedish-chef
+        ''')
+        s = str(robot)
+        self.assertTrue('ägent' in s)
+
     def test_utf16_bom(self):
         '''If there's a utf-16 BOM, we should parse it as such'''
         robot = robots.Robots.parse('http://example.com/robots.txt',

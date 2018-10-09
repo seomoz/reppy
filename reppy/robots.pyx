@@ -24,6 +24,9 @@ cdef as_bytes(value):
         return value
     return value.encode('utf-8')
 
+# For contexts which require a 'str' type, convert bytes to unicode if needed
+# (i.e., Python 3). Note: could raise UnicodeDecodeError in Python 3 if input
+# is invalid UTF-8
 cdef as_string(value):
     if six.PY3:
         if isinstance(value, bytes):
@@ -49,7 +52,7 @@ cdef class Agent:
     from_robots = classmethod(FromRobotsMethod)
 
     def __str__(self):
-        return self.agent.str().decode('utf8')
+        return as_string(self.agent.str())
 
     @property
     def delay(self):
@@ -152,7 +155,9 @@ cdef class Robots:
         self.expires = expires
 
     def __str__(self):
-        return self.robots.str().decode('utf8')
+        # Note: this could raise a UnicodeDecodeError in Python 3 if the
+        # robots.txt had invalid UTF-8
+        return as_string(self.robots.str())
 
     def __dealloc__(self):
         del self.robots
