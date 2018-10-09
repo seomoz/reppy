@@ -132,7 +132,7 @@ class TestAgentCache(unittest.TestCase):
             self.cache.get('http://does-not-resolve/')
 
             expected_err = reppy.exceptions.ConnectionException
-            expected_msg = 'Reppy error on http://does-not-resolve/robots.txt'
+            expected_msg = 'Reppy cache fetch error on http://does-not-resolve/robots.txt'
             self.assertIn((expected_err, expected_msg), logs)
 
     def test_agent_allowed(self):

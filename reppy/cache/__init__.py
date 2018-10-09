@@ -62,7 +62,7 @@ class BaseCache(object):
         try:
             return self.fetch(url)
         except BaseException as exc:
-            logger.exception('Reppy error on %s' % url)
+            logger.exception('Reppy cache fetch error on %s' % url)
             return self.cache_policy.exception(url, exc)
 
     def fetch(self, url):
