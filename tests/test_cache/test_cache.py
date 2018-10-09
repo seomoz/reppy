@@ -3,10 +3,13 @@ from __future__ import print_function
 '''Tests about our caching utilities.'''
 
 import unittest
-
 import mock
 
+import sys
+
 from reppy import cache
+from reppy import logger
+import reppy.exceptions
 
 from ..util import requests_fixtures
 
@@ -118,6 +121,19 @@ class TestAgentCache(unittest.TestCase):
                 self.cache.get('http://does-not-resolve/')
                 self.assertEqual(
                     self.cache.cache['http://does-not-resolve/robots.txt'].expires, 17)
+
+    def test_logs_on_failure(self):
+        '''On fetch failure, it logs the exception.'''
+        logs = []
+        def mock_logger(msg):
+            exc_type = sys.exc_info()[0]
+            logs.append( (exc_type, msg) )
+        with mock.patch.object(logger, 'exception', mock_logger):
+            self.cache.get('http://does-not-resolve/')
+
+            expected_err = reppy.exceptions.ConnectionException
+            expected_msg = 'Reppy error on http://does-not-resolve/robots.txt'
+            self.assertIn((expected_err, expected_msg), logs)
 
     def test_agent_allowed(self):
         '''Can check for allowed.'''
