@@ -50,6 +50,42 @@ class TestBaseCache(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             cache.BaseCache(10).fetch('http://example.com/robots.txt')
 
+class TestBaseCacheLRUCacheWithMissingHandler(unittest.TestCase):
+    '''Tests LRUCacheWithMissingHandler'''
+
+    def calls_the_missing_function(self):
+        # missing ...
+        def missing(item):
+            return item + item
+        cache = cache.LRUCacheWithMissingHandler(maxsize=123, missing=missing)
+        self.assertEqual(cache[5], 10)
+        self.assertEqual(cache[6], 12)
+        self.assertEqual(5 in cache, True)
+        self.assertEqual(6 in cache, True)
+
+    def caches_the_result_of_the_missing_function(self):
+        calls = []
+        def missing(item):
+            calls.append(item)
+            return item * item
+        cache = cache.LRUCacheWithMissingHandler(maxsize=123, missing=missing)
+        self.assertEqual(cache[5], 10)
+        self.assertEqual(cache[6], 12)
+        self.assertEqual(cache[6], 12)
+        self.assertEqual(cache[5], 10)
+        self.assertEqual(calls, [5, 6])
+
+    def fills_up_capactity(self):
+        def missing(item):
+            return item + item
+        cache = cache.LRUCacheWithMissingHandler(maxsize=2, missing=missing)
+        self.assertEqual(cache[5], 10)
+        self.assertEqual(cache[6], 12)
+        self.assertEqual(cache[7], 14)
+        self.assertEqual(5 in cache, False)
+        self.assertEqual(6 in cache, True)
+        self.assertEqual(7 in cache, True)
+
 
 class TestRobotsCache(unittest.TestCase):
     '''Tests about RobotsCache.'''
