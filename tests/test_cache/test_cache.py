@@ -54,7 +54,6 @@ class TestBaseCacheLRUCacheWithMissingHandler(unittest.TestCase):
     '''Tests LRUCacheWithMissingHandler'''
 
     def calls_the_missing_function(self):
-        # missing ...
         def missing(item):
             return item + item
         cache = cache.LRUCacheWithMissingHandler(maxsize=123, missing=missing)
