@@ -46,13 +46,16 @@ class BaseCache(object):
     def __init__(self, capacity, cache_policy=None, ttl_policy=None, *args, **kwargs):
         self.cache_policy = cache_policy or self.DEFAULT_CACHE_POLICY
         self.ttl_policy = ttl_policy or self.DEFAULT_TTL_POLICY
-        self.cache = LRUCache(maxsize=capacity, missing=self.missing)
+        self.cache = LRUCache(maxsize=capacity)
         self.args = args
         self.kwargs = kwargs
 
     def get(self, url):
         '''Get the entity that corresponds to URL.'''
-        return self.cache[Robots.robots_url(url)].get()
+        robots_url = Robots.robots_url(url)
+        if robots_url not in self.cache:
+            self.cache[robots_url] = ExpiringObject(partial(self.factory, robots_url))
+        return self.cache[robots_url].get()
 
     def factory(self, url):
         '''
@@ -68,10 +71,6 @@ class BaseCache(object):
     def fetch(self, url):
         '''Return (expiration, obj) corresponding to provided url.'''
         raise NotImplementedError('BaseCache does not implement fetch.')
-
-    def missing(self, url):
-        '''Invoked on cache misses.'''
-        return ExpiringObject(partial(self.factory, url))
 
 
 class RobotsCache(BaseCache):
