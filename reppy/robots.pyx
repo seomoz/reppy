@@ -54,6 +54,9 @@ cdef class Agent:
     def __str__(self):
         return as_string(self.agent.str())
 
+    def __len__(self):
+        return self.agent.directives().size()
+
     @property
     def delay(self):
         '''The delay associated with this agent.'''

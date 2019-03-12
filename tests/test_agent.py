@@ -10,6 +10,11 @@ class AgentTest(unittest.TestCase):
         '''Parse the robots.txt in content and return the agent of the provided name.'''
         return Robots.parse('http://example.com', content).agent(name)
 
+    def test_length(self):
+        '''An agent knows how many directives it has.'''
+        agent = Agent().disallow('/path').allow('/path/')
+        self.assertEqual(len(agent), 2)
+
     def test_make_allowed(self):
         '''Make an agent that allows a path.'''
         agent = Agent().disallow('/path').allow('/path/')
