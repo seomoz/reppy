@@ -132,7 +132,7 @@ class RobotsTest(unittest.TestCase):
             Sitemap: http://a.com/sitemap.xml
             Sitemap: http://b.com/sitemap.xml
         ''')
-        self.assertEqual(list(robot.sitemaps), [
+        self.assertEqual(robot.sitemaps, [
             'http://a.com/sitemap.xml', 'http://b.com/sitemap.xml'
         ])
 
@@ -148,7 +148,7 @@ class RobotsTest(unittest.TestCase):
     def test_empty(self):
         '''Makes sure we can parse an empty robots.txt'''
         robot = robots.Robots.parse('http://example.com/robots.txt', '')
-        self.assertEqual(list(robot.sitemaps), [])
+        self.assertEqual(robot.sitemaps, [])
         self.assertTrue(robot.allowed('/', 'agent'))
 
     def test_comments(self):

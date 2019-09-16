@@ -168,7 +168,7 @@ cdef class Robots:
     @property
     def sitemaps(self):
         '''Get all the sitemaps in this robots.txt.'''
-        return map(as_string, self.robots.sitemaps())
+        return list(map(as_string, self.robots.sitemaps()))
 
     def allowed(self, path, name):
         '''Is the provided path allowed for the provided agent?'''
