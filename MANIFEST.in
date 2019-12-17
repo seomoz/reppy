@@ -1,3 +1,4 @@
+include LICENSE
 include reppy/rep-cpp/deps/url-cpp/src/*
 include reppy/rep-cpp/deps/url-cpp/include/*
 include reppy/rep-cpp/src/*
@@ -5,3 +6,5 @@ include reppy/rep-cpp/include/*
 include reppy/robots.pyx
 include reppy/robots.pxd
 include reppy/robots.cpp
+recursive-include tests *.py
+recursive-include tests *.txt
