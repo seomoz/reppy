@@ -2,6 +2,10 @@
 test: reppy/robots.so
 	nosetests --with-coverage tests
 
+test-docker:
+	docker build -t reppy-tests . && docker run --rm reppy-tests
+	docker rmi reppy-tests
+
 reppy/%.so: reppy/%.py* reppy/rep-cpp/src/* reppy/rep-cpp/include/* reppy/rep-cpp/deps/url-cpp/include/* reppy/rep-cpp/deps/url-cpp/src/*
 	python setup.py build_ext --inplace
 

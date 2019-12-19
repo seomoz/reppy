@@ -181,11 +181,18 @@ Tests may be run in `vagrant`:
 make test
 ```
 
+Alternatively, they may be run in a Docker container:
+
+```bash
+make docker-test
+```
+
 Development
 ===========
 
 Environment
 -----------
+
 To launch the `vagrant` image, we only need to
 `vagrant up` (though you may have to provide a `--provider` flag):
 
@@ -202,11 +209,24 @@ make test
 
 Running Tests
 -------------
+
+### Vagrant
+
 Tests are run with the top-level `Makefile`:
 
 ```bash
 make test
 ```
+
+### Docker
+
+To use Docker to run the tests, you only need to run `make test-docker` on your local machine:
+
+```bash
+make test-docker
+```
+
+This will build an image, run the tests in a container, then delete the container and image.
 
 PRs
 ===
