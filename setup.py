@@ -57,7 +57,7 @@ ext_modules = [
 
 setup(
     name='reppy',
-    version='0.4.15',
+    version='0.4.16',
     description='Replacement robots.txt Parser',
     long_description='''Replaces the built-in robotsparser with a
 RFC-conformant implementation that supports modern robots.txt constructs like
@@ -69,7 +69,7 @@ Sitemaps, Allow, and Crawl-delay. Main features:
 - Configurable user agent for fetching robots.txt
 - Automatic refetching based on expiration
 ''',
-    maintainer='Moz Pro Services',
+    maintainer='Moz, Inc.',
     maintainer_email='turbo@moz.com',
     url='http://github.com/seomoz/reppy',
     license='MIT',
