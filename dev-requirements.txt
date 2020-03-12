@@ -9,6 +9,6 @@ pbr==1.10.0
 python-dateutil==2.5.3
 python-termstyle==0.1.10
 rednose==1.1.1
-requests==2.10.0
+requests==2.20.0
 requests-mock==1.1.0
 six==1.10.0
