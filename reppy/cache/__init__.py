@@ -7,6 +7,7 @@ import time
 from cachetools import LRUCache
 
 from .policy import DefaultObjectPolicy, ReraiseExceptionPolicy
+from ..exceptions import ReppyException
 from ..robots import Robots, AllowNone, Agent
 from .. import logger
 
@@ -65,7 +66,13 @@ class BaseCache(object):
         try:
             return self.fetch(url)
         except BaseException as exc:
-            logger.exception('Reppy cache fetch error on %s' % url)
+            # Log the whole stack trace only if the exception is not a ReppyException
+            # or if we do not have a default factory
+            if isinstance(exc, ReppyException) and isinstance(self.cache_policy, DefaultObjectPolicy):
+                logger.info('Reppy cache fetch error on %s; using factory.' % url)
+            else:
+                logger.exception('Reppy cache fetch error on %s' % url)
+
             return self.cache_policy.exception(url, exc)
 
     def fetch(self, url):

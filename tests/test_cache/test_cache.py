@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+from reppy.cache import DefaultObjectPolicy, ReraiseExceptionPolicy
+
 '''Tests about our caching utilities.'''
 
 import unittest
@@ -9,6 +11,7 @@ import sys
 
 from reppy import cache
 from reppy import logger
+from reppy.robots import AllowNone
 import reppy.exceptions
 
 from ..util import requests_fixtures
@@ -96,6 +99,36 @@ class TestRobotsCache(unittest.TestCase):
         self.assertTrue(
             self.cache.allowed('http://example.com/allowed', 'agent'))
 
+    def test_logs_on_timeout_without_default_object_policy(self):
+        '''On fetch timeout without a default object policy, it logs the exception.'''
+        robots_cache = cache.RobotsCache(10, timeout=1, cache_policy=ReraiseExceptionPolicy(ttl=600))
+        logs = []
+
+        def mock_logger(msg):
+            exc_type = sys.exc_info()[0]
+            logs.append((exc_type, msg))
+
+        with mock.patch.object(logger, 'exception', mock_logger):
+            robots_cache.factory('https://httpstat.us/200?sleep=10000')
+
+            expected_err = reppy.exceptions.ReadTimeout
+            expected_msg = 'Reppy cache fetch error on https://httpstat.us/200?sleep=10000'
+            self.assertIn((expected_err, expected_msg), logs)
+
+    def test_logs_on_timeout_with_default_object_policy(self):
+        '''On fetch timeout with a default object policy, it logs an informative message.'''
+        robots_cache = cache.RobotsCache(10, timeout=1, cache_policy=DefaultObjectPolicy(ttl=600, factory=AllowNone))
+        logs = []
+
+        def mock_logger(msg):
+            logs.append(msg)
+
+        with mock.patch.object(logger, 'info', mock_logger):
+            robots_cache.factory('https://httpstat.us/200?sleep=10000')
+
+            expected_msg = 'Reppy cache fetch error on https://httpstat.us/200?sleep=10000; using factory.'
+            self.assertIn(expected_msg, logs)
+
 
 class TestAgentCache(unittest.TestCase):
     '''Tests about AgentCache.'''
@@ -122,18 +155,39 @@ class TestAgentCache(unittest.TestCase):
                 self.assertEqual(
                     self.cache.cache['http://does-not-resolve/robots.txt'].expires, 17)
 
-    def test_logs_on_failure(self):
-        '''On fetch failure, it logs the exception.'''
+    def test_logs_on_failure_without_default_object_policy(self):
+        '''On fetch failure without a default object policy, it logs the exception.'''
+        agents_cache = cache.AgentCache('agent', 10, cache_policy=ReraiseExceptionPolicy(ttl=600))
         logs = []
+
         def mock_logger(msg):
             exc_type = sys.exc_info()[0]
-            logs.append( (exc_type, msg) )
+            logs.append((exc_type, msg))
+
         with mock.patch.object(logger, 'exception', mock_logger):
-            self.cache.get('http://does-not-resolve/')
+            try:
+                agents_cache.get('http://does-not-resolve/')
+            except reppy.exceptions.ConnectionException:
+                # This is expected since the cache policy is a ReraiseExceptionPolicy
+                pass
 
             expected_err = reppy.exceptions.ConnectionException
             expected_msg = 'Reppy cache fetch error on http://does-not-resolve/robots.txt'
             self.assertIn((expected_err, expected_msg), logs)
+
+    def test_logs_on_failure_with_default_object_policy(self):
+        '''On fetch failure with a default object policy, it logs an informative message.'''
+        agents_cache = cache.AgentCache('agent', 10, cache_policy=DefaultObjectPolicy(ttl=600, factory=AllowNone))
+        logs = []
+
+        def mock_logger(msg):
+            logs.append(msg)
+
+        with mock.patch.object(logger, 'info', mock_logger):
+            agents_cache.get('http://does-not-resolve/')
+
+            expected_msg = 'Reppy cache fetch error on http://does-not-resolve/robots.txt; using factory.'
+            self.assertIn(expected_msg, logs)
 
     def test_agent_allowed(self):
         '''Can check for allowed.'''
