@@ -34,26 +34,36 @@ ext_files = [
     'reppy/rep-cpp/deps/url-cpp/src/psl.cpp'
 ]
 
+ext_opts = dict(
+    language='c++',
+    extra_compile_args=['-std=c++11'],
+    include_dirs=[
+        'reppy/rep-cpp/include',
+        'reppy/rep-cpp/deps/url-cpp/include'
+    ]
+)
+
+
 kwargs = {}
 
 try:
     from Cython.Distutils import build_ext
     print('Building from Cython')
-    ext_files.append('reppy/robots.pyx')
+    from Cython.Build import cythonize
+
+    # ensure any baked C++ code is cleaned
+    extra = ['reppy/robots.pyx']
+    ext_files += extra
+
+    for file in extra:
+        cythonize(file, force=True, language=ext_opts["language"])
     kwargs['cmdclass'] = {'build_ext': build_ext}
+
 except ImportError:
     print('Building from C++')
     ext_files.append('reppy/robots.cpp')
 
-ext_modules = [
-    Extension(
-        'reppy.robots', ext_files,
-        language='c++',
-        extra_compile_args=['-std=c++11'],
-        include_dirs=[
-            'reppy/rep-cpp/include',
-            'reppy/rep-cpp/deps/url-cpp/include'])
-]
+ext_modules = [Extension('reppy.robots', ext_files, **ext_opts)]
 
 setup(
     name='reppy',
