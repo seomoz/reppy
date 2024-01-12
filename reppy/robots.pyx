@@ -1,4 +1,5 @@
 # cython: linetrace=True
+# cython: language=c++
 # distutils: define_macros=CYTHON_TRACE=1
 
 from contextlib import closing
